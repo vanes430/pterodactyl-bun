@@ -24,13 +24,16 @@ jobs:
         run: |
           rm -rf node_modules tests CONTRIBUTING.md flake.lock flake.nix phpunit.xml shell.nix
           tar -czf panel.tar.gz * .editorconfig .env.example .gitignore biome.json build.ts bun.lock
+          zip -r panel.zip * .editorconfig .env.example .gitignore biome.json build.ts bun.lock
 
       - name: GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: latest
           name: Latest Automated Build
-          files: panel.tar.gz
+          files: |
+            panel.tar.gz
+            panel.zip
           body: |
             This is an automated build of the absolute latest commit.
             
