@@ -37,7 +37,7 @@ export default ({
 		{ password, passwordConfirmation }: Values,
 		{ setSubmitting }: FormikHelpers<Values>,
 	) => {
-		clearFlashes();
+		clearFlashes(undefined);
 		performPasswordReset(email, {
 			token: match.params.token,
 			password,

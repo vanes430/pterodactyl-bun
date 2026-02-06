@@ -24,14 +24,14 @@ export default () => {
 	const recaptcha = useStoreState((state) => state.settings.data?.recaptcha);
 
 	useEffect(() => {
-		clearFlashes();
+		clearFlashes(undefined);
 	}, [clearFlashes]);
 
 	const handleSubmission = (
 		{ email }: Values,
 		{ setSubmitting, resetForm }: FormikHelpers<Values>,
 	) => {
-		clearFlashes();
+		clearFlashes(undefined);
 
 		// If there is no token in the state yet, request the token and then abort this submit request
 		// since it will be re-submitted when the recaptcha data is returned by the component.

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { CSSTransition } from "react-transition-group";
 import tw from "twin.macro";
 import getWebsocketToken from "@/api/server/getWebsocketToken";
@@ -26,21 +26,17 @@ export default () => {
 		(actions) => actions.socket,
 	);
 
-	const updateToken = useCallback(
-		(uuid: string, socket: Websocket) => {
-			if (updatingToken.current) return;
+	const updateToken = useCallback((uuid: string, socket: Websocket) => {
+		if (updatingToken.current) return;
 
-			updatingToken.current = true;
-			getWebsocketToken(uuid)
-				.then((data) => socket.setToken(data.token, true))
-				.catch((error) => console.error(error))
-				.then(() => {
-					updatingToken.current = false;
-				});
-		},
-		[updatingToken],
-	);
-
+		updatingToken.current = true;
+		getWebsocketToken(uuid)
+			.then((data) => socket.setToken(data.token, true))
+			.catch((error) => console.error(error))
+			.then(() => {
+				updatingToken.current = false;
+			});
+	}, []);
 	const connect = useCallback(
 		(uuid: string) => {
 			const socket = new Websocket();

@@ -62,7 +62,7 @@ export default ({ database, className }: Props) => {
 	) => {
 		if (!uuid) return;
 
-		clearFlashes();
+		clearFlashes(undefined);
 		deleteServerDatabase(uuid, database.id)
 			.then(() => {
 				setVisible(false);

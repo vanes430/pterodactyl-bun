@@ -2,7 +2,7 @@ import { ChevronDoubleRightIcon } from "@heroicons/react/solid";
 import classNames from "classnames";
 import { debounce } from "debounce";
 import type React from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { theme as th } from "twin.macro";
 import { type ITerminalOptions, Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
@@ -90,7 +90,7 @@ export default () => {
 					line.replace(/(?:\r\n|\r|\n)$/im, "") +
 					"\u001b[0m",
 			),
-		[terminal, TERMINAL_PRELUDE],
+		[terminal],
 	);
 
 	const handleTransferStatus = useCallback(
@@ -102,7 +102,7 @@ export default () => {
 					return;
 			}
 		},
-		[terminal, TERMINAL_PRELUDE],
+		[terminal],
 	);
 
 	const handleDaemonErrorOutput = useCallback(
@@ -113,7 +113,7 @@ export default () => {
 					line.replace(/(?:\r\n|\r|\n)$/im, "") +
 					"\u001b[0m",
 			),
-		[terminal, TERMINAL_PRELUDE],
+		[terminal],
 	);
 
 	const handlePowerChangeEvent = useCallback(
@@ -121,7 +121,7 @@ export default () => {
 			terminal.writeln(
 				`${TERMINAL_PRELUDE}Server marked as ${state}...\u001b[0m`,
 			),
-		[terminal, TERMINAL_PRELUDE],
+		[terminal],
 	);
 
 	const handleCommandKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
