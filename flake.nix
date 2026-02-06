@@ -47,9 +47,7 @@
         devShells.default = pkgs.mkShellNoCC {
           buildInputs = with pkgs; [
             composer
-            nodejs_18
-            nodePackages.pnpm
-            nodePackages.yarn
+            bun
             phpWithExtensions
           ];
 
@@ -125,9 +123,7 @@
               composer
               coreutils
               mysql80
-              nodejs_18
-              nodePackages.pnpm
-              nodePackages.yarn
+              bun
               phpWithExtensions
             ];
             pathsToLink = ["/bin" "/etc"];

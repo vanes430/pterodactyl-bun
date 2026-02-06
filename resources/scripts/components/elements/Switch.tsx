@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
-import styled from 'styled-components/macro';
-import { v4 } from 'uuid';
-import tw from 'twin.macro';
-import Label from '@/components/elements/Label';
-import Input from '@/components/elements/Input';
+import type React from "react";
+import { useMemo } from "react";
+import styled from "styled-components/macro";
+import tw from "twin.macro";
+import { v4 } from "uuid";
+import Input from "@/components/elements/Input";
+import Label from "@/components/elements/Label";
 
 const ToggleContainer = styled.div`
     ${tw`relative select-none w-12 leading-normal`};
@@ -37,45 +38,58 @@ const ToggleContainer = styled.div`
 `;
 
 export interface SwitchProps {
-    name: string;
-    label?: string;
-    description?: string;
-    defaultChecked?: boolean;
-    readOnly?: boolean;
-    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    children?: React.ReactNode;
+	name: string;
+	label?: string;
+	description?: string;
+	defaultChecked?: boolean;
+	readOnly?: boolean;
+	onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+	children?: React.ReactNode;
 }
 
-const Switch = ({ name, label, description, defaultChecked, readOnly, onChange, children }: SwitchProps) => {
-    const uuid = useMemo(() => v4(), []);
+const Switch = ({
+	name,
+	label,
+	description,
+	defaultChecked,
+	readOnly,
+	onChange,
+	children,
+}: SwitchProps) => {
+	const uuid = useMemo(() => v4(), []);
 
-    return (
-        <div css={tw`flex items-center`}>
-            <ToggleContainer css={tw`flex-none`}>
-                {children || (
-                    <Input
-                        id={uuid}
-                        name={name}
-                        type={'checkbox'}
-                        onChange={(e) => onChange && onChange(e)}
-                        defaultChecked={defaultChecked}
-                        disabled={readOnly}
-                    />
-                )}
-                <Label htmlFor={uuid} />
-            </ToggleContainer>
-            {(label || description) && (
-                <div css={tw`ml-4 w-full`}>
-                    {label && (
-                        <Label css={[tw`cursor-pointer`, !!description && tw`mb-0`]} htmlFor={uuid}>
-                            {label}
-                        </Label>
-                    )}
-                    {description && <p css={tw`text-neutral-400 text-sm mt-2`}>{description}</p>}
-                </div>
-            )}
-        </div>
-    );
+	return (
+		<div css={tw`flex items-center`}>
+			<ToggleContainer css={tw`flex-none`}>
+				{children || (
+					<Input
+						id={uuid}
+						name={name}
+						type={"checkbox"}
+						onChange={(e) => onChange?.(e)}
+						defaultChecked={defaultChecked}
+						disabled={readOnly}
+					/>
+				)}
+				<Label htmlFor={uuid} />
+			</ToggleContainer>
+			{(label || description) && (
+				<div css={tw`ml-4 w-full`}>
+					{label && (
+						<Label
+							css={[tw`cursor-pointer`, !!description && tw`mb-0`]}
+							htmlFor={uuid}
+						>
+							{label}
+						</Label>
+					)}
+					{description && (
+						<p css={tw`text-neutral-400 text-sm mt-2`}>{description}</p>
+					)}
+				</div>
+			)}
+		</div>
+	);
 };
 
 export default Switch;

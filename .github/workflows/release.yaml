@@ -1,8 +1,8 @@
 name: Release
 on:
   push:
-    tags:
-      - "v*"
+    branches:
+      - "**"
 jobs:
   release:
     name: Release
@@ -11,39 +11,35 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@v2
         with:
-          node-version: 22
-          cache: yarn
-      - run: yarn install --frozen-lockfile
-      - run: yarn tsc
-      - run: yarn build:production
-      - name: create release branch and bump version
-        env:
-          VERSION: ${{ github.ref_name }}
-        run: |
-          BRANCH=release/${{ env.VERSION }}
-          git config --local user.email 'ci@pterodactyl.io'
-          git config --local user.name 'Pterodactyl CI'
-          git checkout -b "$BRANCH"
-          git push -u origin "$BRANCH"
-          sed -i "s/'canary'/'${VERSION:1}'/" config/app.php
-          git add config/app.php
-          git commit -m 'ci(release): bump version'
-          git push
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bun run type-check
+      - run: bun run lint
+      - run: bun run test
+      - run: bun run build:production
+
       - name: create release archive
         run: |
           rm -rf node_modules tests CONTRIBUTING.md flake.lock flake.nix phpunit.xml shell.nix
           tar -czf panel.tar.gz * .editorconfig .env.example .eslintignore .eslintrc.js .gitignore .prettierrc.json
-      - name: write changelog
-        run: |
-          sed -n "/^## ${{ github.ref_name }}/,/^## /{/^## /b;p}" CHANGELOG.md > ./RELEASE_CHANGELOG
-      - uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b
+
+      - name: GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Latest Automated Build
+          files: panel.tar.gz
+          body: |
+            This is an automated build of the absolute latest commit.
+            
+            **Metadata:**
+            - Last Branch: `${{ github.ref_name }}`
+            - Last Commit: `${{ github.sha }}`
+            - Build ID: `${{ github.run_id }}`
+          draft: false
+          prerelease: false
+          make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          draft: true
-          prerelease: ${{ contains(github.ref_name, 'rc') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'alpha') }}
-          body_path: ./RELEASE_CHANGELOG
-          files: |
-            panel.tar.gz

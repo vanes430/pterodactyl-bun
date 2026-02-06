@@ -1,29 +1,40 @@
-import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import useEventListener from '@/plugins/useEventListener';
-import SearchModal from '@/components/dashboard/search/SearchModal';
-import Tooltip from '@/components/elements/tooltip/Tooltip';
+import type { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useState } from "react";
+import SearchModal from "@/components/dashboard/search/SearchModal";
+import Tooltip from "@/components/elements/tooltip/Tooltip";
+import useEventListener from "@/plugins/useEventListener";
 
 export default () => {
-    const [visible, setVisible] = useState(false);
+	const [visible, setVisible] = useState(false);
 
-    useEventListener('keydown', (e: KeyboardEvent) => {
-        if (['input', 'textarea'].indexOf(((e.target as HTMLElement).tagName || 'input').toLowerCase()) < 0) {
-            if (!visible && e.metaKey && e.key.toLowerCase() === '/') {
-                setVisible(true);
-            }
-        }
-    });
+	useEventListener("keydown", (e: KeyboardEvent) => {
+		if (
+			["input", "textarea"].indexOf(
+				((e.target as HTMLElement).tagName || "input").toLowerCase(),
+			) < 0
+		) {
+			if (!visible && e.metaKey && e.key.toLowerCase() === "/") {
+				setVisible(true);
+			}
+		}
+	});
 
-    return (
-        <>
-            {visible && <SearchModal appear visible={visible} onDismissed={() => setVisible(false)} />}
-            <Tooltip placement={'bottom'} content={'Search'}>
-                <div className={'navigation-link'} onClick={() => setVisible(true)}>
-                    <FontAwesomeIcon icon={faSearch} />
-                </div>
-            </Tooltip>
-        </>
-    );
+	return (
+		<>
+			{visible && (
+				<SearchModal
+					appear
+					visible={visible}
+					onDismissed={() => setVisible(false)}
+				/>
+			)}
+			<Tooltip placement={"bottom"} content={"Search"}>
+				<div className={"navigation-link"} onClick={() => setVisible(true)}>
+					<FontAwesomeIcon icon={faSearch as IconProp} />
+				</div>
+			</Tooltip>
+		</>
+	);
 };

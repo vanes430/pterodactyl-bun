@@ -1,9 +1,8 @@
-import styled from 'styled-components/macro';
-import tw from 'twin.macro';
-import Checkbox from '@/components/elements/Checkbox';
-import React from 'react';
-import { useStoreState } from 'easy-peasy';
-import Label from '@/components/elements/Label';
+import { useStoreState } from "easy-peasy";
+import styled from "styled-components/macro";
+import tw from "twin.macro";
+import Checkbox from "@/components/elements/Checkbox";
+import Label from "@/components/elements/Label";
 
 const Container = styled.label`
     ${tw`flex items-center border border-transparent rounded md:p-2 transition-colors duration-75`};
@@ -31,35 +30,40 @@ const Container = styled.label`
 `;
 
 interface Props {
-    permission: string;
-    disabled: boolean;
+	permission: string;
+	disabled: boolean;
 }
 
 const PermissionRow = ({ permission, disabled }: Props) => {
-    const [key, pkey] = permission.split('.', 2);
-    const permissions = useStoreState((state) => state.permissions.data);
+	const [key, pkey] = permission.split(".", 2);
+	const permissions = useStoreState((state) => state.permissions.data);
 
-    return (
-        <Container htmlFor={`permission_${permission}`} className={disabled ? 'disabled' : undefined}>
-            <div css={tw`p-2`}>
-                <Checkbox
-                    id={`permission_${permission}`}
-                    name={'permissions'}
-                    value={permission}
-                    css={tw`w-5 h-5 mr-2`}
-                    disabled={disabled}
-                />
-            </div>
-            <div css={tw`flex-1`}>
-                <Label as={'p'} css={tw`font-medium`}>
-                    {pkey}
-                </Label>
-                {permissions[key].keys[pkey].length > 0 && (
-                    <p css={tw`text-xs text-neutral-400 mt-1`}>{permissions[key].keys[pkey]}</p>
-                )}
-            </div>
-        </Container>
-    );
+	return (
+		<Container
+			htmlFor={`permission_${permission}`}
+			className={disabled ? "disabled" : undefined}
+		>
+			<div css={tw`p-2`}>
+				<Checkbox
+					id={`permission_${permission}`}
+					name={"permissions"}
+					value={permission}
+					css={tw`w-5 h-5 mr-2`}
+					disabled={disabled}
+				/>
+			</div>
+			<div css={tw`flex-1`}>
+				<Label as={"p"} css={tw`font-medium`}>
+					{pkey}
+				</Label>
+				{permissions[key].keys[pkey].length > 0 && (
+					<p css={tw`text-xs text-neutral-400 mt-1`}>
+						{permissions[key].keys[pkey]}
+					</p>
+				)}
+			</div>
+		</Container>
+	);
 };
 
 export default PermissionRow;

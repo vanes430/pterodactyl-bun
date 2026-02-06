@@ -1,9 +1,9 @@
-import styled, { css } from 'styled-components/macro';
-import tw from 'twin.macro';
+import styled, { css } from "styled-components/macro";
+import tw from "twin.macro";
 
 export interface Props {
-    isLight?: boolean;
-    hasError?: boolean;
+	isLight?: boolean;
+	hasError?: boolean;
 }
 
 const light = css<Props>`

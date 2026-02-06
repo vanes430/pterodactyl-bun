@@ -1,32 +1,45 @@
-import { useLocation } from 'react-router';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from "react";
+import { useLocation } from "react-router";
 
 export default () => {
-    const location = useLocation();
+	const location = useLocation();
 
-    const getHashObject = (value: string): Record<string, string> =>
-        value
-            .substring(1)
-            .split('&')
-            .reduce((obj, str) => {
-                const [key, value = ''] = str.split('=');
+	const getHashObject = useCallback(
+		(value: string): Record<string, string> =>
+			value
+				.substring(1)
+				.split("&")
+				.reduce(
+					(obj, str) => {
+						const [key, value = ""] = str.split("=");
 
-                return !str.trim() ? obj : { ...obj, [key]: value };
-            }, {});
+						if (str.trim()) {
+							obj[key] = value;
+						}
 
-    const pathTo = (params: Record<string, string>): string => {
-        const current = getHashObject(location.hash);
+						return obj;
+					},
+					{} as Record<string, string>,
+				),
+		[],
+	);
 
-        for (const key in params) {
-            current[key] = params[key];
-        }
+	const pathTo = (params: Record<string, string>): string => {
+		const current = getHashObject(location.hash);
 
-        return Object.keys(current)
-            .map((key) => `${key}=${current[key]}`)
-            .join('&');
-    };
+		for (const key in params) {
+			current[key] = params[key];
+		}
 
-    const hash = useMemo((): Record<string, string> => getHashObject(location.hash), [location.hash]);
+		return Object.keys(current)
+			.map((key) => `${key}=${current[key]}`)
+			.join("&");
+	};
 
-    return { hash, pathTo };
+	const hash = useMemo(
+		(): Record<string, string> => getHashObject(location.hash),
+		[location.hash, getHashObject],
+	);
+
+	return { hash, pathTo };
 };

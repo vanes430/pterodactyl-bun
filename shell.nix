@@ -8,8 +8,7 @@ with pkgs;
     buildInputs = [
       alejandra
       composer
-      nodejs_18
-      nodePackages.yarn
+      bun
       phpWithExtensions
     ];
 
