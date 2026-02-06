@@ -187,20 +187,31 @@ if (!result.success) {
 }
 
 // 📄 Generate manifest.json
-const manifest: Record<string, string> = {};
+const manifest: Record<string, any> = {};
 for (const output of result.outputs) {
 	const fileName = path.basename(output.path);
 	const relativePath = path.relative(outdir, output.path);
 	const publicPath = `/assets/${relativePath}`;
 
 	// Map entry points to Pterodactyl's expected names
-	if (fileName.startsWith("index") && fileName.endsWith(".js"))
-		manifest["bundle.js"] = publicPath;
-	if (fileName.startsWith("index") && fileName.endsWith(".css"))
-		manifest["bundle.css"] = publicPath;
+	if (fileName.startsWith("index") && fileName.endsWith(".js")) {
+		manifest["main.js"] = {
+			src: publicPath,
+			integrity: "",
+		};
+	}
+	if (fileName.startsWith("index") && fileName.endsWith(".css")) {
+		manifest["main.css"] = {
+			src: publicPath,
+			integrity: "",
+		};
+	}
 
 	// Store all hashed versions
-	manifest[fileName] = publicPath;
+	manifest[fileName] = {
+		src: publicPath,
+		integrity: "",
+	};
 }
 
 await Bun.write(

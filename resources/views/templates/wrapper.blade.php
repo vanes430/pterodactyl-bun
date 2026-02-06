@@ -34,6 +34,8 @@
 
         @yield('assets')
 
+        {!! $asset->css('main.css') !!}
+
         @include('layouts.scripts')
     </head>
     <body class="{{ $css['body'] ?? 'bg-neutral-50' }}">

@@ -41,9 +41,6 @@ class NestSeeder extends Seeder
         ])->keyBy('name')->toArray();
 
         $this->createMinecraftNest(array_get($items, 'Minecraft'));
-        $this->createSourceEngineNest(array_get($items, 'Source Engine'));
-        $this->createVoiceServersNest(array_get($items, 'Voice Servers'));
-        $this->createRustNest(array_get($items, 'Rust'));
     }
 
     /**
