@@ -23,7 +23,7 @@ jobs:
       - name: create release archive
         run: |
           rm -rf node_modules tests CONTRIBUTING.md flake.lock flake.nix phpunit.xml shell.nix
-          tar -czf panel.tar.gz * .editorconfig .env.example .eslintignore .eslintrc.js .gitignore .prettierrc.json
+          tar -czf panel.tar.gz * .editorconfig .env.example .gitignore biome.json build.ts bun.lock
 
       - name: GitHub Release
         uses: softprops/action-gh-release@v2
