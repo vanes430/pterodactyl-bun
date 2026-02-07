@@ -11,8 +11,11 @@ interface Props {
 }
 
 const TitledGreyBox = ({ icon: Icon, title, children, className }: Props) => (
-	<div css={tw`rounded shadow-md bg-neutral-700`} className={className}>
-		<div css={tw`bg-neutral-900 rounded-t p-3 border-b border-black`}>
+	<div
+		css={tw`rounded-xl shadow-lg bg-neutral-800/40 backdrop-blur-md border border-neutral-700/50 overflow-hidden`}
+		className={className}
+	>
+		<div css={tw`bg-neutral-900/50 p-3 border-b border-neutral-700/50`}>
 			{typeof title === "string" ? (
 				<div css={tw`flex items-center text-sm uppercase`}>
 					{Icon && (

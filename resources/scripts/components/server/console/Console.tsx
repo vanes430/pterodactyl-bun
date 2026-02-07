@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { debounce } from "debounce";
-import { ChevronRight, Maximize2, X } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { theme as th } from "twin.macro";
@@ -53,7 +53,6 @@ const terminalProps: ITerminalOptions = {
 };
 
 export default () => {
-	const [isFullscreen, setIsFullscreen] = useState(false);
 	const TERMINAL_PRELUDE =
 		"\u001b[1m\u001b[33mcontainer@pterodactyl~ \u001b[0m";
 	const ref = useRef<HTMLDivElement>(null);
@@ -254,31 +253,12 @@ export default () => {
 	]);
 
 	return (
-		<div
-			className={classNames(
-				styles.terminal,
-				"relative transition-all duration-300",
-				{
-					"fixed inset-0 z-[100] h-screen w-screen bg-black p-4": isFullscreen,
-				},
-			)}
-		>
+		<div className={classNames(styles.terminal, "relative")}>
 			<SpinnerOverlay visible={!connected} size={"large"} />
-
-			<button
-				onClick={() => setIsFullscreen(!isFullscreen)}
-				className={
-					"absolute top-2 right-2 z-50 p-2 bg-neutral-800/50 hover:bg-neutral-700 text-neutral-400 hover:text-neutral-100 rounded-lg transition-colors"
-				}
-				title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Mode"}
-			>
-				{isFullscreen ? <X size={20} /> : <Maximize2 size={20} />}
-			</button>
 
 			<div
 				className={classNames(styles.container, styles.overflows_container, {
 					"rounded-b": !canSendCommands,
-					"h-[calc(100vh-120px)]": isFullscreen,
 				})}
 			>
 				<div className={"h-full"}>

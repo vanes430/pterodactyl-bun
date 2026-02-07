@@ -33,7 +33,7 @@ const ContentBox = ({
 		)}
 		<div
 			css={[
-				tw`bg-neutral-700 p-4 rounded shadow-lg relative`,
+				tw`bg-neutral-800/40 backdrop-blur-md p-4 rounded-xl shadow-lg relative border border-neutral-700/50`,
 				!!borderColor && tw`border-t-4`,
 			]}
 		>

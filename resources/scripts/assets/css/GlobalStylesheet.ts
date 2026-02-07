@@ -51,19 +51,27 @@ export default createGlobalStyle`
     ::-webkit-scrollbar {
         width: 8px;
         height: 8px;
+        background-color: transparent;
     }
 
     ::-webkit-scrollbar-thumb {
-        ${tw`bg-neutral-600 rounded-full hover:bg-neutral-500`};
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        border: 2px solid transparent;
+        background-clip: content-box;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(255, 255, 255, 0.2);
     }
 
     ::-webkit-scrollbar-track {
-        ${tw`bg-transparent`};
+        background-color: transparent;
     }
 
     * {
         scrollbar-width: thin;
-        scrollbar-color: theme('colors.neutral.600') transparent;
+        scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
     }
 
     ::-webkit-scrollbar-corner {
