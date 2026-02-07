@@ -45,9 +45,9 @@ const ServerConsoleContainer = () => {
 							: "This server is currently being transferred to another node and all actions are unavailable."}
 				</Alert>
 			)}
-			<div className={"grid grid-cols-4 gap-4 mb-4"}>
-				<div className={"hidden sm:block sm:col-span-2 lg:col-span-3 pr-4"}>
-					<div css={tw`flex items-center`}>
+			<div className={"flex flex-col sm:grid sm:grid-cols-4 gap-4 mb-4"}>
+				<div className={"sm:col-span-2 lg:col-span-3 pr-4"}>
+					<div css={tw`flex items-center justify-center sm:justify-start`}>
 						<h1
 							className={
 								"font-header font-medium text-2xl text-gray-50 leading-relaxed line-clamp-1"
@@ -57,14 +57,18 @@ const ServerConsoleContainer = () => {
 						</h1>
 						<McLogsButton />
 					</div>
-					<p className={"text-sm line-clamp-2"}>{description}</p>
+					<p className={"text-sm line-clamp-2 text-center sm:text-left"}>
+						{description}
+					</p>
 				</div>
-				<div className={"col-span-4 sm:col-span-2 lg:col-span-1 self-end"}>
+				<div className={"sm:col-span-2 lg:col-span-1 self-end mt-4 sm:mt-0"}>
 					<Can
 						action={["control.start", "control.stop", "control.restart"]}
 						matchAny
 					>
-						<PowerButtons className={"flex sm:justify-end space-x-2"} />
+						<PowerButtons
+							className={"flex justify-center sm:justify-end space-x-2"}
+						/>
 					</Can>
 				</div>
 			</div>

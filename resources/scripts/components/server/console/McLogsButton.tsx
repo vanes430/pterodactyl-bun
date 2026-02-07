@@ -79,13 +79,11 @@ const McLogsButton = () => {
 			onClick={onClick}
 			disabled={loading}
 		>
-			{loading ? (
-				<Spinner size={"small"} css={tw`mr-2`} />
-			) : (
-				<Share2 size={14} css={tw`mr-2`} />
+			{loading ? <Spinner size={"small"} /> : <Share2 size={14} />}
+			<span css={tw`hidden sm:inline ml-2`}>Upload Log</span>
+			{!loading && (
+				<ExternalLink size={12} css={tw`ml-2 opacity-50 hidden sm:inline`} />
 			)}
-			Upload Log
-			{!loading && <ExternalLink size={12} css={tw`ml-2 opacity-50`} />}
 		</Button>
 	);
 };
