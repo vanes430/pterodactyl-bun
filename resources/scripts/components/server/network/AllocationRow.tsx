@@ -69,14 +69,14 @@ const AllocationRow = ({ allocation }: Props) => {
 
 	return (
 		<GreyRowBox $hoverable={false} className={"flex-wrap md:flex-nowrap mt-2"}>
-			<div className={"flex items-center w-full md:w-auto"}>
+			<div className={"flex items-center w-full md:w-auto flex-1"}>
 				<div className={"pl-4 pr-6 text-neutral-400"}>
 					<Network size={20} />
 				</div>
-				<div className={"mr-4 flex-1 md:w-40"}>
+				<div className={"mr-4 flex-1 md:flex-none md:w-48"}>
 					{allocation.alias ? (
 						<CopyOnClick text={allocation.alias}>
-							<Code dark className={"w-40 truncate"}>
+							<Code dark className={"w-full truncate"}>
 								{allocation.alias}
 							</Code>
 						</CopyOnClick>
@@ -87,28 +87,26 @@ const AllocationRow = ({ allocation }: Props) => {
 					)}
 					<Label>{allocation.alias ? "Hostname" : "IP Address"}</Label>
 				</div>
-				<div className={"w-16 md:w-24 overflow-hidden"}>
+				<div className={"w-24 overflow-hidden"}>
 					<Code dark>{allocation.port}</Code>
 					<Label>Port</Label>
 				</div>
 			</div>
-			<div className={"mt-4 w-full md:mt-0 md:flex-1 md:w-auto"}>
+			<div className={"mt-4 w-full md:mt-0 md:flex-1 md:mx-6"}>
 				<InputSpinner visible={loading}>
 					<Textarea
-						className={
-							"bg-neutral-800 hover:border-neutral-600 border-transparent"
-						}
+						className={"bg-white/[0.03] hover:border-white/20 border-white/10"}
 						placeholder={"Notes"}
 						defaultValue={allocation.notes || undefined}
 						onChange={(e) => setAllocationNotes(e.currentTarget.value)}
 					/>
 				</InputSpinner>
 			</div>
-			<div className={"flex justify-end space-x-4 mt-4 w-full md:mt-0 md:w-48"}>
+			<div className={"flex justify-end space-x-3 mt-4 w-full md:mt-0 md:w-48"}>
 				{allocation.isDefault ? (
 					<Button
 						size={Button.Sizes.Small}
-						className={"!text-gray-50 !bg-blue-600"}
+						className={"!text-cyan-50 !bg-cyan-600"}
 						disabled
 					>
 						Primary

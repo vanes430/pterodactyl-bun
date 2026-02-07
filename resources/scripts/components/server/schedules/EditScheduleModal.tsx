@@ -114,7 +114,7 @@ const EditScheduleModal = ({ schedule }: Props) => {
 						when these tasks should begin running.
 					</p>
 					<div
-						css={tw`mt-6 bg-neutral-700 border border-neutral-800 shadow-inner p-4 rounded`}
+						css={tw`mt-6 bg-white/[0.03] border border-white/5 p-4 rounded-xl`}
 					>
 						<Switch
 							name={"show_cheatsheet"}
@@ -124,13 +124,13 @@ const EditScheduleModal = ({ schedule }: Props) => {
 							onChange={() => setShowCheetsheet((s) => !s)}
 						/>
 						{showCheatsheet && (
-							<div css={tw`block md:flex w-full`}>
+							<div css={tw`block md:flex w-full mt-6`}>
 								<ScheduleCheatsheetCards />
 							</div>
 						)}
 					</div>
 					<div
-						css={tw`mt-6 bg-neutral-700 border border-neutral-800 shadow-inner p-4 rounded`}
+						css={tw`mt-4 bg-white/[0.03] border border-white/5 p-4 rounded-xl`}
 					>
 						<FormikSwitch
 							name={"onlyWhenOnline"}
@@ -141,7 +141,7 @@ const EditScheduleModal = ({ schedule }: Props) => {
 						/>
 					</div>
 					<div
-						css={tw`mt-6 bg-neutral-700 border border-neutral-800 shadow-inner p-4 rounded`}
+						css={tw`mt-4 bg-white/[0.03] border border-white/5 p-4 rounded-xl`}
 					>
 						<FormikSwitch
 							name={"enabled"}
