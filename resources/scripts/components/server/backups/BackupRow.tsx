@@ -1,5 +1,5 @@
-import { Archive, Lock, MoreHorizontal } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
+import { Archive, Lock, MoreHorizontal } from "lucide-react";
 import tw from "twin.macro";
 import type { ServerBackup } from "@/api/server/types";
 import getServerBackups from "@/api/swr/getServerBackups";
@@ -60,15 +60,9 @@ export default ({ backup, className }: Props) => {
 				<div css={tw`mr-4`}>
 					{backup.completedAt !== null ? (
 						backup.isLocked ? (
-							<Lock
-								size={16}
-								css={tw`text-yellow-500`}
-							/>
+							<Lock size={16} css={tw`text-yellow-500`} />
 						) : (
-							<Archive
-								size={16}
-								css={tw`text-neutral-300`}
-							/>
+							<Archive size={16} css={tw`text-neutral-300`} />
 						)
 					) : (
 						<Spinner size={"small"} />

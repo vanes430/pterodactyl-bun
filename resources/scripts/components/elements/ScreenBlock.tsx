@@ -62,11 +62,7 @@ const ScreenBlock = ({
 							onClick={() => (onRetry ? onRetry() : onBack ? onBack() : null)}
 							className={onRetry ? "hover:spin" : undefined}
 						>
-							{onRetry ? (
-								<RefreshCw size={16} />
-							) : (
-								<ArrowLeft size={16} />
-							)}
+							{onRetry ? <RefreshCw size={16} /> : <ArrowLeft size={16} />}
 						</ActionButton>
 					</div>
 				)}
@@ -82,13 +78,11 @@ const ScreenBlock = ({
 				<p css={tw`text-base text-neutral-400 mt-4`}>{message}</p>
 				<div css={tw`mt-10`}>
 					<Button
-						onClick={() =>
-							onRetry
-								? onRetry()
-								: onBack
-									? onBack()
-									: (window.location.href = "/")
-						}
+						onClick={() => {
+							if (onRetry) return onRetry();
+							if (onBack) return onBack();
+							window.location.href = "/";
+						}}
 					>
 						{onRetry ? "Retry Action" : "Return to Dashboard"}
 					</Button>

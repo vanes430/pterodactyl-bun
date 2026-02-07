@@ -1,5 +1,5 @@
-import { UserCheck, UserX, Pencil } from "lucide-react";
 import { useStoreState } from "easy-peasy";
+import { Pencil, UserCheck, UserX } from "lucide-react";
 import { useState } from "react";
 import tw from "twin.macro";
 import Can from "@/components/elements/Can";

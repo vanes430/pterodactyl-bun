@@ -29,10 +29,12 @@ export default ({
 				<div
 					className={classNames(styles.status_bar, color || "bg-gray-700")}
 				/>
-				<div className={classNames(styles.icon, color || "bg-gray-700", {
-					"text-gray-100": !color || color === "bg-gray-700",
-					"text-gray-50": color && color !== "bg-gray-700",
-				})}>
+				<div
+					className={classNames(styles.icon, color || "bg-gray-700", {
+						"text-gray-100": !color || color === "bg-gray-700",
+						"text-gray-50": color && color !== "bg-gray-700",
+					})}
+				>
 					<Icon size={20} />
 				</div>
 				<div className={"flex flex-col justify-center overflow-hidden w-full"}>

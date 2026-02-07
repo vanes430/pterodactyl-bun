@@ -1,13 +1,13 @@
+import classNames from "classnames";
 import {
 	Clock,
+	Cpu,
 	DownloadCloud,
-	UploadCloud,
 	HardDrive,
 	MemoryStick,
-	Cpu,
+	UploadCloud,
 	Wifi,
 } from "lucide-react";
-import classNames from "classnames";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 import StatBlock from "@/components/server/console/StatBlock";

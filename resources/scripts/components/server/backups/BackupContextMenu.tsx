@@ -1,10 +1,10 @@
 import {
 	DownloadCloud,
+	Lock,
 	MoreHorizontal,
 	PackageOpen,
-	Lock,
-	Unlock,
 	Trash2,
+	Unlock,
 } from "lucide-react";
 import { useState } from "react";
 import tw from "twin.macro";
@@ -203,9 +203,13 @@ export default ({ backup }: Props) => {
 						<Can action={"backup.delete"}>
 							<DropdownButtonRow onClick={onLockToggle}>
 								{backup.isLocked ? (
-									<><Unlock size={14} className={"mr-2"} /> Unlock</>
+									<>
+										<Unlock size={14} className={"mr-2"} /> Unlock
+									</>
 								) : (
-									<><Lock size={14} className={"mr-2"} /> Lock</>
+									<>
+										<Lock size={14} className={"mr-2"} /> Lock
+									</>
 								)}
 							</DropdownButtonRow>
 							{!backup.isLocked && (

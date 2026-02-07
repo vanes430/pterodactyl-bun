@@ -24,7 +24,9 @@ interface Props {
 	task: Task;
 }
 
-const getActionDetails = (action: string): [string, React.ComponentType<any>] => {
+const getActionDetails = (
+	action: string,
+): [string, React.ComponentType<any>] => {
 	switch (action) {
 		case "command":
 			return ["Send Command", Command];
@@ -110,10 +112,7 @@ export default ({ schedule, task }: Props) => {
 						<div
 							css={tw`flex items-center px-2 py-1 bg-yellow-500 text-yellow-800 text-sm rounded-full`}
 						>
-							<ArrowDownCircle
-								size={12}
-								className={"mr-2"}
-							/>
+							<ArrowDownCircle size={12} className={"mr-2"} />
 							Continues on Failure
 						</div>
 					</div>

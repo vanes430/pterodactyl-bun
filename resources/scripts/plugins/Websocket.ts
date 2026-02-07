@@ -1,4 +1,4 @@
-import { EventEmitter } from "events";
+import { EventEmitter } from "node:events";
 
 export class Websocket extends EventEmitter {
 	private socket: WebSocket | null = null;

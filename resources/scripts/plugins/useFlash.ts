@@ -1,7 +1,7 @@
 import { type Actions, useStoreActions } from "easy-peasy";
 import { toast } from "react-hot-toast";
 import type { ApplicationStore } from "@/state";
-import type { FlashMessage, FlashStore } from "@/state/flashes";
+import type { FlashMessage } from "@/state/flashes";
 
 interface KeyedFlashStore {
 	addError: (message: string, title?: string) => void;

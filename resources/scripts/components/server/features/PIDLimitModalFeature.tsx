@@ -1,5 +1,5 @@
-import { AlertTriangle } from "lucide-react";
 import { useStoreState } from "easy-peasy";
+import { AlertTriangle } from "lucide-react";
 import { useEffect, useState } from "react";
 import tw from "twin.macro";
 import Button from "@/components/elements/Button";
@@ -60,10 +60,7 @@ const PIDLimitModalFeature = () => {
 			{isAdmin ? (
 				<>
 					<div css={tw`mt-4 sm:flex items-center`}>
-						<AlertTriangle
-							css={tw`mr-4 text-orange-500`}
-							size={64}
-						/>
+						<AlertTriangle css={tw`mr-4 text-orange-500`} size={64} />
 						<h2 css={tw`text-2xl mb-4 text-neutral-100 `}>
 							Memory or process limit reached...
 						</h2>
@@ -96,10 +93,7 @@ const PIDLimitModalFeature = () => {
 			) : (
 				<>
 					<div css={tw`mt-4 sm:flex items-center`}>
-						<AlertTriangle
-							css={tw`mr-4 text-orange-500`}
-							size={64}
-						/>
+						<AlertTriangle css={tw`mr-4 text-orange-500`} size={64} />
 						<h2 css={tw`text-2xl mb-4 text-neutral-100`}>
 							Possible resource limit reached...
 						</h2>

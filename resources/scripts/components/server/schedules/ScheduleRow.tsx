@@ -1,5 +1,5 @@
-import { CalendarDays } from "lucide-react";
 import { format } from "date-fns";
+import { CalendarDays } from "lucide-react";
 import tw from "twin.macro";
 import type { Schedule } from "@/api/server/schedules/getServerSchedules";
 import ScheduleCronRow from "@/components/server/schedules/ScheduleCronRow";

@@ -1,5 +1,5 @@
-import { Trash2 } from "lucide-react";
 import { type Actions, useStoreActions } from "easy-peasy";
+import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import tw from "twin.macro";
 import { httpErrorToHuman } from "@/api/http";

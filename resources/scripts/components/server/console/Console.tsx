@@ -210,7 +210,7 @@ export default () => {
 			}
 		}, 150);
 		return () => clearTimeout(timeout);
-	}, [isFullscreen, terminal.element, fitAddon]);
+	}, [terminal.element, fitAddon]);
 
 	useEffect(() => {
 		const listeners: Record<string, (s: string) => void> = {

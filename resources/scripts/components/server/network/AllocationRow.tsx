@@ -1,5 +1,5 @@
-import { Network } from "lucide-react";
 import { debounce } from "debounce";
+import { Network } from "lucide-react";
 import { memo, useCallback, useState } from "react";
 import isEqual from "react-fast-compare";
 import styled from "styled-components/macro";
