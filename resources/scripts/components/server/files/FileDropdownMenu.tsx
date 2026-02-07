@@ -1,11 +1,11 @@
 import {
-	PackageOpen,
 	Copy,
-	MoreHorizontal,
+	CornerLeftUp,
+	Download,
 	FileArchive,
 	FileCode,
-	Download,
-	CornerLeftUp,
+	MoreHorizontal,
+	PackageOpen,
 	Pencil,
 	Trash2,
 } from "lucide-react";
@@ -35,7 +35,7 @@ import { ServerContext } from "@/state/server";
 type ModalType = "rename" | "move" | "chmod";
 
 const StyledRow = styled.div<{ $danger?: boolean }>`
-    ${tw`p-2 flex items-center rounded` };
+    ${tw`p-2 flex items-center rounded`};
     ${(props) =>
 			props.$danger
 				? tw`hover:bg-red-100 hover:text-red-700`
@@ -43,7 +43,7 @@ const StyledRow = styled.div<{ $danger?: boolean }>`
 `;
 
 interface RowProps extends React.HTMLAttributes<HTMLDivElement> {
-	icon: React.ComponentType<{ size?: number; className?: string }>;
+	icon: React.ComponentType<any>;
 	title: string;
 	$danger?: boolean;
 }
@@ -194,27 +194,15 @@ const FileDropdownMenu = ({ file }: { file: FileObject }) => {
 				)}
 				{file.isArchiveType() ? (
 					<Can action={"file.create"}>
-						<Row
-							onClick={doUnarchive}
-							icon={PackageOpen}
-							title={"Unarchive"}
-						/>
+						<Row onClick={doUnarchive} icon={PackageOpen} title={"Unarchive"} />
 					</Can>
 				) : (
 					<Can action={"file.archive"}>
-						<Row
-							onClick={doArchive}
-							icon={FileArchive}
-							title={"Archive"}
-						/>
+						<Row onClick={doArchive} icon={FileArchive} title={"Archive"} />
 					</Can>
 				)}
 				{file.isFile && (
-					<Row
-						onClick={doDownload}
-						icon={Download}
-						title={"Download"}
-					/>
+					<Row onClick={doDownload} icon={Download} title={"Download"} />
 				)}
 				<Can action={"file.delete"}>
 					<Row

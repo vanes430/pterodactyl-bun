@@ -1,3 +1,4 @@
+import { describe, expect, it } from "bun:test";
 import { isObject } from "@/lib/objects";
 
 describe("@/lib/objects.ts", () => {

@@ -14,8 +14,8 @@ export default createGlobalStyle`
     }
 
     body {
-        ${tw`font-sans text-neutral-200` };
-        ${tw`bg-neutral-900` };
+        ${tw`font-sans text-neutral-200`};
+        ${tw`bg-neutral-900`};
         background-image: linear-gradient(to bottom right, #131a20, #1a242d);
         background-attachment: fixed;
         letter-spacing: 0.015em;

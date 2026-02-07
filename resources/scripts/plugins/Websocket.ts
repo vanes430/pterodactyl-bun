@@ -4,7 +4,7 @@ export class Websocket extends EventEmitter {
 	private socket: WebSocket | null = null;
 	private url: string | null = null;
 	private token = "";
-	private reconnectTimeout: Timer | null = null;
+	private reconnectTimeout: NodeJS.Timeout | null = null;
 	private retryCount = 0;
 	private maxRetries = 20;
 

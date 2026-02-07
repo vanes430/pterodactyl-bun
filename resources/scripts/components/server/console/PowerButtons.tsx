@@ -1,4 +1,4 @@
-import { Play, RotateCw, Square, Skull } from "lucide-react";
+import { Play, RotateCw, Skull, Square } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/elements/button/index";
@@ -79,9 +79,13 @@ export default ({ className }: PowerButtonProps) => {
 					onClick={onButtonClick.bind(this, killable ? "kill" : "stop")}
 				>
 					{killable ? (
-						<><Skull size={16} className={"mr-2"} /> Kill</>
+						<>
+							<Skull size={16} className={"mr-2"} /> Kill
+						</>
 					) : (
-						<><Square size={16} className={"mr-2"} /> Stop</>
+						<>
+							<Square size={16} className={"mr-2"} /> Stop
+						</>
 					)}
 				</Button.Danger>
 			</Can>

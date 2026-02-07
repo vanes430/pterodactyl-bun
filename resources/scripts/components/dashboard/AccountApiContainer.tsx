@@ -1,5 +1,5 @@
-import { Key, Trash2 } from "lucide-react";
 import { format } from "date-fns";
+import { Key, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import tw from "twin.macro";
 import deleteApiKey from "@/api/account/deleteApiKey";
@@ -103,7 +103,12 @@ export default () => {
 									css={tw`ml-4 p-2 text-sm`}
 									onClick={() => setDeleteIdentifier(key.identifier)}
 								>
-									<Trash2 className={"text-neutral-400 hover:text-red-400 transition-colors duration-150"} size={16} />
+									<Trash2
+										className={
+											"text-neutral-400 hover:text-red-400 transition-colors duration-150"
+										}
+										size={16}
+									/>
 								</button>
 							</GreyRowBox>
 						))

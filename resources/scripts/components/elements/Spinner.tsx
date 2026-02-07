@@ -10,6 +10,7 @@ interface Props {
 	size?: SpinnerSize;
 	centered?: boolean;
 	isBlue?: boolean;
+	className?: string;
 }
 
 interface Spinner extends React.FC<Props> {

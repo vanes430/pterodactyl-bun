@@ -1,8 +1,8 @@
 import classNames from "classnames";
 import { forwardRef } from "react";
 import { type ButtonProps, Options } from "@/components/elements/button/types";
-import styles from "./style.module.css";
 import Spinner from "@/components/elements/Spinner";
+import styles from "./style.module.css";
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 	({ children, shape, size, variant, isLoading, className, ...rest }, ref) => {

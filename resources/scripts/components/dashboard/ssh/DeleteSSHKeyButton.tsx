@@ -45,7 +45,12 @@ export default ({
 				across the Panel.
 			</Dialog.Confirm>
 			<button css={tw`ml-4 p-2 text-sm`} onClick={() => setVisible(true)}>
-				<Trash2 className={"text-neutral-400 hover:text-red-400 transition-colors duration-150"} size={16} />
+				<Trash2
+					className={
+						"text-neutral-400 hover:text-red-400 transition-colors duration-150"
+					}
+					size={16}
+				/>
 			</button>
 		</>
 	);

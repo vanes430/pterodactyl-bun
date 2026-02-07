@@ -1,7 +1,7 @@
 import { StoreProvider } from "easy-peasy";
 import { lazy } from "react";
-import { Toaster } from "react-hot-toast";
 import { hot } from "react-hot-loader/root";
+import { Toaster } from "react-hot-toast";
 import { Route, Router, Switch } from "react-router-dom";
 import tw from "twin.macro";
 import { setupInterceptors } from "@/api/interceptors";

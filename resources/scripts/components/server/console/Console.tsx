@@ -1,6 +1,6 @@
-import { ChevronRight, Maximize2, X } from "lucide-react";
 import classNames from "classnames";
 import { debounce } from "debounce";
+import { ChevronRight, Maximize2, X } from "lucide-react";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { theme as th } from "twin.macro";
@@ -53,14 +53,17 @@ const terminalProps: ITerminalOptions = {
 };
 
 export default () => {
-    const [isFullscreen, setIsFullscreen] = useState(false);
+	const [isFullscreen, setIsFullscreen] = useState(false);
 	const TERMINAL_PRELUDE =
 		"\u001b[1m\u001b[33mcontainer@pterodactyl~ \u001b[0m";
 	const ref = useRef<HTMLDivElement>(null);
 	const terminal = useMemo(() => new Terminal({ ...terminalProps }), []);
 	const fitAddon = useMemo(() => new FitAddon(), []);
 	const searchAddon = useMemo(() => new SearchAddon(), []);
-	const searchBar = useMemo(() => new SearchBarAddon({ searchAddon }), [searchAddon]);
+	const searchBar = useMemo(
+		() => new SearchBarAddon({ searchAddon }),
+		[searchAddon],
+	);
 	const webLinksAddon = useMemo(() => new WebLinksAddon(), []);
 	const scrollDownHelperAddon = useMemo(() => new ScrollDownHelperAddon(), []);
 	const { connected, instance } = ServerContext.useStoreState(
@@ -200,14 +203,14 @@ export default () => {
 		}, 100),
 	);
 
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-            if (terminal.element) {
-                fitAddon.fit();
-            }
-        }, 150);
-        return () => clearTimeout(timeout);
-    }, [isFullscreen, terminal.element, fitAddon]);
+	useEffect(() => {
+		const timeout = setTimeout(() => {
+			if (terminal.element) {
+				fitAddon.fit();
+			}
+		}, 150);
+		return () => clearTimeout(timeout);
+	}, [isFullscreen, terminal.element, fitAddon]);
 
 	useEffect(() => {
 		const listeners: Record<string, (s: string) => void> = {
@@ -251,27 +254,31 @@ export default () => {
 	]);
 
 	return (
-		<div className={classNames(styles.terminal, "relative transition-all duration-300", {
-            "fixed inset-0 z-[100] h-screen w-screen bg-black p-4": isFullscreen,
-        })}>
+		<div
+			className={classNames(
+				styles.terminal,
+				"relative transition-all duration-300",
+				{
+					"fixed inset-0 z-[100] h-screen w-screen bg-black p-4": isFullscreen,
+				},
+			)}
+		>
 			<SpinnerOverlay visible={!connected} size={"large"} />
-            
-            <button
-                onClick={() => setIsFullscreen(!isFullscreen)}
-                className={"absolute top-2 right-2 z-50 p-2 bg-neutral-800/50 hover:bg-neutral-700 text-neutral-400 hover:text-neutral-100 rounded-lg transition-colors"}
-                title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Mode"}
-            >
-                {isFullscreen ? (
-                    <X size={20} />
-                ) : (
-                    <Maximize2 size={20} />
-                )}
-            </button>
+
+			<button
+				onClick={() => setIsFullscreen(!isFullscreen)}
+				className={
+					"absolute top-2 right-2 z-50 p-2 bg-neutral-800/50 hover:bg-neutral-700 text-neutral-400 hover:text-neutral-100 rounded-lg transition-colors"
+				}
+				title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Mode"}
+			>
+				{isFullscreen ? <X size={20} /> : <Maximize2 size={20} />}
+			</button>
 
 			<div
 				className={classNames(styles.container, styles.overflows_container, {
 					"rounded-b": !canSendCommands,
-                    "h-[calc(100vh-120px)]": isFullscreen,
+					"h-[calc(100vh-120px)]": isFullscreen,
 				})}
 			>
 				<div className={"h-full"}>

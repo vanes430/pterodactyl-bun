@@ -93,7 +93,7 @@ const EditorContainer = styled.div`
         font-family: "JetBrains Mono", "Fira Code", "Source Code Pro", monospace;
         font-size: 13px;
         line-height: 1.5rem;
-        ${tw`rounded` };
+        ${tw`rounded`};
     }
 
     .CodeMirror-linenumber {

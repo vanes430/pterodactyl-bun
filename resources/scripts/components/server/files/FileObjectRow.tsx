@@ -1,11 +1,5 @@
-import { 
-	FileText, 
-	FileArchive, 
-	FileCode, 
-	Folder, 
-	Link2 
-} from "lucide-react";
 import { differenceInHours, format, formatDistanceToNow } from "date-fns";
+import { FileArchive, FileCode, FileText, Folder, Link2 } from "lucide-react";
 import { join } from "pathe";
 import type React from "react";
 import { memo } from "react";
@@ -46,8 +40,10 @@ const Clickable: React.FC<{ file: FileObject }> = memo(({ file, children }) => {
 const FileIcon = ({ file }: { file: FileObject }) => {
 	if (!file.isFile) return <Folder className={"text-blue-400"} size={20} />;
 	if (file.isSymlink) return <Link2 className={"text-cyan-400"} size={20} />;
-	if (file.isArchiveType()) return <FileArchive className={"text-yellow-400"} size={20} />;
-	if (file.isEditable()) return <FileCode className={"text-green-400"} size={20} />;
+	if (file.isArchiveType())
+		return <FileArchive className={"text-yellow-400"} size={20} />;
+	if (file.isEditable())
+		return <FileCode className={"text-green-400"} size={20} />;
 	return <FileText size={20} />;
 };
 

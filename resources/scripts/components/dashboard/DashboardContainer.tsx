@@ -78,14 +78,26 @@ export default () => {
 			{!servers ? (
 				<div css={tw`space-y-2`}>
 					{[...Array(5)].map((_, i) => (
-						<div key={i} css={tw`bg-neutral-700/50 p-4 rounded-lg flex items-center`}>
-							<Skeleton circle width={"40px"} height={"40px"} className={"mr-4"} />
+						<div
+							key={i}
+							css={tw`bg-neutral-700/50 p-4 rounded-lg flex items-center`}
+						>
+							<Skeleton
+								circle
+								width={"40px"}
+								height={"40px"}
+								className={"mr-4"}
+							/>
 							<div css={tw`flex-1`}>
 								<Skeleton width={"30%"} height={"1.25rem"} className={"mb-2"} />
 								<Skeleton width={"20%"} height={"0.75rem"} />
 							</div>
 							<div css={tw`hidden md:flex flex-col items-end mr-8`}>
-								<Skeleton width={"60px"} height={"0.75rem"} className={"mb-2"} />
+								<Skeleton
+									width={"60px"}
+									height={"0.75rem"}
+									className={"mb-2"}
+								/>
 								<Skeleton width={"40px"} height={"0.75rem"} />
 							</div>
 							<Skeleton width={"100px"} height={"2rem"} />

@@ -1,3 +1,4 @@
+import { describe, expect, it } from "bun:test";
 import { capitalize } from "@/lib/strings";
 
 describe("@/lib/strings.ts", () => {

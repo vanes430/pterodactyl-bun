@@ -159,7 +159,9 @@ export default ({ className }: WithClassname) => {
 									"flex flex-col items-center justify-center space-y-4 bg-transparent border-4 border-dashed border-blue-400 border-opacity-60 rounded-3xl p-16 mx-10 w-full max-w-lg transition-all duration-150"
 								}
 							>
-								<CloudUploadIcon className={"w-24 h-24 text-blue-400 animate-bounce"} />
+								<CloudUploadIcon
+									className={"w-24 h-24 text-blue-400 animate-bounce"}
+								/>
 								<div className={"text-center"}>
 									<p className={"font-header text-3xl text-neutral-100 mb-2"}>
 										Drop to Upload

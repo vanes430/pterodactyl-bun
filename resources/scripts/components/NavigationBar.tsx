@@ -1,9 +1,5 @@
-import {
-	LayoutDashboard,
-	Settings,
-	LogOut,
-} from "lucide-react";
 import { useStoreState } from "easy-peasy";
+import { LayoutDashboard, LogOut, Settings } from "lucide-react";
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import styled from "styled-components/macro";
@@ -23,7 +19,7 @@ const RightNavigation = styled.div`
 
         &:active,
         &:hover {
-            ${tw`text-neutral-100 bg-black` };
+            ${tw`text-neutral-100 bg-black`};
         }
 
         &:active,
@@ -52,10 +48,16 @@ export default () => {
 	};
 
 	return (
-		<div className={"w-full bg-neutral-900/90 backdrop-blur-md shadow-md sticky top-0 z-50"}>
+		<div
+			className={
+				"w-full bg-neutral-900/90 backdrop-blur-md shadow-md sticky top-0 z-50"
+			}
+		>
 			<SpinnerOverlay visible={isLoggingOut} />
 			<div
-				className={"mx-auto w-full flex items-center h-[3.5rem] max-w-[1200px] px-2"}
+				className={
+					"mx-auto w-full flex items-center h-[3.5rem] max-w-[1200px] px-2"
+				}
 			>
 				<div id={"logo"} className={"flex-shrink-0"}>
 					<Link
@@ -67,7 +69,11 @@ export default () => {
 						{name}
 					</Link>
 				</div>
-				<RightNavigation className={"flex-1 flex h-full items-center justify-end overflow-x-auto"}>
+				<RightNavigation
+					className={
+						"flex-1 flex h-full items-center justify-end overflow-x-auto"
+					}
+				>
 					<SearchContainer />
 					<Tooltip placement={"bottom"} content={"Dashboard"}>
 						<NavLink to={"/"} exact>

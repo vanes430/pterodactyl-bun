@@ -1,7 +1,7 @@
 import { type Actions, useStoreActions } from "easy-peasy";
 import { toast } from "react-hot-toast";
 import type { ApplicationStore } from "@/state";
-import type { FlashStore, FlashMessage } from "@/state/flashes";
+import type { FlashMessage, FlashStore } from "@/state/flashes";
 
 interface KeyedFlashStore {
 	addError: (message: string, title?: string) => void;
@@ -10,23 +10,25 @@ interface KeyedFlashStore {
 	addSuccess: (message: string, title?: string) => void;
 }
 
-const useFlash = (): Actions<FlashStore> => {
+const useFlash = () => {
 	const actions = useStoreActions(
 		(actions: Actions<ApplicationStore>) => actions.flashes,
 	);
 
+	const addFlash = (message: FlashMessage) => {
+		if (message.type === "success") {
+			toast.success(message.message);
+		} else if (message.type === "error" || message.type === "warning") {
+			toast.error(message.message);
+		} else {
+			toast(message.message);
+		}
+		return actions.addFlash(message);
+	};
+
 	return {
 		...actions,
-		addFlash: (message: FlashMessage) => {
-			if (message.type === "success") {
-				toast.success(message.message);
-			} else if (message.type === "error" || message.type === "warning") {
-				toast.error(message.message);
-			} else {
-				toast(message.message);
-			}
-			return actions.addFlash(message);
-		},
+		addFlash,
 	};
 };
 

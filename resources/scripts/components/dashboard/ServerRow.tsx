@@ -1,12 +1,14 @@
+import copy from "copy-to-clipboard";
 import {
-	Network,
+	Cpu,
 	HardDrive,
 	MemoryStick,
-	Cpu,
+	Network,
 	Server as ServerIcon,
 } from "lucide-react";
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import isEqual from "react-fast-compare";
+import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import styled from "styled-components/macro";
 import tw from "twin.macro";
@@ -17,9 +19,7 @@ import getServerResourceUsage, {
 } from "@/api/server/getServerResourceUsage";
 import GreyRowBox from "@/components/elements/GreyRowBox";
 import Spinner from "@/components/elements/Spinner";
-import { toast } from "react-hot-toast";
 import { bytesToString, ip, mbToBytes } from "@/lib/formatters";
-import copy from "copy-to-clipboard";
 
 // Determines if the current value is in an alarm threshold so we can show it in red rather
 // than the more faded default style.
@@ -41,12 +41,12 @@ const IconDescription = styled.p<{ $alarm: boolean }>`
 const StatusIndicatorBox = styled(GreyRowBox)<{
 	$status: ServerPowerState | undefined;
 }>`
-    ${tw`grid grid-cols-12 gap-4 relative transition-all duration-300 ease-out` };
-    ${tw`bg-neutral-800/40 backdrop-blur-sm border border-neutral-700/50 hover:border-neutral-500/50` };
-    ${tw`hover:shadow-2xl hover:shadow-cyan-900/20 hover:-translate-y-1 hover:scale-[1.01]` };
+    ${tw`grid grid-cols-12 gap-4 relative transition-all duration-300 ease-out`};
+    ${tw`bg-neutral-800/40 backdrop-blur-sm border border-neutral-700/50 hover:border-neutral-500/50`};
+    ${tw`hover:shadow-2xl hover:shadow-cyan-900/20 hover:-translate-y-1 hover:scale-[1.01]`};
 
     & .status-bar {
-        ${tw`w-1 bg-red-500 absolute left-0 top-0 bottom-0 z-20 rounded-full my-2 ml-1 opacity-80 transition-all duration-150` };
+        ${tw`w-1 bg-red-500 absolute left-0 top-0 bottom-0 z-20 rounded-full my-2 ml-1 opacity-80 transition-all duration-150`};
 
         ${({ $status }) =>
 					!$status || $status === "offline"
@@ -153,11 +153,12 @@ export default ({
 			<div css={tw`flex-1 ml-4 lg:block lg:col-span-2 hidden`}>
 				<div css={tw`flex justify-center items-center`}>
 					<Network size={16} css={tw`text-neutral-500`} />
-					<p 
+					<p
 						css={tw`text-sm text-neutral-400 ml-2 hover:text-neutral-100 cursor-pointer transition-colors duration-75`}
 						onClick={(e) => {
-							const alloc = server.allocations.find(a => a.isDefault);
-							if (alloc) onCopyIP(e, `${alloc.alias || ip(alloc.ip)}:${alloc.port}`);
+							const alloc = server.allocations.find((a) => a.isDefault);
+							if (alloc)
+								onCopyIP(e, `${alloc.alias || ip(alloc.ip)}:${alloc.port}`);
 						}}
 					>
 						{server.allocations
