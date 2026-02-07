@@ -64,13 +64,13 @@ export default ({ className }: PowerButtonProps) => {
 				</Button>
 			</Can>
 			<Can action={"control.restart"}>
-				<Button.Text
+				<Button
 					className={"flex-1"}
 					disabled={!status}
 					onClick={onButtonClick.bind(this, "restart")}
 				>
 					<RotateCw size={16} className={"mr-2"} /> Restart
-				</Button.Text>
+				</Button>
 			</Can>
 			<Can action={"control.stop"}>
 				<Button.Danger

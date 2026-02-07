@@ -61,13 +61,19 @@ const ServerConsoleContainer = () => {
 						{description}
 					</p>
 				</div>
-				<div className={"sm:col-span-2 lg:col-span-1 self-end mt-4 sm:mt-0"}>
+				<div
+					className={
+						"sm:col-span-2 lg:col-span-1 self-end mt-4 sm:mt-0 w-full sm:w-auto"
+					}
+				>
 					<Can
 						action={["control.start", "control.stop", "control.restart"]}
 						matchAny
 					>
 						<PowerButtons
-							className={"flex justify-center sm:justify-end space-x-2"}
+							className={
+								"flex justify-center sm:justify-end space-x-2 w-full sm:w-auto"
+							}
 						/>
 					</Can>
 				</div>
