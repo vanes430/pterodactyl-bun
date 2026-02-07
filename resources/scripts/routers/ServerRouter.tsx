@@ -73,37 +73,39 @@ export default () => {
 					<Spinner size={"large"} centered />
 				)
 			) : (
-				<div css={tw`flex flex-col md:flex-row w-full h-full`}>
+				<div css={tw`flex flex-col md:flex-row w-full`}>
 					<ServerSidebar />
-					<div css={tw`flex-1 overflow-x-hidden p-4 md:p-10 min-h-screen`}>
-						<InstallListener />
-						<TransferListener />
-						<WebsocketHandler />
-						{inConflictState &&
-						(!rootAdmin ||
-							(rootAdmin && !location.pathname.endsWith(`/server/${id}`))) ? (
-							<ConflictStateRenderer />
-						) : (
-							<ErrorBoundary>
-								<Switch location={location}>
-									{routes.server.map(
-										({ path, permission, component: Component }) => (
-											<PermissionRoute
-												key={path}
-												permission={permission}
-												path={to(path)}
-												exact
-											>
-												<Spinner.Suspense>
-													<Component />
-												</Spinner.Suspense>
-											</PermissionRoute>
-										),
-									)}
-									<Route path={"*"} component={NotFound} />
-								</Switch>
-							</ErrorBoundary>
-						)}
+					<div css={tw`flex-1 flex justify-center`}>
+						<div css={tw`w-full max-w-[1200px] p-4 md:p-8 md:pt-4`}>
+							<InstallListener />
+							<TransferListener />
+							<WebsocketHandler />
+							{inConflictState &&
+							(!rootAdmin ||
+								(rootAdmin && !location.pathname.endsWith(`/server/${id}`))) ? (
+								<ConflictStateRenderer />
+							) : (
+								<ErrorBoundary>
+									<Switch location={location}>
+										{routes.server.map(
+											({ path, permission, component: Component }) => (
+												<PermissionRoute
+													key={path}
+													permission={permission}
+													path={to(path)}
+													exact
+												>
+													<Spinner.Suspense>
+														<Component />
+													</Spinner.Suspense>
+												</PermissionRoute>
+											),
+										)}
+										<Route path={"*"} component={NotFound} />
+									</Switch>
+								</ErrorBoundary>
+							)}
+						</div>
 					</div>
 				</div>
 			)}

@@ -24,7 +24,7 @@ const PageContentBlock: React.FC<PageContentBlockProps> = ({
 
 	return (
 		<>
-			<ContentContainer css={tw`my-4 sm:my-10`} className={className}>
+			<ContentContainer css={tw`my-2 sm:my-4`} className={className}>
 				{showFlashKey && (
 					<FlashMessageRender byKey={showFlashKey} css={tw`mb-4`} />
 				)}

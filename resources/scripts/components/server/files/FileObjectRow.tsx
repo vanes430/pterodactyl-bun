@@ -62,17 +62,17 @@ const FileObjectRow = ({ file }: { file: FileObject }) => (
 	>
 		<SelectFileCheckbox name={file.name} />
 		<Clickable file={file}>
-			<div css={tw`flex-none text-neutral-400 ml-6 mr-4 pl-3`}>
+			<div css={tw`flex-none text-neutral-400 mr-4 pl-3`}>
 				<FileIcon file={file} />
 			</div>
-			<div css={tw`flex-1 truncate`}>{file.name}</div>
+			<div css={tw`flex-1 truncate font-medium`}>{file.name}</div>
 			{file.isFile && (
-				<div css={tw`w-1/6 text-right mr-4 hidden sm:block`}>
+				<div css={tw`w-1/6 text-right mr-4 hidden sm:block text-neutral-400 text-xs font-mono`}>
 					{bytesToString(file.size)}
 				</div>
 			)}
 			<div
-				css={tw`w-1/5 text-right mr-4 hidden md:block`}
+				css={tw`w-1/5 text-right mr-4 hidden md:block text-neutral-500 text-xs`}
 				title={file.modifiedAt.toString()}
 			>
 				{Math.abs(differenceInHours(file.modifiedAt, new Date())) > 48
