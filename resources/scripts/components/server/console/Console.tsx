@@ -261,12 +261,19 @@ export default () => {
 					"rounded-b": !canSendCommands,
 				})}
 			>
+				<div className={styles.dots}>
+					<div className={styles.red} />
+					<div className={styles.yellow} />
+					<div className={styles.green} />
+				</div>
 				<div className={"h-full"}>
 					<div id={styles.terminal} ref={ref} />
 				</div>
 			</div>
 			{canSendCommands && (
-				<div className={classNames("relative", styles.overflows_container)}>
+				<div
+					className={classNames("relative mt-2", styles.overflows_container)}
+				>
 					<input
 						className={classNames("peer", styles.command_input)}
 						type={"text"}
