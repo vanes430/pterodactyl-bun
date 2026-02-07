@@ -15,17 +15,16 @@ const RightNavigation = styled.div`
     & > a,
     & > button,
     & > .navigation-link {
-        ${tw`flex items-center h-full no-underline text-neutral-300 px-3 md:px-6 cursor-pointer transition-all duration-150`};
+        ${tw`flex items-center h-full no-underline text-neutral-400 px-3 md:px-6 cursor-pointer transition-colors duration-150`};
 
         &:active,
         &:hover {
-            ${tw`text-neutral-100 bg-black`};
+            ${tw`text-neutral-100 bg-white/5`};
         }
 
-        &:active,
-        &:hover,
         &.active {
-            box-shadow: inset 0 -2px ${theme`colors.cyan.600`.toString()};
+            ${tw`text-cyan-400`};
+            box-shadow: inset 0 -2px ${theme`colors.cyan.500`.toString()};
         }
     }
 `;

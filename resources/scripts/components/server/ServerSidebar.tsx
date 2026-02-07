@@ -21,14 +21,14 @@ const SidebarContainer = styled.div`
 `;
 
 const NavItem = styled(NavLink)`
-    ${tw`flex items-center px-6 py-3 text-neutral-400 no-underline transition-all duration-150 hover:text-neutral-100 hover:bg-white/5 border-l-4 border-transparent`};
+    ${tw`flex items-center px-6 py-3 text-neutral-400 no-underline transition-colors duration-150 hover:text-neutral-100 hover:bg-white/5 border-l-4 border-transparent`};
 
     &.active {
         ${tw`text-cyan-400 bg-white/[0.08] border-cyan-500 font-medium`};
     }
 
     & svg {
-        ${tw`mr-3 opacity-75`};
+        ${tw`mr-3 opacity-75 transition-opacity duration-150`};
     }
 
     &:hover svg, &.active svg {
