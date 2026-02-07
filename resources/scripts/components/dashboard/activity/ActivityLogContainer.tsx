@@ -60,7 +60,11 @@ export default () => {
 			{!data && isValidating ? (
 				<Spinner centered />
 			) : (
-				<div className={"bg-gray-700"}>
+				<div
+					className={
+						"bg-white/[0.03] border border-white/5 rounded-xl overflow-hidden shadow-lg"
+					}
+				>
 					{data?.items.map((activity) => (
 						<ActivityLogEntry key={activity.id} activity={activity}>
 							{typeof activity.properties.useragent === "string" && (

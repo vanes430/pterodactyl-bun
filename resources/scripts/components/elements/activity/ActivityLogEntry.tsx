@@ -56,7 +56,7 @@ export default ({ activity, children }: Props) => {
 	return (
 		<div
 			className={
-				"grid grid-cols-10 py-4 border-b-2 border-gray-800 last:rounded-b last:border-0 group"
+				"grid grid-cols-10 py-4 border-b border-white/5 last:rounded-b-xl last:border-0 group transition-colors duration-150 hover:bg-white/[0.02]"
 			}
 		>
 			<div
@@ -66,7 +66,7 @@ export default ({ activity, children }: Props) => {
 			>
 				<div
 					className={
-						"flex items-center w-10 h-10 rounded-full bg-gray-600 overflow-hidden"
+						"flex items-center w-10 h-10 rounded-full bg-white/5 overflow-hidden border border-white/10"
 					}
 				>
 					<Avatar name={actor?.uuid || "system"} />
@@ -74,21 +74,26 @@ export default ({ activity, children }: Props) => {
 			</div>
 			<div className={"col-span-10 sm:col-span-9 flex"}>
 				<div className={"flex-1 px-4 sm:px-0"}>
-					<div className={"flex items-center text-gray-50"}>
+					<div className={"flex items-center text-neutral-100"}>
 						<Tooltip placement={"top"} content={actor?.email || "System User"}>
-							<span>{actor?.username || "System"}</span>
+							<span className={"font-medium"}>
+								{actor?.username || "System"}
+							</span>
 						</Tooltip>
-						<span className={"text-gray-400"}>&nbsp;&mdash;&nbsp;</span>
+						<span className={"text-neutral-500"}>&nbsp;&mdash;&nbsp;</span>
 						<Link
 							to={`#${pathTo({ event: activity.event })}`}
 							className={
-								"transition-colors duration-75 active:text-cyan-400 hover:text-cyan-400"
+								"transition-colors duration-150 text-neutral-400 hover:text-cyan-400 font-mono text-xs"
 							}
 						>
 							{activity.event}
 						</Link>
 						<div
-							className={classNames(style.icons, "group-hover:text-gray-300")}
+							className={classNames(
+								style.icons,
+								"group-hover:text-neutral-400",
+							)}
 						>
 							{activity.isApi && (
 								<Tooltip placement={"top"} content={"Using API Key"}>
@@ -110,11 +115,11 @@ export default ({ activity, children }: Props) => {
 							i18nKey={activity.event.replace(":", ".")}
 						/>
 					</p>
-					<div className={"mt-1 flex items-center text-sm"}>
+					<div className={"mt-1 flex items-center text-xs text-neutral-500"}>
 						{activity.ip && (
 							<span>
 								{activity.ip}
-								<span className={"text-gray-400"}>&nbsp;|&nbsp;</span>
+								<span className={"text-neutral-700"}>&nbsp;|&nbsp;</span>
 							</span>
 						)}
 						<Tooltip

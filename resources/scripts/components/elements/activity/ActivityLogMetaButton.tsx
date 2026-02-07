@@ -16,7 +16,7 @@ export default ({ meta }: { meta: Record<string, unknown> }) => {
 			>
 				<pre
 					className={
-						"bg-gray-900 rounded p-2 font-mono text-sm leading-relaxed overflow-x-scroll whitespace-pre-wrap"
+						"bg-white/[0.03] border border-white/5 rounded-lg p-4 font-mono text-sm leading-relaxed overflow-x-scroll whitespace-pre-wrap text-neutral-300"
 					}
 				>
 					{JSON.stringify(meta, null, 2)}
