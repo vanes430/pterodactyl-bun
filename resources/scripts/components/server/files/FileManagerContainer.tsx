@@ -15,6 +15,7 @@ import FileManagerStatus from "@/components/server/files/FileManagerStatus";
 import FileObjectRow from "@/components/server/files/FileObjectRow";
 import MassActionsBar from "@/components/server/files/MassActionsBar";
 import NewDirectoryButton from "@/components/server/files/NewDirectoryButton";
+import PullFileButton from "@/components/server/files/PullFileButton";
 import { FileActionCheckbox } from "@/components/server/files/SelectFileCheckbox";
 import UploadButton from "@/components/server/files/UploadButton";
 import { hashToPath } from "@/helpers";
@@ -83,7 +84,7 @@ export default () => {
 						renderLeft={
 							<FileActionCheckbox
 								type={"checkbox"}
-								css={tw`mx-4`}
+								css={tw`ml-4 mr-2`}
 								checked={
 									selectedFilesLength ===
 									(files?.length === 0 ? -1 : files?.length)
@@ -96,6 +97,7 @@ export default () => {
 						<div className={style.manager_actions}>
 							<FileManagerStatus />
 							<NewDirectoryButton />
+							<PullFileButton />
 							<UploadButton />
 							<NavLink to={`/server/${id}/files/new${window.location.hash}`}>
 								<Button>New File</Button>

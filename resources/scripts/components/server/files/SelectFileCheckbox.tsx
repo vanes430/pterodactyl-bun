@@ -26,7 +26,7 @@ export default ({ name }: { name: string }) => {
 	);
 
 	return (
-		<label css={tw`flex-none px-4 py-2 cursor-pointer`}>
+		<label css={tw`flex-none pl-4 pr-2 py-2 cursor-pointer`}>
 			<FileActionCheckbox
 				name={"selectedFiles"}
 				value={name}
