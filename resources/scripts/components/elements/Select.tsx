@@ -28,12 +28,15 @@ const Select = styled.select<Props>`
     ${(props) =>
 			!props.hideDropdownArrow &&
 			css`
-            ${tw`bg-neutral-600 border-neutral-500 text-neutral-200`};
+            ${tw`bg-white/[0.03] border-white/10 text-neutral-200 hover:border-white/20`};
             background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='%23C3D1DF' d='M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z'/%3e%3c/svg%3e ");
 
-            &:hover:not(:disabled),
             &:focus {
-                ${tw`border-neutral-400`};
+                ${tw`border-cyan-500/50 bg-white/[0.05]`};
+            }
+
+            & option {
+                ${tw`bg-neutral-900 text-neutral-200`};
             }
         `};
 `;

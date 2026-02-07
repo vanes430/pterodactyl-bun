@@ -190,7 +190,7 @@ const TaskDetailsModal = ({ schedule, task }: Props) => {
 						)}
 					</div>
 					<div
-						css={tw`mt-6 bg-neutral-700 border border-neutral-800 shadow-inner p-4 rounded`}
+						css={tw`mt-6 bg-white/[0.03] border border-white/5 p-4 rounded-xl`}
 					>
 						<FormikSwitch
 							name={"continueOnFailure"}
