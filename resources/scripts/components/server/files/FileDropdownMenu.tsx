@@ -4,6 +4,7 @@ import {
 	Download,
 	FileArchive,
 	FileCode,
+	Image as ImageIcon,
 	MoreHorizontal,
 	PackageOpen,
 	Pencil,
@@ -11,7 +12,7 @@ import {
 } from "lucide-react";
 import { join } from "pathe";
 import type React from "react";
-import { memo, useRef, useState } from "react";
+import { memo, useMemo, useRef, useState } from "react";
 import isEqual from "react-fast-compare";
 import styled from "styled-components/macro";
 import tw from "twin.macro";
@@ -26,6 +27,7 @@ import DropdownMenu from "@/components/elements/DropdownMenu";
 import { Dialog } from "@/components/elements/dialog";
 import SpinnerOverlay from "@/components/elements/SpinnerOverlay";
 import ChmodFileModal from "@/components/server/files/ChmodFileModal";
+import ImagePreviewModal from "@/components/server/files/ImagePreviewModal";
 import RenameFileModal from "@/components/server/files/RenameFileModal";
 import useEventListener from "@/plugins/useEventListener";
 import useFileManagerSwr from "@/plugins/useFileManagerSwr";
@@ -60,6 +62,7 @@ const FileDropdownMenu = ({ file }: { file: FileObject }) => {
 	const [showSpinner, setShowSpinner] = useState(false);
 	const [modal, setModal] = useState<ModalType | null>(null);
 	const [showConfirmation, setShowConfirmation] = useState(false);
+	const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
 	const uuid = ServerContext.useStoreState((state) => state.server.data?.uuid);
 	const { mutate } = useFileManagerSwr();
@@ -67,6 +70,12 @@ const FileDropdownMenu = ({ file }: { file: FileObject }) => {
 	const directory = ServerContext.useStoreState(
 		(state) => state.files.directory,
 	);
+
+	const isImage = useMemo(() => {
+		return (
+			file.isFile && /\.(png|jpe?g|svg|gif|webp|bmp|ico)$/i.test(file.name)
+		);
+	}, [file]);
 
 	useEventListener(`pterodactyl:files:ctx:${file.key}`, (e: CustomEvent) => {
 		if (onClickRef.current) {
@@ -110,6 +119,16 @@ const FileDropdownMenu = ({ file }: { file: FileObject }) => {
 			.then(() => setShowSpinner(false));
 	};
 
+	const doPreview = () => {
+		setShowSpinner(true);
+		clearFlashes("files");
+
+		getFileDownloadUrl(uuid, join(directory, file.name))
+			.then((url) => setPreviewUrl(url))
+			.catch((error) => clearAndAddHttpError({ key: "files", error }))
+			.then(() => setShowSpinner(false));
+	};
+
 	const doArchive = () => {
 		setShowSpinner(true);
 		clearFlashes("files");
@@ -143,6 +162,14 @@ const FileDropdownMenu = ({ file }: { file: FileObject }) => {
 				<span className={"font-semibold text-gray-50"}>{file.name}</span> once
 				deleted.
 			</Dialog.Confirm>
+			{isImage && (
+				<ImagePreviewModal
+					visible={!!previewUrl}
+					url={previewUrl || ""}
+					name={file.name}
+					onDismissed={() => setPreviewUrl(null)}
+				/>
+			)}
 			<DropdownMenu
 				ref={onClickRef}
 				renderToggle={(onClick) => (
@@ -191,6 +218,9 @@ const FileDropdownMenu = ({ file }: { file: FileObject }) => {
 					<Can action={"file.create"}>
 						<Row onClick={doCopy} icon={Copy} title={"Copy"} />
 					</Can>
+				)}
+				{isImage && (
+					<Row onClick={doPreview} icon={ImageIcon} title={"Preview"} />
 				)}
 				{file.isArchiveType() ? (
 					<Can action={"file.create"}>
