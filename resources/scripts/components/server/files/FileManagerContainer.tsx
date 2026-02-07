@@ -1,10 +1,14 @@
+import classNames from "classnames";
 import type React from "react";
 import { useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import tw from "twin.macro";
 import { httpErrorToHuman } from "@/api/http";
 import type { FileObject } from "@/api/server/files/loadDirectory";
-import { Button } from "@/components/elements/button/index";
+import {
+	Button,
+	styles as btnStyles,
+} from "@/components/elements/button/index";
 import Can from "@/components/elements/Can";
 import ErrorBoundary from "@/components/elements/ErrorBoundary";
 import { ServerError } from "@/components/elements/ScreenBlock";
@@ -101,10 +105,11 @@ export default () => {
 							<NewDirectoryButton />
 							<PullFileButton />
 							<UploadButton />
-							<NavLink to={`/server/${id}/files/new${window.location.hash}`}>
-								<Button>
-									<span>New File</span>
-								</Button>
+							<NavLink
+								to={`/server/${id}/files/new${window.location.hash}`}
+								className={classNames(btnStyles.button, btnStyles.primary)}
+							>
+								<span>New File</span>
 							</NavLink>
 						</div>
 					</Can>

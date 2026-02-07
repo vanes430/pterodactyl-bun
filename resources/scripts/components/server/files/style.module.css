@@ -1,8 +1,8 @@
 .manager_actions {
-	@apply grid grid-cols-2 gap-2 w-full mb-4 overflow-hidden;
+	@apply grid grid-cols-2 gap-2 w-full mb-4;
 
-	& button,
-	& a {
+	& > button,
+	& > a {
 		@apply flex items-center justify-center min-w-0 w-full;
 
 		& span {
@@ -11,10 +11,10 @@
 	}
 
 	@screen md {
-		@apply flex flex-row flex-none items-center justify-end w-auto gap-2 mb-0 ml-auto;
+		@apply flex flex-row items-center justify-end w-auto gap-2 mb-0 ml-auto;
 
-		& button,
-		& a {
+		& > button,
+		& > a {
 			@apply w-auto px-4;
 		}
 	}
