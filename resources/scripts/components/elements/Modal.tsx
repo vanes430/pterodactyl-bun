@@ -36,8 +36,8 @@ const ModalContainer = styled.div<{ alignTop?: boolean }>`
     ${(props) =>
 			props.alignTop &&
 			css`
-            margin-top: 20%;
-            ${breakpoint("md")`margin-top: 10%`};
+            margin-top: 10%;
+            ${breakpoint("md")`margin-top: 5%`};
         `};
 
     margin-bottom: auto;
@@ -140,7 +140,7 @@ const Modal: React.FC<ModalProps> = ({
 						</Fade>
 					)}
 					<div
-						css={tw`bg-neutral-800 p-3 sm:p-4 md:p-6 rounded shadow-md overflow-y-scroll transition-all duration-150`}
+						css={tw`bg-neutral-900/80 backdrop-blur-xl p-3 sm:p-4 md:p-6 rounded-xl shadow-2xl overflow-y-scroll border border-white/10 transition-all duration-150`}
 					>
 						{children}
 					</div>
