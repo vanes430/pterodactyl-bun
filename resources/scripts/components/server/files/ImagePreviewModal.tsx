@@ -26,17 +26,6 @@ const ImagePreviewModal = ({ url, name, ...props }: Props) => {
 						css={tw`max-w-full max-h-[70vh] object-contain`}
 					/>
 				</div>
-				<div css={tw`mt-4 w-full flex justify-end`}>
-					<a
-						href={url}
-						download={name}
-						target={"_blank"}
-						rel={"noreferrer"}
-						css={tw`text-sm text-cyan-400 hover:text-cyan-300 transition-colors duration-150`}
-					>
-						Open in new tab
-					</a>
-				</div>
 			</div>
 		</Modal>
 	);
