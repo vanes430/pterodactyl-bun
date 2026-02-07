@@ -1,6 +1,4 @@
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import tw from "twin.macro";
 import { deleteSSHKey, useSSHKeys } from "@/api/account/ssh-keys";
@@ -47,10 +45,7 @@ export default ({
 				across the Panel.
 			</Dialog.Confirm>
 			<button css={tw`ml-4 p-2 text-sm`} onClick={() => setVisible(true)}>
-				<FontAwesomeIcon
-					icon={faTrashAlt as IconProp}
-					css={tw`text-neutral-400 hover:text-red-400 transition-colors duration-150`}
-				/>
+				<Trash2 className={"text-neutral-400 hover:text-red-400 transition-colors duration-150"} size={16} />
 			</button>
 		</>
 	);

@@ -1,11 +1,10 @@
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
-import {
-	faFileAlt,
-	faFileArchive,
-	faFileImport,
-	faFolder,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { 
+	FileText, 
+	FileArchive, 
+	FileCode, 
+	Folder, 
+	Link2 
+} from "lucide-react";
 import { differenceInHours, format, formatDistanceToNow } from "date-fns";
 import { join } from "pathe";
 import type React from "react";
@@ -44,6 +43,14 @@ const Clickable: React.FC<{ file: FileObject }> = memo(({ file, children }) => {
 	);
 }, isEqual);
 
+const FileIcon = ({ file }: { file: FileObject }) => {
+	if (!file.isFile) return <Folder className={"text-blue-400"} size={20} />;
+	if (file.isSymlink) return <Link2 className={"text-cyan-400"} size={20} />;
+	if (file.isArchiveType()) return <FileArchive className={"text-yellow-400"} size={20} />;
+	if (file.isEditable()) return <FileCode className={"text-green-400"} size={20} />;
+	return <FileText size={20} />;
+};
+
 const FileObjectRow = ({ file }: { file: FileObject }) => (
 	<div
 		className={styles.file_row}
@@ -59,20 +66,8 @@ const FileObjectRow = ({ file }: { file: FileObject }) => (
 	>
 		<SelectFileCheckbox name={file.name} />
 		<Clickable file={file}>
-			<div css={tw`flex-none text-neutral-400 ml-6 mr-4 text-lg pl-3`}>
-				{file.isFile ? (
-					<FontAwesomeIcon
-						icon={
-							(file.isSymlink
-								? faFileImport
-								: file.isArchiveType()
-									? faFileArchive
-									: faFileAlt) as IconProp
-						}
-					/>
-				) : (
-					<FontAwesomeIcon icon={faFolder as IconProp} />
-				)}
+			<div css={tw`flex-none text-neutral-400 ml-6 mr-4 pl-3`}>
+				<FileIcon file={file} />
 			</div>
 			<div css={tw`flex-1 truncate`}>{file.name}</div>
 			{file.isFile && (

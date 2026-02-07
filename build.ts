@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import { existsSync } from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
 import { rm } from "node:fs/promises";
 import path from "node:path";
 import postcss from "postcss";
@@ -142,10 +142,12 @@ const isProduction =
 	cliConfig.production || process.env.NODE_ENV === "production";
 const outdir = cliConfig.outdir || path.join(process.cwd(), "public/assets");
 
+// Selalu bersihkan outdir agar file hash lama tidak menumpuk
 if (existsSync(outdir)) {
-	console.log(`🗑️ Cleaning previous build at ${outdir}`);
+	console.log(`🗑️  Cleaning assets directory: ${outdir}`);
 	await rm(outdir, { recursive: true, force: true });
 }
+mkdirSync(outdir, { recursive: true });
 
 const start = performance.now();
 const { outdir: _, external: cliExternal, ...remainingCliConfig } = cliConfig;
@@ -154,14 +156,15 @@ const result = await Bun.build({
 	entrypoints: ["./resources/scripts/index.tsx"],
 	outdir,
 	target: "browser",
-	minify: isProduction,
-	sourcemap: isProduction ? "none" : "external",
-	splitting: false, // Splitting is currently disabled due to CSS chunking collisions in Bun with PostCSS
+	minify: cliConfig.minify === false ? false : isProduction,
+	sourcemap: cliConfig.minify === false ? "external" : (isProduction ? "none" : "external"),
+	splitting: false,
 	publicPath: cliConfig.publicPath || "/assets/",
 	naming: isProduction ? "[name].[hash].[ext]" : "[dir]/[name].[ext]",
 	env: "inline",
 	define: {
 		"process.env.DEBUG": JSON.stringify(!isProduction),
+		"process.env.NODE_ENV": JSON.stringify(isProduction ? "production" : "development"),
 		"process.env.WEBPACK_BUILD_HASH": JSON.stringify(
 			Bun.hash(Date.now().toString()).toString(16),
 		),

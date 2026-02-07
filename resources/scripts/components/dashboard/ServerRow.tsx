@@ -1,11 +1,10 @@
 import {
-	faEthernet,
-	faHdd,
-	faMemory,
-	faMicrochip,
-	faServer,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+	Network,
+	HardDrive,
+	MemoryStick,
+	Cpu,
+	Server as ServerIcon,
+} from "lucide-react";
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import isEqual from "react-fast-compare";
 import { Link } from "react-router-dom";
@@ -18,15 +17,17 @@ import getServerResourceUsage, {
 } from "@/api/server/getServerResourceUsage";
 import GreyRowBox from "@/components/elements/GreyRowBox";
 import Spinner from "@/components/elements/Spinner";
+import { toast } from "react-hot-toast";
 import { bytesToString, ip, mbToBytes } from "@/lib/formatters";
+import copy from "copy-to-clipboard";
 
 // Determines if the current value is in an alarm threshold so we can show it in red rather
 // than the more faded default style.
 const isAlarmState = (current: number, limit: number): boolean =>
 	limit > 0 && current / (limit * 1024 * 1024) >= 0.9;
 
-const Icon = memo(
-	styled(FontAwesomeIcon)<{ $alarm: boolean }>`
+const IconWrapper = memo(
+	styled.div<{ $alarm: boolean }>`
         ${(props) => (props.$alarm ? tw`text-red-400` : tw`text-neutral-500`)};
     `,
 	isEqual,
@@ -40,22 +41,19 @@ const IconDescription = styled.p<{ $alarm: boolean }>`
 const StatusIndicatorBox = styled(GreyRowBox)<{
 	$status: ServerPowerState | undefined;
 }>`
-    ${tw`grid grid-cols-12 gap-4 relative`};
+    ${tw`grid grid-cols-12 gap-4 relative transition-all duration-300 ease-out` };
+    ${tw`bg-neutral-800/40 backdrop-blur-sm border border-neutral-700/50 hover:border-neutral-500/50` };
+    ${tw`hover:shadow-2xl hover:shadow-cyan-900/20 hover:-translate-y-1 hover:scale-[1.01]` };
 
     & .status-bar {
-        ${tw`w-2 bg-red-500 absolute right-0 z-20 rounded-full m-1 opacity-50 transition-all duration-150`};
-        height: calc(100% - 0.5rem);
+        ${tw`w-1 bg-red-500 absolute left-0 top-0 bottom-0 z-20 rounded-full my-2 ml-1 opacity-80 transition-all duration-150` };
 
         ${({ $status }) =>
 					!$status || $status === "offline"
-						? tw`bg-red-500`
+						? tw`bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]`
 						: $status === "running"
-							? tw`bg-green-500`
-							: tw`bg-yellow-500`};
-    }
-
-    &:hover .status-bar {
-        ${tw`opacity-75`};
+							? tw`bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]`
+							: tw`bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.6)]`};
     }
 `;
 
@@ -125,6 +123,13 @@ export default ({
 	const cpuLimit =
 		server.limits.cpu !== 0 ? `${server.limits.cpu} %` : "Unlimited";
 
+	const onCopyIP = (e: React.MouseEvent, text: string) => {
+		e.preventDefault();
+		e.stopPropagation();
+		copy(text);
+		toast.success("IP address copied to clipboard!");
+	};
+
 	return (
 		<StatusIndicatorBox
 			as={Link}
@@ -133,24 +138,28 @@ export default ({
 			$status={stats?.status}
 		>
 			<div css={tw`flex items-center col-span-12 sm:col-span-5 lg:col-span-6`}>
-				<div className={"icon mr-4"}>
-					{/* @ts-ignore */}
-					<FontAwesomeIcon icon={faServer} />
+				<div className={"icon mr-4 text-neutral-500"}>
+					<ServerIcon size={24} />
 				</div>
 				<div>
-					<p css={tw`text-lg break-words`}>{server.name}</p>
+					<p css={tw`text-lg break-words text-neutral-100`}>{server.name}</p>
 					{!!server.description && (
-						<p css={tw`text-sm text-neutral-300 break-words line-clamp-2`}>
+						<p css={tw`text-sm text-neutral-400 break-words line-clamp-2`}>
 							{server.description}
 						</p>
 					)}
 				</div>
 			</div>
 			<div css={tw`flex-1 ml-4 lg:block lg:col-span-2 hidden`}>
-				<div css={tw`flex justify-center`}>
-					{/* @ts-ignore */}
-					<FontAwesomeIcon icon={faEthernet} css={tw`text-neutral-500`} />
-					<p css={tw`text-sm text-neutral-400 ml-2`}>
+				<div css={tw`flex justify-center items-center`}>
+					<Network size={16} css={tw`text-neutral-500`} />
+					<p 
+						css={tw`text-sm text-neutral-400 ml-2 hover:text-neutral-100 cursor-pointer transition-colors duration-75`}
+						onClick={(e) => {
+							const alloc = server.allocations.find(a => a.isDefault);
+							if (alloc) onCopyIP(e, `${alloc.alias || ip(alloc.ip)}:${alloc.port}`);
+						}}
+					>
 						{server.allocations
 							.filter((alloc) => alloc.isDefault)
 							.map((allocation) => (
@@ -195,9 +204,10 @@ export default ({
 				) : (
 					<React.Fragment>
 						<div css={tw`flex-1 ml-4 sm:block hidden`}>
-							<div css={tw`flex justify-center`}>
-								{/* @ts-ignore */}
-								<Icon icon={faMicrochip} $alarm={alarms.cpu} />
+							<div css={tw`flex justify-center items-center`}>
+								<IconWrapper $alarm={alarms.cpu}>
+									<Cpu size={16} />
+								</IconWrapper>
 								<IconDescription $alarm={alarms.cpu}>
 									{stats.cpuUsagePercent.toFixed(2)} %
 								</IconDescription>
@@ -207,9 +217,10 @@ export default ({
 							</p>
 						</div>
 						<div css={tw`flex-1 ml-4 sm:block hidden`}>
-							<div css={tw`flex justify-center`}>
-								{/* @ts-ignore */}
-								<Icon icon={faMemory} $alarm={alarms.memory} />
+							<div css={tw`flex justify-center items-center`}>
+								<IconWrapper $alarm={alarms.memory}>
+									<MemoryStick size={16} />
+								</IconWrapper>
 								<IconDescription $alarm={alarms.memory}>
 									{bytesToString(stats.memoryUsageInBytes)}
 								</IconDescription>
@@ -219,9 +230,10 @@ export default ({
 							</p>
 						</div>
 						<div css={tw`flex-1 ml-4 sm:block hidden`}>
-							<div css={tw`flex justify-center`}>
-								{/* @ts-ignore */}
-								<Icon icon={faHdd} $alarm={alarms.disk} />
+							<div css={tw`flex justify-center items-center`}>
+								<IconWrapper $alarm={alarms.disk}>
+									<HardDrive size={16} />
+								</IconWrapper>
 								<IconDescription $alarm={alarms.disk}>
 									{bytesToString(stats.diskUsageInBytes)}
 								</IconDescription>

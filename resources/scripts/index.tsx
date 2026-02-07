@@ -1,3 +1,6 @@
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/700.css";
 import ReactDOM from "react-dom";
 import { setConfig } from "react-hot-loader";
 import App from "@/components/App";

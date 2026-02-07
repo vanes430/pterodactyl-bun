@@ -18,13 +18,22 @@ jobs:
       - run: bun run type-check
       - run: bun run lint
       - run: bun run test
-      - run: bun run build:production
 
-      - name: create release archive
+      - name: Build & Package DEVELOPMENT
         run: |
-          rm -rf node_modules tests CONTRIBUTING.md flake.lock flake.nix phpunit.xml shell.nix
-          tar -czf panel.tar.gz * .editorconfig .env.example .gitignore biome.json build.ts bun.lock
-          zip -r panel.zip * .editorconfig .env.example .gitignore biome.json build.ts bun.lock
+          bun run package:dev
+          mv panel.tar.gz panel-dev.tar.gz
+
+      - name: Build & Package DEVELOPMENT-HASHED
+        run: |
+          bun run package:dev-hash
+          mv panel.tar.gz panel-dev-hash.tar.gz
+
+      - name: Build & Package PRODUCTION
+        run: |
+          bun run package:prod
+          mv panel.tar.gz panel-prod.tar.gz
+          cp panel-prod.tar.gz panel.tar.gz
 
       - name: GitHub Release
         uses: softprops/action-gh-release@v2
@@ -32,10 +41,17 @@ jobs:
           tag_name: latest
           name: Latest Automated Build
           files: |
+            panel-dev.tar.gz
+            panel-dev-hash.tar.gz
+            panel-prod.tar.gz
             panel.tar.gz
-            panel.zip
           body: |
             This is an automated build of the absolute latest commit.
+            
+            **Available Packages:**
+            - `panel-prod.tar.gz`: Optimized for production (Minified + Hashed).
+            - `panel-dev-hash.tar.gz`: Production-like structure but readable code (No Minify + Hashed).
+            - `panel-dev.tar.gz`: Cleanest version for debugging (No Minify + No Hash).
             
             **Metadata:**
             - Last Branch: `${{ github.ref_name }}`

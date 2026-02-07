@@ -1,3 +1,4 @@
+import { Play, RotateCw, Square, Skull } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/elements/button/index";
@@ -59,7 +60,7 @@ export default ({ className }: PowerButtonProps) => {
 					disabled={status !== "offline"}
 					onClick={onButtonClick.bind(this, "start")}
 				>
-					Start
+					<Play size={16} className={"mr-2"} /> Start
 				</Button>
 			</Can>
 			<Can action={"control.restart"}>
@@ -68,7 +69,7 @@ export default ({ className }: PowerButtonProps) => {
 					disabled={!status}
 					onClick={onButtonClick.bind(this, "restart")}
 				>
-					Restart
+					<RotateCw size={16} className={"mr-2"} /> Restart
 				</Button.Text>
 			</Can>
 			<Can action={"control.stop"}>
@@ -77,7 +78,11 @@ export default ({ className }: PowerButtonProps) => {
 					disabled={status === "offline"}
 					onClick={onButtonClick.bind(this, killable ? "kill" : "stop")}
 				>
-					{killable ? "Kill" : "Stop"}
+					{killable ? (
+						<><Skull size={16} className={"mr-2"} /> Kill</>
+					) : (
+						<><Square size={16} className={"mr-2"} /> Stop</>
+					)}
 				</Button.Danger>
 			</Can>
 		</div>

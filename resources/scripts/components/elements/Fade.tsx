@@ -1,7 +1,6 @@
 import type React from "react";
-import CSSTransition, {
-	type CSSTransitionProps,
-} from "react-transition-group/CSSTransition";
+import { CSSTransition } from "react-transition-group";
+import type { CSSTransitionProps } from "react-transition-group/CSSTransition";
 import styled from "styled-components/macro";
 import tw from "twin.macro";
 
@@ -38,11 +37,9 @@ const Container = styled.div<{ timeout: number }>`
 `;
 
 const Fade: React.FC<Props> = ({ timeout, children, ...props }) => (
-	<Container timeout={timeout}>
-		<CSSTransition timeout={timeout} classNames={"fade"} {...props}>
-			{children}
-		</CSSTransition>
-	</Container>
+	<CSSTransition timeout={timeout} classNames={"fade"} {...props}>
+		<Container timeout={timeout}>{children}</Container>
+	</CSSTransition>
 );
 Fade.displayName = "Fade";
 

@@ -50,10 +50,12 @@ const ScreenBlock = ({
 	<PageContentBlock>
 		<div css={tw`flex justify-center`}>
 			<div
-				css={tw`w-full sm:w-3/4 md:w-1/2 p-12 md:p-20 bg-neutral-100 rounded-lg shadow-lg text-center relative`}
+				css={tw`w-full sm:w-3/4 md:w-1/2 p-12 md:p-20 bg-neutral-800/40 backdrop-blur-md border border-neutral-700/50 rounded-2xl shadow-2xl text-center relative overflow-hidden`}
 			>
+                <div css={tw`absolute -top-24 -right-24 w-48 h-48 bg-cyan-500/10 blur-3xl rounded-full`} />
+                <div css={tw`absolute -bottom-24 -left-24 w-48 h-48 bg-red-500/10 blur-3xl rounded-full`} />
 				{(typeof onBack === "function" || typeof onRetry === "function") && (
-					<div css={tw`absolute left-0 top-0 ml-4 mt-4`}>
+					<div css={tw`absolute left-0 top-0 ml-6 mt-6`}>
 						<ActionButton
 							onClick={() => (onRetry ? onRetry() : onBack ? onBack() : null)}
 							className={onRetry ? "hover:spin" : undefined}
@@ -64,9 +66,14 @@ const ScreenBlock = ({
 						</ActionButton>
 					</div>
 				)}
-				<img src={image} css={tw`w-2/3 h-auto select-none mx-auto`} />
-				<h2 css={tw`mt-10 text-neutral-900 font-bold text-4xl`}>{title}</h2>
-				<p css={tw`text-sm text-neutral-700 mt-2`}>{message}</p>
+				<img src={image} css={tw`w-2/3 h-auto select-none mx-auto drop-shadow-[0_0_15px_rgba(0,0,0,0.5)]`} />
+				<h2 css={tw`mt-10 text-neutral-100 font-header font-bold text-4xl tracking-tight`}>{title}</h2>
+				<p css={tw`text-base text-neutral-400 mt-4`}>{message}</p>
+                <div css={tw`mt-10`}>
+                    <Button onClick={() => (onRetry ? onRetry() : onBack ? onBack() : window.location.href = '/')}>
+                        {onRetry ? 'Retry Action' : 'Return to Dashboard'}
+                    </Button>
+                </div>
 			</div>
 		</div>
 	</PageContentBlock>

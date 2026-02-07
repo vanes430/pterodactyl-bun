@@ -2,9 +2,10 @@ import classNames from "classnames";
 import { forwardRef } from "react";
 import { type ButtonProps, Options } from "@/components/elements/button/types";
 import styles from "./style.module.css";
+import Spinner from "@/components/elements/Spinner";
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-	({ children, shape, size, variant, className, ...rest }, ref) => {
+	({ children, shape, size, variant, isLoading, className, ...rest }, ref) => {
 		return (
 			<button
 				ref={ref}
@@ -19,8 +20,16 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 					},
 					className,
 				)}
+				disabled={isLoading || rest.disabled}
 				{...rest}
 			>
+				{isLoading && (
+					<Spinner
+						size={Spinner.Size.SMALL}
+						centered={false}
+						className={"mr-2"}
+					/>
+				)}
 				{children}
 			</button>
 		);

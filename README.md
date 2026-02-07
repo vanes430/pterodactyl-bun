@@ -1,72 +1,99 @@
-[![Logo Image](https://cdn.pterodactyl.io/logos/new/pterodactyl_logo.png)](https://pterodactyl.io)
+# Pterodactyl Panel (Bun Hard Fork)
 
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/pterodactyl/panel/ci.yaml?label=Tests&style=for-the-badge&branch=1.0-develop)
-![Discord](https://img.shields.io/discord/122900397965705216?label=Discord&logo=Discord&logoColor=white&style=for-the-badge)
-![GitHub Releases](https://img.shields.io/github/downloads/pterodactyl/panel/latest/total?style=for-the-badge)
-![GitHub contributors](https://img.shields.io/github/contributors/pterodactyl/panel?style=for-the-badge)
+<p align="center">
+  <img src="https://cdn.pterodactyl.io/logos/new/pterodactyl_logo_transparent.png" width="400" alt="Pterodactyl Panel">
+</p>
 
-# Pterodactyl Panel
+## ⚠️ About This Fork
 
-Pterodactyl® is a free, open-source game server management panel built with PHP, React, and Go. Designed with security
-in mind, Pterodactyl runs all game servers in isolated Docker containers while exposing a beautiful and intuitive
-UI to end users.
+This is a **Hard Fork** of the [Pterodactyl Panel](https://github.com/pterodactyl/panel). 
 
-Stop settling for less. Make game servers a first class citizen on your platform.
+**What makes this fork different?**
+- **Modern UI**: Full Glassmorphism theme, Inter font, and [Lucide React](https://lucide.dev/) icons.
+- **Enhanced UX**: Skeleton loading, modern Toast notifications, and Fullscreen Terminal.
+- **Bun Optimized**: The entire frontend build system has been migrated to [Bun](https://bun.sh/) for near-instant compilation and improved developer experience.
 
-![Image](https://cdn.pterodactyl.io/site-assets/pterodactyl_v1_demo.gif)
+---
 
-## Documentation
+## 📦 Installation (Standard Pterodactyl)
 
-* [Panel Documentation](https://pterodactyl.io/panel/1.0/getting_started.html)
-* [Wings Documentation](https://pterodactyl.io/wings/1.0/installing.html)
-* [Community Guides](https://pterodactyl.io/community/about.html)
-* Or, get additional help [via Discord](https://discord.gg/pterodactyl)
+This fork follows the standard Pterodactyl installation procedure. You should follow the [official documentation](https://pterodactyl.io/panel/1.0/getting_started.html) for web server and database configuration.
 
-## Sponsors
+### 1. Requirements
+- PHP `8.2` or `8.3` (with extensions: `cli`, `openssl`, `gd`, `mysql`, `PDO`, `mbstring`, `tokenizer`, `bcmath`, `xml` or `dom`, `curl`, `zip`, and `fpm`)
+- MySQL `8.0+` or MariaDB `10.6+`
+- Redis Server
+- A Webserver (Nginx or Apache)
+- **Bun** (Required for asset compilation)
 
-I would like to extend my sincere thanks to the following sponsors for helping fund Pterodactyl's development.
-[Interested in becoming a sponsor?](https://github.com/sponsors/pterodactyl)
+### 2. Download & Install
+```bash
+# Create directory
+mkdir -p /var/www/pterodactyl
+cd /var/www/pterodactyl
 
-| Company                                                                           | About                                                                                                                                                                                                                                           |
-|-----------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [**Aussie Server Hosts**](https://aussieserverhosts.com/)                         | No frills Australian Owned and operated High Performance Server hosting for some of the most demanding games serving Australia and New Zealand.                                                                                                 |
-| [**BisectHosting**](https://www.bisecthosting.com/)                               | BisectHosting provides Minecraft, Valheim and other server hosting services with the highest reliability and lightning fast support since 2012.                                                                                                 |
-| [**MineStrator**](https://minestrator.com/)                                       | Looking for the most highend French hosting company for your minecraft server? More than 24,000 members on our discord trust us. Give us a try!                                                                                                 |
-| [**HostEZ**](https://hostez.io)                                                   | US & EU Rust & Minecraft Hosting. DDoS Protected bare metal, VPS and colocation with low latency, high uptime and maximum availability. EZ!                                                                                                     |
-| [**Blueprint**](https://blueprint.zip/?utm_source=pterodactyl&utm_medium=sponsor) | Create and install Pterodactyl addons and themes with the growing Blueprint framework - the package-manager for Pterodactyl. Use multiple modifications at once without worrying about conflicts and make use of the large extension ecosystem. |
-| [**indifferent broccoli**](https://indifferentbroccoli.com/)                      | indifferent broccoli is a game server hosting and rental company. With us, you get top-notch computer power for your gaming sessions. We destroy lag, latency, and complexity--letting you focus on the fun stuff.                              |
+# Clone this repo or download the release
+git clone https://github.com/your-username/pterodactyl-bun.git .
 
-### Supported Games
+# Install PHP dependencies
+composer install --no-dev --optimize-autoloader
 
-Pterodactyl supports a wide variety of games by utilizing Docker containers to isolate each instance. This gives
-you the power to run game servers without bloating machines with a host of additional dependencies.
+# Setup environment
+cp .env.example .env
+php artisan key:generate
+```
 
-Some of our core supported games include:
+### 3. Database & Permissions
+Follow the standard steps for database setup and permissioning as outlined in the official docs.
 
-* Minecraft — including Paper, Sponge, Bungeecord, Waterfall, and more
-* Rust
-* Terraria
-* Teamspeak
-* Mumble
-* Team Fortress 2
-* Counter Strike: Global Offensive
-* Garry's Mod
-* ARK: Survival Evolved
+### 4. Compile Assets
+Unlike the original panel which uses Yarn/Webpacker, this fork uses **Bun**.
+```bash
+# Install Bun (if not present)
+curl -fsSL https://bun.sh/install | bash
+source ~/.bashrc
 
-In addition to our standard nest of supported games, our community is constantly pushing the limits of this software
-and there are plenty more games available provided by the community. Some of these games include:
+# Build the panel
+bun install
+bun run build:prod
+```
 
-* Factorio
-* San Andreas: MP
-* Pocketmine MP
-* Squad
-* Xonotic
-* Starmade
-* Discord ATLBot, and most other Node.js/Python discord bots
-* [and many more...](https://pterodactyleggs.com)
+---
 
-## License
+## 🛠️ Local Development
 
-Pterodactyl® Copyright © 2015 - 2022 Dane Everitt and contributors.
+If you want to modify the UI or contribute to the development of this fork:
 
-Code released under the [MIT License](./LICENSE.md).
+### 🚀 Development Workflow
+```bash
+# 1. Install dependencies
+bun install
+
+# 2. Start the watcher (Auto-rebuild on changes)
+bun run watch
+
+# 3. Access UI Laboratory
+# Visit http://your-panel.test/dev/playground
+# This route is only accessible when process.env.NODE_ENV is 'development'.
+```
+
+### 🏗️ Flexible Build Modes
+We provide three specialized build modes via Bun:
+
+| Command | Target | Features |
+| :--- | :--- | :--- |
+| `bun run package:dev` | Debugging | No Minify, No Hashing, Source Maps enabled. |
+| `bun run package:dev-hash` | Staging | No Minify, Filename Hashing enabled (Production structure). |
+| `bun run package:prod` | Production | Full Minification, Hashing, and Code Optimization. |
+
+### ✨ UI Components
+This fork uses a modernized stack:
+- **Icons**: Lucide React (Standardized across the panel).
+- **Styling**: Tailwind CSS + Styled Components + Twin.Macro.
+- **Avatars**: DiceBear API with local SVG fallback.
+- **Notifications**: react-hot-toast.
+
+---
+
+## 📜 License
+Pterodactyl Panel is licensed under the [MIT License](https://opensource.org/licenses/MIT).

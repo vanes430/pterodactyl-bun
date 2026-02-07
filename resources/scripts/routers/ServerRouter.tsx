@@ -20,7 +20,6 @@ import TransferListener from "@/components/server/TransferListener";
 import WebsocketHandler from "@/components/server/WebsocketHandler";
 import routes from "@/routers/routes";
 import { ServerContext } from "@/state/server";
-import TransitionRouter from "@/TransitionRouter";
 
 export default () => {
 	const match = useRouteMatch<{ id: string }>();
@@ -122,25 +121,23 @@ export default () => {
 						<ConflictStateRenderer />
 					) : (
 						<ErrorBoundary>
-							<TransitionRouter>
-								<Switch location={location}>
-									{routes.server.map(
-										({ path, permission, component: Component }) => (
-											<PermissionRoute
-												key={path}
-												permission={permission}
-												path={to(path)}
-												exact
-											>
-												<Spinner.Suspense>
-													<Component />
-												</Spinner.Suspense>
-											</PermissionRoute>
-										),
-									)}
-									<Route path={"*"} component={NotFound} />
-								</Switch>
-							</TransitionRouter>
+							<Switch location={location}>
+								{routes.server.map(
+									({ path, permission, component: Component }) => (
+										<PermissionRoute
+											key={path}
+											permission={permission}
+											path={to(path)}
+											exact
+										>
+											<Spinner.Suspense>
+												<Component />
+											</Spinner.Suspense>
+										</PermissionRoute>
+									),
+								)}
+								<Route path={"*"} component={NotFound} />
+							</Switch>
 						</ErrorBoundary>
 					)}
 				</>

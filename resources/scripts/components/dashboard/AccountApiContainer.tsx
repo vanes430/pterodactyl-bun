@@ -1,6 +1,4 @@
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { faKey, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Key, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import tw from "twin.macro";
@@ -86,10 +84,7 @@ export default () => {
 									index > 0 && tw`mt-2`,
 								]}
 							>
-								<FontAwesomeIcon
-									icon={faKey as IconProp}
-									css={tw`text-neutral-300`}
-								/>
+								<Key className={"text-neutral-300"} size={16} />
 								<div css={tw`ml-4 flex-1 overflow-hidden`}>
 									<p css={tw`text-sm break-words`}>{key.description}</p>
 									<p css={tw`text-2xs text-neutral-300 uppercase`}>
@@ -108,10 +103,7 @@ export default () => {
 									css={tw`ml-4 p-2 text-sm`}
 									onClick={() => setDeleteIdentifier(key.identifier)}
 								>
-									<FontAwesomeIcon
-										icon={faTrashAlt as IconProp}
-										css={tw`text-neutral-400 hover:text-red-400 transition-colors duration-150`}
-									/>
+									<Trash2 className={"text-neutral-400 hover:text-red-400 transition-colors duration-150"} size={16} />
 								</button>
 							</GreyRowBox>
 						))

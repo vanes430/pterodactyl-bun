@@ -20,4 +20,5 @@ export type ButtonProps = JSX.IntrinsicElements["button"] & {
 	shape?: Shape;
 	size?: Size;
 	variant?: Variant;
+	isLoading?: boolean;
 };

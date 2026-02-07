@@ -1,5 +1,6 @@
 import { StoreProvider } from "easy-peasy";
 import { lazy } from "react";
+import { Toaster } from "react-hot-toast";
 import { hot } from "react-hot-loader/root";
 import { Route, Router, Switch } from "react-router-dom";
 import tw from "twin.macro";
@@ -8,7 +9,7 @@ import GlobalStylesheet from "@/assets/css/GlobalStylesheet";
 import AuthenticatedRoute from "@/components/elements/AuthenticatedRoute";
 import ProgressBar from "@/components/elements/ProgressBar";
 import { NotFound } from "@/components/elements/ScreenBlock";
-import { history } from "@/components/history";
+import { browserHistory } from "@/components/history";
 import { store } from "@/state";
 import { ServerContext } from "@/state/server";
 import type { SiteSettings } from "@/state/settings";
@@ -23,6 +24,9 @@ const ServerRouter = lazy(
 );
 const AuthenticationRouter = lazy(
 	() => import(/* webpackChunkName: "auth" */ "@/routers/AuthenticationRouter"),
+);
+const PlaygroundContainer = lazy(
+	() => import("@/components/dashboard/PlaygroundContainer"),
 );
 
 interface ExtendedWindow extends Window {
@@ -41,7 +45,7 @@ interface ExtendedWindow extends Window {
 	};
 }
 
-setupInterceptors(history);
+setupInterceptors(browserHistory);
 
 const App = () => {
 	const { PterodactylUser, SiteConfiguration } = window as ExtendedWindow;
@@ -66,15 +70,33 @@ const App = () => {
 		<>
 			<GlobalStylesheet />
 			<StoreProvider store={store}>
+				<Toaster
+					position={"top-right"}
+					toastOptions={{
+						duration: 4000,
+						style: {
+							background: "#262626",
+							color: "#fff",
+							border: "1px solid #404040",
+						},
+					}}
+				/>
 				<ProgressBar />
 				<div css={tw`mx-auto w-auto`}>
-					<Router history={history}>
+					<Router history={browserHistory}>
 						<Switch>
 							<Route path={"/auth"}>
 								<Spinner.Suspense>
 									<AuthenticationRouter />
 								</Spinner.Suspense>
 							</Route>
+							{process.env.NODE_ENV === "development" && (
+								<Route path={"/dev/playground"} exact>
+									<Spinner.Suspense>
+										<PlaygroundContainer />
+									</Spinner.Suspense>
+								</Route>
+							)}
 							<AuthenticatedRoute path={"/server/:id"}>
 								<Spinner.Suspense>
 									<ServerContext.Provider>

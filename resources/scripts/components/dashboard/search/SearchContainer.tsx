@@ -1,6 +1,4 @@
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Search } from "lucide-react";
 import { useState } from "react";
 import SearchModal from "@/components/dashboard/search/SearchModal";
 import Tooltip from "@/components/elements/tooltip/Tooltip";
@@ -32,7 +30,7 @@ export default () => {
 			)}
 			<Tooltip placement={"bottom"} content={"Search"}>
 				<div className={"navigation-link"} onClick={() => setVisible(true)}>
-					<FontAwesomeIcon icon={faSearch as IconProp} />
+					<Search size={20} strokeWidth={2} />
 				</div>
 			</Tooltip>
 		</>

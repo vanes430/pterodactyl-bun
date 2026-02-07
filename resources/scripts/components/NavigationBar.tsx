@@ -1,10 +1,8 @@
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import {
-	faCogs,
-	faLayerGroup,
-	faSignOutAlt,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+	LayoutDashboard,
+	Settings,
+	LogOut,
+} from "lucide-react";
 import { useStoreState } from "easy-peasy";
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
@@ -21,11 +19,11 @@ const RightNavigation = styled.div`
     & > a,
     & > button,
     & > .navigation-link {
-        ${tw`flex items-center h-full no-underline text-neutral-300 px-6 cursor-pointer transition-all duration-150`};
+        ${tw`flex items-center h-full no-underline text-neutral-300 px-3 md:px-6 cursor-pointer transition-all duration-150`};
 
         &:active,
         &:hover {
-            ${tw`text-neutral-100 bg-black`};
+            ${tw`text-neutral-100 bg-black` };
         }
 
         &:active,
@@ -54,32 +52,32 @@ export default () => {
 	};
 
 	return (
-		<div className={"w-full bg-neutral-900 shadow-md overflow-x-auto"}>
+		<div className={"w-full bg-neutral-900/90 backdrop-blur-md shadow-md sticky top-0 z-50"}>
 			<SpinnerOverlay visible={isLoggingOut} />
 			<div
-				className={"mx-auto w-full flex items-center h-[3.5rem] max-w-[1200px]"}
+				className={"mx-auto w-full flex items-center h-[3.5rem] max-w-[1200px] px-2"}
 			>
-				<div id={"logo"} className={"flex-1"}>
+				<div id={"logo"} className={"flex-shrink-0"}>
 					<Link
 						to={"/"}
 						className={
-							"text-2xl font-header font-medium px-4 no-underline text-neutral-200 hover:text-neutral-100 transition-colors duration-150"
+							"text-lg md:text-2xl font-header font-medium px-2 md:px-4 no-underline text-neutral-200 hover:text-neutral-100 transition-colors duration-150"
 						}
 					>
 						{name}
 					</Link>
 				</div>
-				<RightNavigation className={"flex h-full items-center justify-center"}>
+				<RightNavigation className={"flex-1 flex h-full items-center justify-end overflow-x-auto"}>
 					<SearchContainer />
 					<Tooltip placement={"bottom"} content={"Dashboard"}>
 						<NavLink to={"/"} exact>
-							<FontAwesomeIcon icon={faLayerGroup as IconProp} />
+							<LayoutDashboard size={20} strokeWidth={2} />
 						</NavLink>
 					</Tooltip>
 					{rootAdmin && (
 						<Tooltip placement={"bottom"} content={"Admin"}>
 							<a href={"/admin"} rel={"noreferrer"}>
-								<FontAwesomeIcon icon={faCogs as IconProp} />
+								<Settings size={20} strokeWidth={2} />
 							</a>
 						</Tooltip>
 					)}
@@ -92,7 +90,7 @@ export default () => {
 					</Tooltip>
 					<Tooltip placement={"bottom"} content={"Sign Out"}>
 						<button type={"button"} onClick={onTriggerLogout}>
-							<FontAwesomeIcon icon={faSignOutAlt as IconProp} />
+							<LogOut size={20} strokeWidth={2} />
 						</button>
 					</Tooltip>
 				</RightNavigation>

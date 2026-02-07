@@ -14,7 +14,10 @@ export default createGlobalStyle`
     }
 
     body {
-        ${tw`font-sans bg-neutral-800 text-neutral-200`};
+        ${tw`font-sans text-neutral-200` };
+        ${tw`bg-neutral-900` };
+        background-image: linear-gradient(to bottom right, #131a20, #1a242d);
+        background-attachment: fixed;
         letter-spacing: 0.015em;
     }
 
@@ -46,29 +49,21 @@ export default createGlobalStyle`
 
     /* Scroll Bar Style */
     ::-webkit-scrollbar {
-        background: none;
-        width: 16px;
-        height: 16px;
+        width: 8px;
+        height: 8px;
     }
 
     ::-webkit-scrollbar-thumb {
-        border: solid 0 rgb(0 0 0 / 0%);
-        border-right-width: 4px;
-        border-left-width: 4px;
-        -webkit-border-radius: 9px 4px;
-        -webkit-box-shadow: inset 0 0 0 1px hsl(211, 10%, 53%), inset 0 0 0 4px hsl(209deg 18% 30%);
+        ${tw`bg-neutral-600 rounded-full hover:bg-neutral-500`};
     }
 
-    ::-webkit-scrollbar-track-piece {
-        margin: 4px 0;
+    ::-webkit-scrollbar-track {
+        ${tw`bg-transparent`};
     }
 
-    ::-webkit-scrollbar-thumb:horizontal {
-        border-right-width: 0;
-        border-left-width: 0;
-        border-top-width: 4px;
-        border-bottom-width: 4px;
-        -webkit-border-radius: 4px 9px;
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: theme('colors.neutral.600') transparent;
     }
 
     ::-webkit-scrollbar-corner {

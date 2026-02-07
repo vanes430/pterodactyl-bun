@@ -1,6 +1,5 @@
 import type React from "react";
 import { useEffect } from "react";
-import { CSSTransition } from "react-transition-group";
 import tw from "twin.macro";
 import ContentContainer from "@/components/elements/ContentContainer";
 import FlashMessageRender from "@/components/FlashMessageRender";
@@ -24,7 +23,7 @@ const PageContentBlock: React.FC<PageContentBlockProps> = ({
 	}, [title]);
 
 	return (
-		<CSSTransition timeout={150} classNames={"fade"} appear in>
+		<>
 			<ContentContainer css={tw`my-4 sm:my-10`} className={className}>
 				{showFlashKey && (
 					<FlashMessageRender byKey={showFlashKey} css={tw`mb-4`} />
@@ -44,7 +43,7 @@ const PageContentBlock: React.FC<PageContentBlockProps> = ({
 					&nbsp;&copy; 2015 - {new Date().getFullYear()}
 				</p>
 			</ContentContainer>
-		</CSSTransition>
+		</>
 	);
 };
 

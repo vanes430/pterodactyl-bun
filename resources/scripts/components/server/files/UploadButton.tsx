@@ -1,7 +1,6 @@
 import { CloudUploadIcon } from "@heroicons/react/outline";
-import { useSignal } from "@preact/signals-react";
 import axios, { type AxiosProgressEvent } from "axios";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import tw from "twin.macro";
 import getFileUploadUrl from "@/api/server/files/getFileUploadUrl";
 import { Button } from "@/components/elements/button/index";
@@ -27,8 +26,8 @@ function isFileOrDirectory(event: DragEvent): boolean {
 export default ({ className }: WithClassname) => {
 	const fileUploadInput = useRef<HTMLInputElement>(null);
 
-	const visible = useSignal(false);
-	const timeouts = useSignal<NodeJS.Timeout[]>([]);
+	const [visible, setVisible] = useState(false);
+	const timeouts = useRef<NodeJS.Timeout[]>([]);
 
 	const { mutate } = useFileManagerSwr();
 	const { addError, clearAndAddHttpError } = useFlashKey("files");
@@ -50,7 +49,7 @@ export default ({ className }: WithClassname) => {
 			e.preventDefault();
 			e.stopPropagation();
 			if (isFileOrDirectory(e)) {
-				visible.value = true;
+				setVisible(true);
 			}
 		},
 		{ capture: true },
@@ -59,7 +58,7 @@ export default ({ className }: WithClassname) => {
 	useEventListener(
 		"dragexit",
 		() => {
-			visible.value = false;
+			setVisible(false);
 		},
 		{
 			capture: true,
@@ -67,12 +66,15 @@ export default ({ className }: WithClassname) => {
 	);
 
 	useEventListener("keydown", () => {
-		visible.value = false;
+		setVisible(false);
 	});
 
 	useEffect(() => {
-		return () => timeouts.value.forEach(clearTimeout);
-	}, [timeouts.value]);
+		return () => {
+			// eslint-disable-next-line react-hooks/exhaustive-deps
+			timeouts.current.forEach(clearTimeout);
+		};
+	}, []);
 
 	const onUploadProgress = (data: AxiosProgressEvent, name: string) => {
 		setUploadProgress({ name, loaded: data.loaded });
@@ -106,7 +108,7 @@ export default ({ className }: WithClassname) => {
 							},
 						)
 						.then(() =>
-							timeouts.value.push(
+							timeouts.current.push(
 								setTimeout(() => removeFileUpload(file.name), 500),
 							),
 						),
@@ -126,44 +128,46 @@ export default ({ className }: WithClassname) => {
 			<Portal>
 				<Fade
 					appear
-					in={visible.value}
+					in={visible}
 					timeout={75}
 					key={"upload_modal_mask"}
 					unmountOnExit
 				>
 					<ModalMask
 						onClick={() => {
-							visible.value = false;
+							setVisible(false);
 						}}
 						onDragOver={(e) => e.preventDefault()}
 						onDrop={(e) => {
 							e.preventDefault();
 							e.stopPropagation();
 
-							visible.value = false;
+							setVisible(false);
 							if (!e.dataTransfer?.files.length) return;
 
 							onFileSubmission(e.dataTransfer.files);
 						}}
+						css={tw`bg-neutral-900/80 backdrop-blur-sm`}
 					>
 						<div
 							className={
-								"w-full flex items-center justify-center pointer-events-none"
+								"w-full h-full flex items-center justify-center pointer-events-none"
 							}
 						>
 							<div
 								className={
-									"flex items-center space-x-4 bg-black w-full ring-4 ring-blue-200 ring-opacity-60 rounded p-6 mx-10 max-w-sm"
+									"flex flex-col items-center justify-center space-y-4 bg-transparent border-4 border-dashed border-blue-400 border-opacity-60 rounded-3xl p-16 mx-10 w-full max-w-lg transition-all duration-150"
 								}
 							>
-								<CloudUploadIcon className={"w-10 h-10 flex-shrink-0"} />
-								<p
-									className={
-										"font-header flex-1 text-lg text-neutral-100 text-center"
-									}
-								>
-									Drag and drop files to upload.
-								</p>
+								<CloudUploadIcon className={"w-24 h-24 text-blue-400 animate-bounce"} />
+								<div className={"text-center"}>
+									<p className={"font-header text-3xl text-neutral-100 mb-2"}>
+										Drop to Upload
+									</p>
+									<p className={"text-neutral-400"}>
+										Release your files anywhere to begin uploading.
+									</p>
+								</div>
 							</div>
 						</div>
 					</ModalMask>

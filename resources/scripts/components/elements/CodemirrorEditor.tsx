@@ -6,7 +6,7 @@ import tw from "twin.macro";
 import modes from "@/modes";
 
 require("codemirror/lib/codemirror.css");
-require("codemirror/theme/ayu-mirage.css");
+require("codemirror/theme/dracula.css");
 require("codemirror/addon/edit/closebrackets");
 require("codemirror/addon/edit/closetag");
 require("codemirror/addon/edit/matchbrackets");
@@ -90,8 +90,10 @@ const EditorContainer = styled.div`
     }
 
     .CodeMirror {
-        font-size: 12px;
-        line-height: 1.375rem;
+        font-family: "JetBrains Mono", "Fira Code", "Source Code Pro", monospace;
+        font-size: 13px;
+        line-height: 1.5rem;
+        ${tw`rounded` };
     }
 
     .CodeMirror-linenumber {
@@ -160,7 +162,7 @@ export default ({
 
 		const e = CodeMirror.fromTextArea(node, {
 			mode: "text/plain",
-			theme: "ayu-mirage",
+			theme: "dracula",
 			indentUnit: 4,
 			smartIndent: true,
 			tabSize: 4,
