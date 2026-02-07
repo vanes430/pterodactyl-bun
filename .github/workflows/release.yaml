@@ -35,30 +35,15 @@ jobs:
           mv panel.tar.gz panel-prod.tar.gz
           cp panel-prod.tar.gz panel.tar.gz
 
-      - name: GitHub Release
-        uses: softprops/action-gh-release@v2
+      - name: Automatic Releases
+        uses: marvinpinto/action-automatic-releases@latest
         with:
-          tag_name: latest
-          name: Latest Automated Build
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: false
+          title: "Latest Automated Build"
           files: |
             panel-dev.tar.gz
             panel-dev-hash.tar.gz
             panel-prod.tar.gz
             panel.tar.gz
-          body: |
-            This is an automated build of the absolute latest commit.
-            
-            **Available Packages:**
-            - `panel-prod.tar.gz`: Optimized for production (Minified + Hashed).
-            - `panel-dev-hash.tar.gz`: Production-like structure but readable code (No Minify + Hashed).
-            - `panel-dev.tar.gz`: Cleanest version for debugging (No Minify + No Hash).
-            
-            **Metadata:**
-            - Last Branch: `${{ github.ref_name }}`
-            - Last Commit: `${{ github.sha }}`
-            - Build ID: `${{ github.run_id }}`
-          draft: false
-          prerelease: false
-          make_latest: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
