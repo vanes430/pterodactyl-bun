@@ -1,4 +1,3 @@
-import type React from "react";
 import tw from "twin.macro";
 import Modal, { type RequiredModalProps } from "@/components/elements/Modal";
 
