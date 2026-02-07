@@ -1,21 +1,21 @@
 .manager_actions {
-	@apply grid grid-cols-2 gap-2 w-full mb-4;
+	@apply flex items-center w-full gap-2 mb-4 overflow-hidden;
 
 	& button,
 	& a {
-		@apply w-full flex items-center justify-center;
-	}
+		@apply flex-1 flex items-center justify-center min-w-0;
 
-	@screen sm {
-		@apply grid-cols-4 gap-4;
+		& span {
+			@apply truncate;
+		}
 	}
 
 	@screen md {
-		@apply flex flex-1 justify-end gap-2 mb-0;
+		@apply w-auto flex-none justify-end mb-0 ml-auto;
 
 		& button,
 		& a {
-			@apply w-auto px-4;
+			@apply flex-none px-4;
 		}
 	}
 }

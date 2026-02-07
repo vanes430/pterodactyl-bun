@@ -193,7 +193,7 @@ export default ({ className }: WithClassname) => {
 				className={className}
 				onClick={() => fileUploadInput.current?.click()}
 			>
-				Upload
+				<span>Upload</span>
 			</Button>
 		</>
 	);

@@ -102,7 +102,9 @@ export default () => {
 							<PullFileButton />
 							<UploadButton />
 							<NavLink to={`/server/${id}/files/new${window.location.hash}`}>
-								<Button>New File</Button>
+								<Button>
+									<span>New File</span>
+								</Button>
 							</NavLink>
 						</div>
 					</Can>
