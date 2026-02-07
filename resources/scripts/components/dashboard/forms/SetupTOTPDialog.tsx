@@ -35,10 +35,12 @@ const ConfigureTwoFactorForm = ({ onTokens }: Props) => {
 	const { close, setProps } = useContext(DialogWrapperContext);
 
 	useEffect(() => {
+		if (token) return;
+
 		getTwoFactorTokenData()
 			.then(setToken)
 			.catch((error) => clearAndAddHttpError(error));
-	}, [clearAndAddHttpError]);
+	}, [clearAndAddHttpError, token]);
 
 	useEffect(() => {
 		setProps((state) => ({ ...state, preventExternalClose: submitting }));

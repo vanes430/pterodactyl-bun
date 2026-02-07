@@ -4,7 +4,9 @@ import {
 	HardDrive,
 	MemoryStick,
 	Network,
+	ServerCog,
 	Server as ServerIcon,
+	ServerOff,
 } from "lucide-react";
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import isEqual from "react-fast-compare";
@@ -149,7 +151,13 @@ export default ({
 		>
 			<div css={tw`flex items-center col-span-12 sm:col-span-5 lg:col-span-6`}>
 				<div className={"icon mr-4 text-neutral-500"}>
-					<ServerIcon size={24} />
+					{!stats || stats.status === "offline" ? (
+						<ServerOff size={24} />
+					) : stats.status === "starting" ? (
+						<ServerCog size={24} />
+					) : (
+						<ServerIcon size={24} />
+					)}
 				</div>
 				<div>
 					<p css={tw`text-lg break-words text-neutral-100`}>{server.name}</p>
