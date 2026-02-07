@@ -62,7 +62,7 @@ const FileObjectRow = ({ file }: { file: FileObject }) => (
 	>
 		<SelectFileCheckbox name={file.name} />
 		<Clickable file={file}>
-			<div css={tw`flex-none text-neutral-400 mr-4 pl-3`}>
+			<div css={tw`flex-none text-neutral-400 mr-4`}>
 				<FileIcon file={file} />
 			</div>
 			<div css={tw`flex-1 truncate font-medium`}>{file.name}</div>
