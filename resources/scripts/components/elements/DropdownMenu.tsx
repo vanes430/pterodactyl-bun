@@ -46,15 +46,19 @@ class DropdownMenu extends React.PureComponent<Props, State> {
 			document.addEventListener("contextmenu", this.contextMenuListener);
 
 			const { posX, posY } = this.state;
-			const { clientWidth, clientHeight } = menu;
 			const { innerWidth, innerHeight } = window;
+
+			// Reset position first to get correct dimensions
+			menu.style.left = "0px";
+			menu.style.top = "0px";
+
+			const { clientWidth, clientHeight } = menu;
 
 			// Horizontal positioning
 			let left = posX;
 			if (posX + clientWidth > innerWidth - 10) {
 				left = posX - clientWidth;
 			}
-			// Ensure it doesn't go off-screen to the left either
 			left = Math.max(10, left);
 
 			// Vertical positioning
@@ -62,7 +66,6 @@ class DropdownMenu extends React.PureComponent<Props, State> {
 			if (posY + clientHeight > innerHeight - 10) {
 				top = posY - clientHeight;
 			}
-			// Ensure it doesn't go off-screen to the top
 			top = Math.max(10, top);
 
 			menu.style.left = `${Math.round(left)}px`;

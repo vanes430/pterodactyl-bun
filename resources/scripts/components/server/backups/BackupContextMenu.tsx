@@ -180,7 +180,10 @@ export default ({ backup }: Props) => {
 				<DropdownMenu
 					renderToggle={(onClick) => (
 						<button
-							onClick={onClick}
+							onClick={(e) => {
+								e.preventDefault();
+								onClick(e);
+							}}
 							css={tw`text-gray-200 transition-colors duration-150 hover:text-gray-100 p-2`}
 						>
 							<MoreHorizontal size={20} />
