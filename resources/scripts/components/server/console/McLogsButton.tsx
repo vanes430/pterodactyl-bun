@@ -39,7 +39,7 @@ const McLogsButton = () => {
 			const formData = new URLSearchParams();
 			formData.append("content", content);
 
-			const response = await fetch("https://api.mclogs.com/1/log", {
+			const response = await fetch("https://api.mclo.gs/1/log", {
 				method: "POST",
 				body: formData,
 			});
