@@ -17,7 +17,7 @@ import Can from "@/components/elements/Can";
 import routes from "@/routers/routes";
 
 const SidebarContainer = styled.div`
-	${tw`flex flex-col w-full md:w-60 flex-shrink-0 bg-white/[0.02] backdrop-blur-md border-r border-white/5 md:min-h-[calc(100vh-3.5rem)] md:sticky md:top-14 md:self-start`};
+	${tw`flex flex-col w-full md:w-60 flex-shrink-0 bg-white/[0.02] border-r border-white/5 md:min-h-[calc(100vh-3.5rem)] md:sticky md:top-14 md:self-start`};
 `;
 
 const NavItem = styled(NavLink)`

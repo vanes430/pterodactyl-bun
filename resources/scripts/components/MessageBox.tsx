@@ -40,7 +40,7 @@ const getBackground = (type?: FlashMessageType): TwStyle | string => {
 };
 
 const Container = styled.div<{ $type?: FlashMessageType }>`
-    ${tw`p-3 border items-center leading-normal rounded-xl flex w-full text-sm backdrop-blur-md transition-all duration-200`};
+    ${tw`p-3 border items-center leading-normal rounded-xl flex w-full text-sm transition-all duration-200`};
     ${(props) => styling(props.$type)};
 `;
 Container.displayName = "MessageBox.Container";

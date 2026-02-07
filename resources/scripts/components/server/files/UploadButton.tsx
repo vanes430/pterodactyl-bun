@@ -147,7 +147,7 @@ export default ({ className }: WithClassname) => {
 
 							onFileSubmission(e.dataTransfer.files);
 						}}
-						css={tw`bg-neutral-900/80 backdrop-blur-sm`}
+						css={tw`bg-neutral-900/80 `}
 					>
 						<div
 							className={

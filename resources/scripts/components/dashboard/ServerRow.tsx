@@ -44,7 +44,7 @@ const StatusIndicatorBox = styled(GreyRowBox)<{
 
     ${tw`grid grid-cols-12 gap-4 relative transition-all duration-300 ease-out`};
 
-    ${tw`bg-white/[0.03] backdrop-blur-md border border-white/[0.05] hover:border-white/10`};
+    ${tw`bg-white/[0.03]  border border-white/[0.05] hover:border-white/10`};
 
     ${tw`hover:shadow-2xl hover:bg-white/[0.06] hover:-translate-y-1 hover:scale-[1.01]`};
 
