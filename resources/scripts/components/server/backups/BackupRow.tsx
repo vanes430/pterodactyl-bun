@@ -1,10 +1,4 @@
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
-import {
-	faArchive,
-	faEllipsisH,
-	faLock,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Archive, Lock, MoreHorizontal } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import tw from "twin.macro";
 import type { ServerBackup } from "@/api/server/types";
@@ -66,13 +60,13 @@ export default ({ backup, className }: Props) => {
 				<div css={tw`mr-4`}>
 					{backup.completedAt !== null ? (
 						backup.isLocked ? (
-							<FontAwesomeIcon
-								icon={faLock as IconProp}
+							<Lock
+								size={16}
 								css={tw`text-yellow-500`}
 							/>
 						) : (
-							<FontAwesomeIcon
-								icon={faArchive as IconProp}
+							<Archive
+								size={16}
 								css={tw`text-neutral-300`}
 							/>
 						)
@@ -124,7 +118,7 @@ export default ({ backup, className }: Props) => {
 				<div css={tw`mt-4 md:mt-0 ml-6`} style={{ marginRight: "-0.5rem" }}>
 					{!backup.completedAt ? (
 						<div css={tw`p-2 invisible`}>
-							<FontAwesomeIcon icon={faEllipsisH as IconProp} />
+							<MoreHorizontal size={16} />
 						</div>
 					) : (
 						<BackupContextMenu backup={backup} />

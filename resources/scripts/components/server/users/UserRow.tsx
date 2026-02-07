@@ -1,10 +1,4 @@
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
-import {
-	faPencilAlt,
-	faUnlockAlt,
-	faUserLock,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { UserCheck, UserX, Pencil } from "lucide-react";
 import { useStoreState } from "easy-peasy";
 import { useState } from "react";
 import tw from "twin.macro";
@@ -40,13 +34,11 @@ export default ({ subuser }: Props) => {
 			<div css={tw`ml-4`}>
 				<p css={tw`font-medium text-center`}>
 					&nbsp;
-					<FontAwesomeIcon
-						icon={
-							(subuser.twoFactorEnabled ? faUserLock : faUnlockAlt) as IconProp
-						}
-						fixedWidth
-						css={!subuser.twoFactorEnabled ? tw`text-red-400` : undefined}
-					/>
+					{subuser.twoFactorEnabled ? (
+						<UserCheck size={16} />
+					) : (
+						<UserX size={16} className={"text-red-400"} />
+					)}
 					&nbsp;
 				</p>
 				<p css={tw`text-2xs text-neutral-500 uppercase hidden md:block`}>
@@ -72,7 +64,7 @@ export default ({ subuser }: Props) => {
 							css={tw`block text-sm p-1 md:p-2 text-neutral-500 hover:text-neutral-100 transition-colors duration-150 mx-4`}
 							onClick={() => setVisible(true)}
 						>
-							<FontAwesomeIcon icon={faPencilAlt as IconProp} />
+							<Pencil size={16} />
 						</button>
 					</Can>
 					<Can action={"user.delete"}>

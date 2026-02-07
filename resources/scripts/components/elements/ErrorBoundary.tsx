@@ -1,8 +1,6 @@
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import { AlertTriangle } from "lucide-react";
 import React from "react";
 import tw from "twin.macro";
-import Icon from "@/components/elements/Icon";
 
 interface State {
 	hasError: boolean;
@@ -28,10 +26,7 @@ class ErrorBoundary extends React.Component<{}, State> {
 				<div
 					css={tw`flex items-center bg-neutral-900 rounded p-3 text-red-500`}
 				>
-					<Icon
-						icon={faExclamationTriangle as IconProp}
-						css={tw`h-4 w-auto mr-2`}
-					/>
+					<AlertTriangle size={16} className={"mr-2"} />
 					<p css={tw`text-sm text-neutral-100`}>
 						An error was encountered by the application while rendering this
 						view. Try refreshing the page.

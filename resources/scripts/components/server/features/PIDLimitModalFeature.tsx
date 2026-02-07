@@ -1,6 +1,4 @@
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { AlertTriangle } from "lucide-react";
 import { useStoreState } from "easy-peasy";
 import { useEffect, useState } from "react";
 import tw from "twin.macro";
@@ -62,11 +60,9 @@ const PIDLimitModalFeature = () => {
 			{isAdmin ? (
 				<>
 					<div css={tw`mt-4 sm:flex items-center`}>
-						<FontAwesomeIcon
-							css={tw`pr-4`}
-							icon={faExclamationTriangle as IconProp}
-							color={"orange"}
-							size={"4x"}
+						<AlertTriangle
+							css={tw`mr-4 text-orange-500`}
+							size={64}
 						/>
 						<h2 css={tw`text-2xl mb-4 text-neutral-100 `}>
 							Memory or process limit reached...
@@ -100,11 +96,9 @@ const PIDLimitModalFeature = () => {
 			) : (
 				<>
 					<div css={tw`mt-4 sm:flex items-center`}>
-						<FontAwesomeIcon
-							css={tw`pr-4`}
-							icon={faExclamationTriangle as IconProp}
-							color={"orange"}
-							size={"4x"}
+						<AlertTriangle
+							css={tw`mr-4 text-orange-500`}
+							size={64}
 						/>
 						<h2 css={tw`text-2xl mb-4 text-neutral-100`}>
 							Possible resource limit reached...

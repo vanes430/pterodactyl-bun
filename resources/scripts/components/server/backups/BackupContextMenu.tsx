@@ -1,13 +1,11 @@
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import {
-	faBoxOpen,
-	faCloudDownloadAlt,
-	faEllipsisH,
-	faLock,
-	faTrashAlt,
-	faUnlock,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+	DownloadCloud,
+	MoreHorizontal,
+	PackageOpen,
+	Lock,
+	Unlock,
+	Trash2,
+} from "lucide-react";
 import { useState } from "react";
 import tw from "twin.macro";
 import http, { httpErrorToHuman } from "@/api/http";
@@ -185,48 +183,35 @@ export default ({ backup }: Props) => {
 							onClick={onClick}
 							css={tw`text-gray-200 transition-colors duration-150 hover:text-gray-100 p-2`}
 						>
-							<FontAwesomeIcon icon={faEllipsisH as IconProp} />
+							<MoreHorizontal size={20} />
 						</button>
 					)}
 				>
 					<div css={tw`text-sm`}>
 						<Can action={"backup.download"}>
 							<DropdownButtonRow onClick={doDownload}>
-								<FontAwesomeIcon
-									fixedWidth
-									icon={faCloudDownloadAlt as IconProp}
-									css={tw`text-xs`}
-								/>
-								<span css={tw`ml-2`}>Download</span>
+								<DownloadCloud size={14} className={"mr-2"} />
+								<span>Download</span>
 							</DropdownButtonRow>
 						</Can>
 						<Can action={"backup.restore"}>
 							<DropdownButtonRow onClick={() => setModal("restore")}>
-								<FontAwesomeIcon
-									fixedWidth
-									icon={faBoxOpen as IconProp}
-									css={tw`text-xs`}
-								/>
-								<span css={tw`ml-2`}>Restore</span>
+								<PackageOpen size={14} className={"mr-2"} />
+								<span>Restore</span>
 							</DropdownButtonRow>
 						</Can>
 						<Can action={"backup.delete"}>
 							<DropdownButtonRow onClick={onLockToggle}>
-								<FontAwesomeIcon
-									fixedWidth
-									icon={(backup.isLocked ? faUnlock : faLock) as IconProp}
-									css={tw`text-xs mr-2`}
-								/>
-								{backup.isLocked ? "Unlock" : "Lock"}
+								{backup.isLocked ? (
+									<><Unlock size={14} className={"mr-2"} /> Unlock</>
+								) : (
+									<><Lock size={14} className={"mr-2"} /> Lock</>
+								)}
 							</DropdownButtonRow>
 							{!backup.isLocked && (
 								<DropdownButtonRow danger onClick={() => setModal("delete")}>
-									<FontAwesomeIcon
-										fixedWidth
-										icon={faTrashAlt as IconProp}
-										css={tw`text-xs`}
-									/>
-									<span css={tw`ml-2`}>Delete</span>
+									<Trash2 size={14} className={"mr-2"} />
+									<span>Delete</span>
 								</DropdownButtonRow>
 							)}
 						</Can>
@@ -237,7 +222,7 @@ export default ({ backup }: Props) => {
 					onClick={() => setModal("delete")}
 					css={tw`text-gray-200 transition-colors duration-150 hover:text-gray-100 p-2`}
 				>
-					<FontAwesomeIcon icon={faTrashAlt as IconProp} />
+					<Trash2 size={20} />
 				</button>
 			)}
 		</>

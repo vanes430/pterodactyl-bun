@@ -1,12 +1,12 @@
 import {
-	faClock,
-	faCloudDownloadAlt,
-	faCloudUploadAlt,
-	faHdd,
-	faMemory,
-	faMicrochip,
-	faWifi,
-} from "@fortawesome/free-solid-svg-icons";
+	Clock,
+	DownloadCloud,
+	UploadCloud,
+	HardDrive,
+	MemoryStick,
+	Cpu,
+	Wifi,
+} from "lucide-react";
 import classNames from "classnames";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
@@ -117,11 +117,11 @@ const ServerDetailsBlock = ({ className }: { className?: string }) => {
 
 	return (
 		<div className={classNames("grid grid-cols-6 gap-2 md:gap-4", className)}>
-			<StatBlock icon={faWifi} title={"Address"} copyOnClick={allocation}>
+			<StatBlock icon={Wifi} title={"Address"} copyOnClick={allocation}>
 				{allocation}
 			</StatBlock>
 			<StatBlock
-				icon={faClock}
+				icon={Clock}
 				title={"Uptime"}
 				color={getBackgroundColor(
 					status === "running" ? 0 : status !== "offline" ? 9 : 10,
@@ -137,7 +137,7 @@ const ServerDetailsBlock = ({ className }: { className?: string }) => {
 				)}
 			</StatBlock>
 			<StatBlock
-				icon={faMicrochip}
+				icon={Cpu}
 				title={"CPU Load"}
 				color={getBackgroundColor(stats.cpu, limits.cpu)}
 			>
@@ -148,7 +148,7 @@ const ServerDetailsBlock = ({ className }: { className?: string }) => {
 				)}
 			</StatBlock>
 			<StatBlock
-				icon={faMemory}
+				icon={MemoryStick}
 				title={"Memory"}
 				color={getBackgroundColor(stats.memory / 1024, limits.memory * 1024)}
 			>
@@ -159,20 +159,20 @@ const ServerDetailsBlock = ({ className }: { className?: string }) => {
 				)}
 			</StatBlock>
 			<StatBlock
-				icon={faHdd}
+				icon={HardDrive}
 				title={"Disk"}
 				color={getBackgroundColor(stats.disk / 1024, limits.disk * 1024)}
 			>
 				<Limit limit={textLimits.disk}>{bytesToString(stats.disk)}</Limit>
 			</StatBlock>
-			<StatBlock icon={faCloudDownloadAlt} title={"Network (Inbound)"}>
+			<StatBlock icon={DownloadCloud} title={"Network (Inbound)"}>
 				{status === "offline" ? (
 					<span className={"text-gray-400"}>Offline</span>
 				) : (
 					bytesToString(stats.rx)
 				)}
 			</StatBlock>
-			<StatBlock icon={faCloudUploadAlt} title={"Network (Outbound)"}>
+			<StatBlock icon={UploadCloud} title={"Network (Outbound)"}>
 				{status === "offline" ? (
 					<span className={"text-gray-400"}>Offline</span>
 				) : (

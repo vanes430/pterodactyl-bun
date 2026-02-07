@@ -1,6 +1,4 @@
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { CalendarDays } from "lucide-react";
 import { format } from "date-fns";
 import tw from "twin.macro";
 import type { Schedule } from "@/api/server/schedules/getServerSchedules";
@@ -8,8 +6,8 @@ import ScheduleCronRow from "@/components/server/schedules/ScheduleCronRow";
 
 export default ({ schedule }: { schedule: Schedule }) => (
 	<>
-		<div css={tw`hidden md:block`}>
-			<FontAwesomeIcon icon={faCalendarAlt as IconProp} fixedWidth />
+		<div css={tw`hidden md:block text-neutral-400`}>
+			<CalendarDays size={20} />
 		</div>
 		<div css={tw`flex-1 md:ml-4`}>
 			<p>{schedule.name}</p>

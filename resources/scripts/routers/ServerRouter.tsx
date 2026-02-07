@@ -1,6 +1,4 @@
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ExternalLink } from "lucide-react";
 import { useStoreState } from "easy-peasy";
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router";
@@ -106,7 +104,7 @@ export default () => {
 								{rootAdmin && (
 									// eslint-disable-next-line react/jsx-no-target-blank
 									<a href={`/admin/servers/view/${serverId}`} target={"_blank"}>
-										<FontAwesomeIcon icon={faExternalLinkAlt as IconProp} />
+										<ExternalLink size={16} />
 									</a>
 								)}
 							</div>

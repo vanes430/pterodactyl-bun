@@ -1,6 +1,4 @@
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { faNetworkWired } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Network } from "lucide-react";
 import { debounce } from "debounce";
 import { memo, useCallback, useState } from "react";
 import isEqual from "react-fast-compare";
@@ -73,7 +71,7 @@ const AllocationRow = ({ allocation }: Props) => {
 		<GreyRowBox $hoverable={false} className={"flex-wrap md:flex-nowrap mt-2"}>
 			<div className={"flex items-center w-full md:w-auto"}>
 				<div className={"pl-4 pr-6 text-neutral-400"}>
-					<FontAwesomeIcon icon={faNetworkWired as IconProp} />
+					<Network size={20} />
 				</div>
 				<div className={"mr-4 flex-1 md:w-40"}>
 					{allocation.alias ? (

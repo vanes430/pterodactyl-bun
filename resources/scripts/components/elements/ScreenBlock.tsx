@@ -1,6 +1,4 @@
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { faArrowLeft, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ArrowLeft, RefreshCw } from "lucide-react";
 import styled, { keyframes } from "styled-components/macro";
 import tw from "twin.macro";
 import NotFoundSvg from "@/assets/images/not_found.svg";
@@ -33,7 +31,7 @@ const spin = keyframes`
 `;
 
 const ActionButton = styled(Button)`
-    ${tw`rounded-full w-8 h-8 flex items-center justify-center p-0`};
+    ${tw`rounded-full w-8 h-8 flex items-center justify-center p-0`} ;
 
     &.hover\\:spin:hover {
         animation: ${spin} 2s linear infinite;
@@ -64,9 +62,11 @@ const ScreenBlock = ({
 							onClick={() => (onRetry ? onRetry() : onBack ? onBack() : null)}
 							className={onRetry ? "hover:spin" : undefined}
 						>
-							<FontAwesomeIcon
-								icon={(onRetry ? faSyncAlt : faArrowLeft) as IconProp}
-							/>
+							{onRetry ? (
+								<RefreshCw size={16} />
+							) : (
+								<ArrowLeft size={16} />
+							)}
 						</ActionButton>
 					</div>
 				)}

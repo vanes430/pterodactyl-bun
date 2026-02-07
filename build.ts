@@ -192,25 +192,23 @@ if (!result.success) {
 // 📄 Generate manifest.json
 const manifest: Record<string, any> = {};
 for (const output of result.outputs) {
+	if (output.path.endsWith(".map")) continue; // Jangan masukkan sourcemap ke manifest
+
 	const fileName = path.basename(output.path);
 	const relativePath = path.relative(outdir, output.path);
 	const publicPath = `/assets/${relativePath}`;
 
 	// Map entry points to Pterodactyl's expected names
-	if (fileName.startsWith("index") && fileName.endsWith(".js")) {
-		manifest["main.js"] = {
-			src: publicPath,
-			integrity: "",
-		};
-	}
-	if (fileName.startsWith("index") && fileName.endsWith(".css")) {
-		manifest["main.css"] = {
-			src: publicPath,
-			integrity: "",
-		};
+	// Kita cari file yang MULAI dengan 'index' dan berakhir dengan '.js' atau '.css'
+	if (fileName.startsWith("index.") || fileName === "index.js") {
+		if (fileName.endsWith(".js")) {
+			manifest["main.js"] = { src: publicPath, integrity: "" };
+		} else if (fileName.endsWith(".css")) {
+			manifest["main.css"] = { src: publicPath, integrity: "" };
+		}
 	}
 
-	// Store all hashed versions
+	// Store versioned name as well
 	manifest[fileName] = {
 		src: publicPath,
 		integrity: "",

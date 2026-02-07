@@ -1,6 +1,4 @@
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Trash2 } from "lucide-react";
 import { type Actions, useStoreActions } from "easy-peasy";
 import { useState } from "react";
 import tw from "twin.macro";
@@ -57,7 +55,7 @@ export default ({ subuser }: { subuser: Subuser }) => {
 				css={tw`block text-sm p-2 text-neutral-500 hover:text-red-600 transition-colors duration-150`}
 				onClick={() => setShowConfirmation(true)}
 			>
-				<FontAwesomeIcon icon={faTrashAlt as IconProp} />
+				<Trash2 size={16} />
 			</button>
 		</>
 	);

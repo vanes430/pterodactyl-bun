@@ -1,14 +1,12 @@
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import {
-	faArrowCircleDown,
-	faClock,
-	faCode,
-	faFileArchive,
-	faPencilAlt,
-	faToggleOn,
-	faTrashAlt,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+	ArrowDownCircle,
+	Clock,
+	Command,
+	FileArchive,
+	Pencil,
+	Power,
+	Trash2,
+} from "lucide-react";
 import { useState } from "react";
 import tw from "twin.macro";
 import { httpErrorToHuman } from "@/api/http";
@@ -16,7 +14,6 @@ import deleteScheduleTask from "@/api/server/schedules/deleteScheduleTask";
 import type { Schedule, Task } from "@/api/server/schedules/getServerSchedules";
 import Can from "@/components/elements/Can";
 import ConfirmationModal from "@/components/elements/ConfirmationModal";
-import Icon from "@/components/elements/Icon";
 import SpinnerOverlay from "@/components/elements/SpinnerOverlay";
 import TaskDetailsModal from "@/components/server/schedules/TaskDetailsModal";
 import useFlash from "@/plugins/useFlash";
@@ -27,16 +24,16 @@ interface Props {
 	task: Task;
 }
 
-const getActionDetails = (action: string): [string, any] => {
+const getActionDetails = (action: string): [string, React.ComponentType<any>] => {
 	switch (action) {
 		case "command":
-			return ["Send Command", faCode];
+			return ["Send Command", Command];
 		case "power":
-			return ["Send Power Action", faToggleOn];
+			return ["Send Power Action", Power];
 		case "backup":
-			return ["Create Backup", faFileArchive];
+			return ["Create Backup", FileArchive];
 		default:
-			return ["Unknown Action", faCode];
+			return ["Unknown Action", Command];
 	}
 };
 
@@ -67,7 +64,7 @@ export default ({ schedule, task }: Props) => {
 			});
 	};
 
-	const [title, icon] = getActionDetails(task.action);
+	const [title, Icon] = getActionDetails(task.action);
 
 	return (
 		<div css={tw`sm:flex items-center p-3 sm:p-6 border-b border-neutral-800`}>
@@ -87,10 +84,9 @@ export default ({ schedule, task }: Props) => {
 			>
 				Are you sure you want to delete this task? This action cannot be undone.
 			</ConfirmationModal>
-			<FontAwesomeIcon
-				icon={icon as IconProp}
-				css={tw`text-lg text-white hidden md:block`}
-			/>
+			<div css={tw`text-white hidden md:block`}>
+				<Icon size={20} />
+			</div>
 			<div css={tw`flex-none sm:flex-1 w-full sm:w-auto overflow-x-auto`}>
 				<p css={tw`md:ml-6 text-neutral-200 uppercase text-sm`}>{title}</p>
 				{task.payload && (
@@ -114,9 +110,9 @@ export default ({ schedule, task }: Props) => {
 						<div
 							css={tw`flex items-center px-2 py-1 bg-yellow-500 text-yellow-800 text-sm rounded-full`}
 						>
-							<Icon
-								icon={faArrowCircleDown as IconProp}
-								css={tw`w-3 h-3 mr-2`}
+							<ArrowDownCircle
+								size={12}
+								className={"mr-2"}
 							/>
 							Continues on Failure
 						</div>
@@ -127,7 +123,7 @@ export default ({ schedule, task }: Props) => {
 						<div
 							css={tw`flex items-center px-2 py-1 bg-neutral-500 text-sm rounded-full`}
 						>
-							<Icon icon={faClock as IconProp} css={tw`w-3 h-3 mr-2`} />
+							<Clock size={12} className={"mr-2"} />
 							{task.timeOffset}s later
 						</div>
 					</div>
@@ -139,7 +135,7 @@ export default ({ schedule, task }: Props) => {
 						css={tw`block text-sm p-2 text-neutral-500 hover:text-neutral-100 transition-colors duration-150 mr-4 ml-auto sm:ml-0`}
 						onClick={() => setIsEditing(true)}
 					>
-						<FontAwesomeIcon icon={faPencilAlt as IconProp} />
+						<Pencil size={16} />
 					</button>
 				</Can>
 				<Can action={"schedule.update"}>
@@ -149,7 +145,7 @@ export default ({ schedule, task }: Props) => {
 						css={tw`block text-sm p-2 text-neutral-500 hover:text-red-600 transition-colors duration-150`}
 						onClick={() => setVisible(true)}
 					>
-						<FontAwesomeIcon icon={faTrashAlt as IconProp} />
+						<Trash2 size={16} />
 					</button>
 				</Can>
 			</div>

@@ -1,12 +1,9 @@
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { Trash2 } from "lucide-react";
 import { useState } from "react";
-import tw from "twin.macro";
 import deleteServerAllocation from "@/api/server/network/deleteServerAllocation";
 import getServerAllocations from "@/api/swr/getServerAllocations";
 import { Button } from "@/components/elements/button/index";
 import { Dialog } from "@/components/elements/dialog";
-import Icon from "@/components/elements/Icon";
 import { useFlashKey } from "@/plugins/useFlash";
 import { ServerContext } from "@/state/server";
 
@@ -58,7 +55,7 @@ const DeleteAllocationButton = ({ allocation }: Props) => {
 				type={"button"}
 				onClick={() => setConfirm(true)}
 			>
-				<Icon icon={faTrashAlt as IconProp} css={tw`w-3 h-auto`} />
+				<Trash2 size={16} />
 			</Button.Danger>
 		</>
 	);

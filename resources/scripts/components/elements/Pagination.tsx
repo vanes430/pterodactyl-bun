@@ -1,9 +1,4 @@
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
-import {
-	faAngleDoubleLeft,
-	faAngleDoubleRight,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ChevronsLeft, ChevronsRight } from "lucide-react";
 import type React from "react";
 import styled from "styled-components/macro";
 import tw from "twin.macro";
@@ -62,7 +57,7 @@ function Pagination<T>({
 							color={"primary"}
 							onClick={() => onPageSelect(1)}
 						>
-							<FontAwesomeIcon icon={faAngleDoubleLeft as IconProp} />
+							<ChevronsLeft size={16} />
 						</Block>
 					)}
 					{pages.map((i) => (
@@ -81,7 +76,7 @@ function Pagination<T>({
 							color={"primary"}
 							onClick={() => onPageSelect(pagination.totalPages)}
 						>
-							<FontAwesomeIcon icon={faAngleDoubleRight as IconProp} />
+							<ChevronsRight size={16} />
 						</Block>
 					)}
 				</div>

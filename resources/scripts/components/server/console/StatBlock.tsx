@@ -2,14 +2,13 @@ import classNames from "classnames";
 import type React from "react";
 import useFitText from "use-fit-text";
 import CopyOnClick from "@/components/elements/CopyOnClick";
-import Icon from "@/components/elements/Icon";
 import styles from "./style.module.css";
 
 interface StatBlockProps {
 	title: string;
 	copyOnClick?: string;
 	color?: string | undefined;
-	icon: any;
+	icon: React.ComponentType<any>;
 	children: React.ReactNode;
 	className?: string;
 }
@@ -17,7 +16,7 @@ interface StatBlockProps {
 export default ({
 	title,
 	copyOnClick,
-	icon,
+	icon: Icon,
 	color,
 	className,
 	children,
@@ -30,14 +29,11 @@ export default ({
 				<div
 					className={classNames(styles.status_bar, color || "bg-gray-700")}
 				/>
-				<div className={classNames(styles.icon, color || "bg-gray-700")}>
-					<Icon
-						icon={icon}
-						className={classNames({
-							"text-gray-100": !color || color === "bg-gray-700",
-							"text-gray-50": color && color !== "bg-gray-700",
-						})}
-					/>
+				<div className={classNames(styles.icon, color || "bg-gray-700", {
+					"text-gray-100": !color || color === "bg-gray-700",
+					"text-gray-50": color && color !== "bg-gray-700",
+				})}>
+					<Icon size={20} />
 				</div>
 				<div className={"flex flex-col justify-center overflow-hidden w-full"}>
 					<p

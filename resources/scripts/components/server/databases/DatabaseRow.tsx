@@ -1,10 +1,4 @@
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
-import {
-	faDatabase,
-	faEye,
-	faTrashAlt,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Database, Eye, Trash2 } from "lucide-react";
 import { Form, Formik, type FormikHelpers } from "formik";
 import { useState } from "react";
 import tw from "twin.macro";
@@ -177,8 +171,8 @@ export default ({ database, className }: Props) => {
 				</div>
 			</Modal>
 			<GreyRowBox $hoverable={false} className={className} css={tw`mb-2`}>
-				<div css={tw`hidden md:block`}>
-					<FontAwesomeIcon icon={faDatabase as IconProp} fixedWidth />
+				<div css={tw`hidden md:block text-neutral-400`}>
+					<Database size={20} />
 				</div>
 				<div css={tw`flex-1 ml-4`}>
 					<CopyOnClick text={database.name}>
@@ -207,17 +201,17 @@ export default ({ database, className }: Props) => {
 						Username
 					</p>
 				</div>
-				<div css={tw`ml-8`}>
+				<div css={tw`ml-8 flex items-center`}>
 					<Button
 						isSecondary
 						css={tw`mr-2`}
 						onClick={() => setConnectionVisible(true)}
 					>
-						<FontAwesomeIcon icon={faEye as IconProp} fixedWidth />
+						<Eye size={16} />
 					</Button>
 					<Can action={"database.delete"}>
 						<Button color={"red"} isSecondary onClick={() => setVisible(true)}>
-							<FontAwesomeIcon icon={faTrashAlt as IconProp} fixedWidth />
+							<Trash2 size={16} />
 						</Button>
 					</Can>
 				</div>
