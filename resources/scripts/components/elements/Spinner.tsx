@@ -1,6 +1,7 @@
+import { RectangleEllipsis } from "lucide-react";
 import type React from "react";
 import { Suspense } from "react";
-import styled, { css, keyframes } from "styled-components/macro";
+import styled, { keyframes } from "styled-components/macro";
 import tw from "twin.macro";
 import ErrorBoundary from "@/components/elements/ErrorBoundary";
 
@@ -18,29 +19,24 @@ interface Spinner extends React.FC<Props> {
 	Suspense: React.FC<Props>;
 }
 
-const spin = keyframes`
-    to { transform: rotate(360deg); }
+const pulse = keyframes`
+    0%, 100% { opacity: 0.4; transform: scale(0.95); }
+    50% { opacity: 1; transform: scale(1.05); }
 `;
 
-// noinspection CssOverwrittenProperties
-const SpinnerComponent = styled.div<Props>`
-    ${tw`w-8 h-8`};
-    border-width: 3px;
-    border-radius: 50%;
-    animation: ${spin} 1s cubic-bezier(0.55, 0.25, 0.25, 0.7) infinite;
+const StyledIcon = styled(RectangleEllipsis)<{
+	$size?: SpinnerSize;
+	$isBlue?: boolean;
+}>`
+	animation: ${pulse} 1.5s ease-in-out infinite;
+	${(props) => (props.$isBlue ? tw`text-blue-500` : tw`text-white`)};
 
-    ${(props) =>
-			props.size === "small"
-				? tw`w-4 h-4 border-2`
-				: props.size === "large"
-					? css`
-                  ${tw`w-16 h-16`};
-                  border-width: 6px;
-              `
-					: null};
-
-    border-color: ${(props) => (!props.isBlue ? "rgba(255, 255, 255, 0.2)" : "hsla(212, 92%, 43%, 0.2)")};
-    border-top-color: ${(props) => (!props.isBlue ? "rgb(255, 255, 255)" : "hsl(212, 92%, 43%)")};
+	${(props) =>
+		props.$size === "small"
+			? tw`w-4 h-4`
+			: props.$size === "large"
+				? tw`w-16 h-16`
+				: tw`w-8 h-8`};
 `;
 
 const Spinner: Spinner = ({ centered, ...props }) =>
@@ -51,10 +47,18 @@ const Spinner: Spinner = ({ centered, ...props }) =>
 				props.size === "large" ? tw`m-20` : tw`m-6`,
 			]}
 		>
-			<SpinnerComponent {...props} />
+			<StyledIcon
+				$size={props.size}
+				$isBlue={props.isBlue}
+				className={props.className}
+			/>
 		</div>
 	) : (
-		<SpinnerComponent {...props} />
+		<StyledIcon
+			$size={props.size}
+			$isBlue={props.isBlue}
+			className={props.className}
+		/>
 	);
 Spinner.displayName = "Spinner";
 

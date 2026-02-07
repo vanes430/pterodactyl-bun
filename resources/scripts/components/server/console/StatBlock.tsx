@@ -40,7 +40,7 @@ export default ({
 				<div className={"flex flex-col justify-center overflow-hidden w-full"}>
 					<p
 						className={
-							"font-header font-medium leading-tight text-xs md:text-sm text-gray-200"
+							"font-header font-medium leading-tight text-xs md:text-sm text-neutral-400"
 						}
 					>
 						{title}

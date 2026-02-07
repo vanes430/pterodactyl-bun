@@ -10,7 +10,7 @@ export default ({ children }: { children: React.ReactNode }): null => {
 		setFooter(
 			<div
 				className={
-					"px-6 py-3 bg-gray-700 flex items-center justify-end space-x-3 rounded-b"
+					"px-6 py-4 bg-white/5 flex items-center justify-end space-x-3 border-t border-white/5"
 				}
 			>
 				{children}

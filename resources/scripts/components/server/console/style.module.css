@@ -33,7 +33,7 @@
 	}
 
 	& > .container {
-		@apply rounded-t-lg p-1 sm:p-2 bg-neutral-900/50 backdrop-blur-md min-h-[16rem] flex-1 font-mono text-sm border-x border-t border-white/[0.05];
+		@apply rounded-lg p-1 sm:p-2 bg-neutral-900/50 backdrop-blur-md min-h-[16rem] flex-1 font-mono text-sm border border-white/[0.05];
 
 		& #terminal {
 			@apply h-full;
@@ -53,7 +53,7 @@
 	}
 
 	& .command_input {
-		@apply relative bg-neutral-900/50 backdrop-blur-md px-2 text-gray-100 pl-10 pr-4 py-2 w-full font-mono text-sm sm:rounded-b-lg border border-white/[0.05];
+		@apply mt-2 relative bg-neutral-900/50 backdrop-blur-md px-2 text-gray-100 pl-10 pr-4 py-2 w-full font-mono text-sm rounded-lg border border-white/[0.05];
 		@apply focus:ring-0 outline-none focus-visible:outline-none;
 		@apply transition-colors duration-100;
 		@apply active:border-cyan-500/50 focus:border-cyan-500/50;
