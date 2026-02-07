@@ -1,4 +1,5 @@
 import React, { createRef } from "react";
+import { createPortal } from "react-dom";
 import styled from "styled-components/macro";
 import tw from "twin.macro";
 import Fade from "@/components/elements/Fade";
@@ -46,27 +47,23 @@ class DropdownMenu extends React.PureComponent<Props, State> {
 			document.addEventListener("contextmenu", this.contextMenuListener);
 
 			const { posX, posY } = this.state;
-			const { innerWidth, innerHeight } = window;
-
-			// Reset position first to get correct dimensions
-			menu.style.left = "0px";
-			menu.style.top = "0px";
-
 			const { clientWidth, clientHeight } = menu;
+			const { innerWidth, innerHeight } = window;
+			const { scrollX, scrollY } = window;
 
 			// Horizontal positioning
 			let left = posX;
-			if (posX + clientWidth > innerWidth - 10) {
+			if (posX - scrollX + clientWidth > innerWidth - 10) {
 				left = posX - clientWidth;
 			}
-			left = Math.max(10, left);
+			left = Math.max(scrollX + 10, left);
 
 			// Vertical positioning
 			let top = posY;
-			if (posY + clientHeight > innerHeight - 10) {
+			if (posY - scrollY + clientHeight > innerHeight - 10) {
 				top = posY - clientHeight;
 			}
-			top = Math.max(10, top);
+			top = Math.max(scrollY + 10, top);
 
 			menu.style.left = `${Math.round(left)}px`;
 			menu.style.top = `${Math.round(top)}px`;
@@ -84,7 +81,7 @@ class DropdownMenu extends React.PureComponent<Props, State> {
 
 	onClickHandler = (e: React.MouseEvent<any, MouseEvent>) => {
 		e.preventDefault();
-		this.triggerMenu(e.clientX, e.clientY);
+		this.triggerMenu(e.pageX, e.pageY);
 	};
 
 	contextMenuListener = () => this.setState({ visible: false });
@@ -111,23 +108,29 @@ class DropdownMenu extends React.PureComponent<Props, State> {
 		}));
 
 	render() {
+		const portal = document.getElementById("modal-portal");
+
 		return (
-			<div>
+			<>
 				{this.props.renderToggle(this.onClickHandler)}
-				<Fade timeout={150} in={this.state.visible} unmountOnExit>
-					<div
-						ref={this.menu}
-						onClick={(e) => {
-							e.stopPropagation();
-							this.setState({ visible: false });
-						}}
-						style={{ width: "12rem" }}
-						css={tw`fixed bg-white p-2 rounded border border-neutral-700 shadow-lg text-neutral-500 z-[100]`}
-					>
-						{this.props.children}
-					</div>
-				</Fade>
-			</div>
+				{portal &&
+					createPortal(
+						<Fade timeout={150} in={this.state.visible} unmountOnExit>
+							<div
+								ref={this.menu}
+								onClick={(e) => {
+									e.stopPropagation();
+									this.setState({ visible: false });
+								}}
+								style={{ width: "12rem", position: "absolute", zIndex: 9999 }}
+								css={tw`bg-white p-2 rounded border border-neutral-700 shadow-lg text-neutral-500`}
+							>
+								{this.props.children}
+							</div>
+						</Fade>,
+						portal,
+					)}
+			</>
 		);
 	}
 }

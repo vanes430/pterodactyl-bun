@@ -55,7 +55,7 @@ const FileObjectRow = ({ file }: { file: FileObject }) => (
 			e.preventDefault();
 			window.dispatchEvent(
 				new CustomEvent(`pterodactyl:files:ctx:${file.key}`, {
-					detail: { clientX: e.clientX, clientY: e.clientY },
+					detail: { pageX: e.pageX, pageY: e.pageY },
 				}),
 			);
 		}}
