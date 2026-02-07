@@ -85,6 +85,7 @@ const NetworkContainer = () => {
 										css={tw`w-full sm:w-auto`}
 										color={"primary"}
 										onClick={onCreateAllocation}
+										disabled={loading}
 									>
 										Create Allocation
 									</Button>
