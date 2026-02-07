@@ -1,7 +1,6 @@
 import type React from "react";
 import { useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { CSSTransition } from "react-transition-group";
 import tw from "twin.macro";
 import { httpErrorToHuman } from "@/api/http";
 import type { FileObject } from "@/api/server/files/loadDirectory";
@@ -116,8 +115,8 @@ export default () => {
 					{files.length > 250 && (
 						<div css={tw`rounded bg-yellow-400 mb-4 p-3`}>
 							<p css={tw`text-yellow-900 text-sm text-center`}>
-								This directory is too large to display in the browser,
-								limiting the output to the first 250 files.
+								This directory is too large to display in the browser, limiting
+								the output to the first 250 files.
 							</p>
 						</div>
 					)}

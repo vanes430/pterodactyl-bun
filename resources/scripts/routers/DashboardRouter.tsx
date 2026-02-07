@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router";
-import { NavLink, Route, Switch } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 import DashboardContainer from "@/components/dashboard/DashboardContainer";
 import { NotFound } from "@/components/elements/ScreenBlock";
 import Spinner from "@/components/elements/Spinner";

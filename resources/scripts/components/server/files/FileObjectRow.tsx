@@ -67,7 +67,9 @@ const FileObjectRow = ({ file }: { file: FileObject }) => (
 			</div>
 			<div css={tw`flex-1 truncate font-medium`}>{file.name}</div>
 			{file.isFile && (
-				<div css={tw`w-1/6 text-right mr-4 hidden sm:block text-neutral-400 text-xs font-mono`}>
+				<div
+					css={tw`w-1/6 text-right mr-4 hidden sm:block text-neutral-400 text-xs font-mono`}
+				>
 					{bytesToString(file.size)}
 				</div>
 			)}
