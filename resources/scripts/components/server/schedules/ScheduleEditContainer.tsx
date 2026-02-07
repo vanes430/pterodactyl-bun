@@ -23,17 +23,25 @@ interface Params {
 }
 
 const CronBox = ({ title, value }: { title: string; value: string }) => (
-	<div css={tw`bg-neutral-700 rounded p-3`}>
-		<p css={tw`text-neutral-300 text-sm`}>{title}</p>
-		<p css={tw`text-xl font-medium text-neutral-100`}>{value}</p>
+	<div
+		css={tw`bg-white/[0.03] border border-white/5 rounded-lg p-3 text-center`}
+	>
+		<p
+			css={tw`text-neutral-500 text-[10px] uppercase font-bold tracking-wider`}
+		>
+			{title}
+		</p>
+		<p css={tw`text-xl font-mono text-neutral-100 mt-1`}>{value}</p>
 	</div>
 );
 
 const ActivePill = ({ active }: { active: boolean }) => (
 	<span
 		css={[
-			tw`rounded-full px-2 py-px text-xs ml-4 uppercase`,
-			active ? tw`bg-green-600 text-green-100` : tw`bg-red-600 text-red-100`,
+			tw`rounded-full px-2 py-px text-[10px] ml-4 uppercase font-bold tracking-wider border`,
+			active
+				? tw`bg-green-500/20 text-green-400 border-green-500/20`
+				: tw`bg-red-500/20 text-red-400 border-red-500/20`,
 		]}
 	>
 		{active ? "Active" : "Inactive"}
@@ -95,18 +103,20 @@ export default () => {
 				<>
 					<ScheduleCronRow
 						cron={schedule.cron}
-						css={tw`sm:hidden bg-neutral-700 rounded mb-4 p-3`}
+						css={tw`sm:hidden bg-white/[0.03] border border-white/5 rounded-lg mb-4 p-3`}
 					/>
-					<div css={tw`rounded shadow`}>
+					<div css={tw`rounded-xl overflow-hidden`}>
 						<div
-							css={tw`sm:flex items-center bg-neutral-900 p-3 sm:p-6 border-b-4 border-neutral-600 rounded-t`}
+							css={tw`sm:flex items-center bg-white/[0.03] p-4 sm:p-6 border border-white/5 rounded-t-xl`}
 						>
 							<div css={tw`flex-1`}>
-								<h3 css={tw`flex items-center text-neutral-100 text-2xl`}>
+								<h3
+									css={tw`flex items-center text-neutral-100 text-2xl font-header font-bold`}
+								>
 									{schedule.name}
 									{schedule.isProcessing ? (
 										<span
-											css={tw`flex items-center rounded-full px-2 py-px text-xs ml-4 uppercase bg-neutral-600 text-white`}
+											css={tw`flex items-center rounded-full px-2 py-px text-[10px] ml-4 uppercase font-bold tracking-wider bg-cyan-500/20 text-cyan-400 border border-cyan-500/20`}
 										>
 											<Spinner css={tw`w-3! h-3! mr-2`} />
 											Processing
@@ -115,19 +125,23 @@ export default () => {
 										<ActivePill active={schedule.isActive} />
 									)}
 								</h3>
-								<p css={tw`mt-1 text-sm text-neutral-200`}>
+								<p css={tw`mt-1 text-sm text-neutral-400`}>
 									Last run at:&nbsp;
 									{schedule.lastRunAt ? (
-										format(schedule.lastRunAt, "MMM do 'at' h:mma")
+										<span css={tw`text-neutral-200`}>
+											{format(schedule.lastRunAt, "MMM do 'at' h:mma")}
+										</span>
 									) : (
-										<span css={tw`text-neutral-300`}>n/a</span>
+										<span>n/a</span>
 									)}
-									<span css={tw`ml-4 pl-4 border-l-4 border-neutral-600 py-px`}>
+									<span css={tw`ml-4 pl-4 border-l border-white/10 py-px`}>
 										Next run at:&nbsp;
 										{schedule.nextRunAt ? (
-											format(schedule.nextRunAt, "MMM do 'at' h:mma")
+											<span css={tw`text-neutral-200`}>
+												{format(schedule.nextRunAt, "MMM do 'at' h:mma")}
+											</span>
 										) : (
-											<span css={tw`text-neutral-300`}>n/a</span>
+											<span>n/a</span>
 										)}
 									</span>
 								</p>
@@ -153,24 +167,30 @@ export default () => {
 							<CronBox title={"Month"} value={schedule.cron.month} />
 							<CronBox title={"Day (Week)"} value={schedule.cron.dayOfWeek} />
 						</div>
-						<div css={tw`bg-neutral-700 rounded-b`}>
-							{schedule.tasks.length > 0
-								? schedule.tasks
-										.sort((a, b) =>
-											a.sequenceId === b.sequenceId
-												? 0
-												: a.sequenceId > b.sequenceId
-													? 1
-													: -1,
-										)
-										.map((task) => (
-											<ScheduleTaskRow
-												key={`${schedule.id}_${task.id}`}
-												task={task}
-												schedule={schedule}
-											/>
-										))
-								: null}
+						<div
+							css={tw`bg-white/[0.02] border border-white/5 rounded-b-xl overflow-hidden`}
+						>
+							{schedule.tasks.length > 0 ? (
+								schedule.tasks
+									.sort((a, b) =>
+										a.sequenceId === b.sequenceId
+											? 0
+											: a.sequenceId > b.sequenceId
+												? 1
+												: -1,
+									)
+									.map((task) => (
+										<ScheduleTaskRow
+											key={`${schedule.id}_${task.id}`}
+											task={task}
+											schedule={schedule}
+										/>
+									))
+							) : (
+								<p css={tw`p-6 text-center text-neutral-400 text-sm`}>
+									No tasks configured for this schedule.
+								</p>
+							)}
 						</div>
 					</div>
 					<EditScheduleModal

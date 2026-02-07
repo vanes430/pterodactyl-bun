@@ -21,8 +21,10 @@ export default ({ schedule }: { schedule: Schedule }) => (
 		<div>
 			<p
 				css={[
-					tw`py-1 px-3 rounded text-xs uppercase text-white sm:hidden`,
-					schedule.isActive ? tw`bg-green-600` : tw`bg-neutral-400`,
+					tw`py-1 px-3 rounded-full text-[10px] uppercase font-bold sm:hidden tracking-wider`,
+					schedule.isActive
+						? tw`bg-green-500/20 text-green-400 border border-green-500/20`
+						: tw`bg-neutral-500/20 text-neutral-400 border border-neutral-500/20`,
 				]}
 			>
 				{schedule.isActive ? "Active" : "Inactive"}
@@ -35,10 +37,12 @@ export default ({ schedule }: { schedule: Schedule }) => (
 		<div>
 			<p
 				css={[
-					tw`py-1 px-3 rounded text-xs uppercase text-white hidden sm:block`,
-					schedule.isActive && !schedule.isProcessing
-						? tw`bg-green-600`
-						: tw`bg-neutral-400`,
+					tw`py-1 px-3 rounded-full text-[10px] uppercase font-bold hidden sm:block tracking-wider`,
+					schedule.isProcessing
+						? tw`bg-cyan-500/20 text-cyan-400 border border-cyan-500/20`
+						: schedule.isActive
+							? tw`bg-green-500/20 text-green-400 border border-green-500/20`
+							: tw`bg-neutral-500/20 text-neutral-400 border border-neutral-500/20`,
 				]}
 			>
 				{schedule.isProcessing
