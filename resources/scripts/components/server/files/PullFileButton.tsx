@@ -93,9 +93,9 @@ export default ({ className }: WithClassname) => {
 	return (
 		<>
 			<PullFileDialog open={open} onClose={setOpen.bind(this, false)} />
-			<Button.Text onClick={setOpen.bind(this, true)} className={className}>
+			<Button onClick={setOpen.bind(this, true)} className={className}>
 				Download
-			</Button.Text>
+			</Button>
 		</>
 	);
 };

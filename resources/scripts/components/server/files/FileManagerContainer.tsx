@@ -82,20 +82,22 @@ export default () => {
 				<div className={"flex flex-wrap-reverse md:flex-nowrap mb-4"}>
 					<FileManagerBreadcrumbs
 						renderLeft={
-							<FileActionCheckbox
-								type={"checkbox"}
-								css={tw`ml-4 mr-2`}
-								checked={
-									selectedFilesLength ===
-									(files?.length === 0 ? -1 : files?.length)
-								}
-								onChange={onSelectAllClick}
-							/>
+							<div css={tw`flex items-center`}>
+								<FileActionCheckbox
+									type={"checkbox"}
+									css={tw`ml-4 mr-2`}
+									checked={
+										selectedFilesLength ===
+										(files?.length === 0 ? -1 : files?.length)
+									}
+									onChange={onSelectAllClick}
+								/>
+								<FileManagerStatus />
+							</div>
 						}
 					/>
 					<Can action={"file.create"}>
 						<div className={style.manager_actions}>
-							<FileManagerStatus />
 							<NewDirectoryButton />
 							<PullFileButton />
 							<UploadButton />

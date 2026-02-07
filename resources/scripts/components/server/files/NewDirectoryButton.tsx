@@ -126,9 +126,9 @@ export default ({ className }: WithClassname) => {
 	return (
 		<>
 			<NewDirectoryDialog open={open} onClose={setOpen.bind(this, false)} />
-			<Button.Text onClick={setOpen.bind(this, true)} className={className}>
+			<Button onClick={setOpen.bind(this, true)} className={className}>
 				Create Directory
-			</Button.Text>
+			</Button>
 		</>
 	);
 };
