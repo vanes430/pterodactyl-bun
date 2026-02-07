@@ -5,12 +5,15 @@ import {
 	Database,
 	FileText,
 	GanttChartSquare,
+	Menu,
 	Network,
 	Play,
 	Settings,
 	Terminal,
 	Users,
+	X,
 } from "lucide-react";
+import { useState } from "react";
 import { NavLink, useRouteMatch } from "react-router-dom";
 import styled from "styled-components/macro";
 import tw from "twin.macro";
@@ -19,8 +22,9 @@ import routes from "@/routers/routes";
 import { useStoreState } from "@/state/hooks";
 import { ServerContext } from "@/state/server";
 
-const SidebarContainer = styled.div`
-	${tw`flex flex-col w-full md:w-60 flex-shrink-0 bg-white/[0.02] border-r border-white/5 md:min-h-[calc(100vh-3.5rem)] md:sticky md:top-14 md:self-start`};
+const SidebarContainer = styled.div<{ $open: boolean }>`
+	${tw`flex flex-col w-full md:w-60 flex-shrink-0 bg-white/[0.02] border-r border-white/5 md:min-h-[calc(100vh-3.5rem)] md:sticky md:top-14 md:self-start transition-all duration-300 ease-in-out overflow-hidden`};
+    ${({ $open }) => ($open ? tw`max-h-[1000px]` : tw`max-h-12 md:max-h-none`)};
 `;
 
 const NavItem = styled(NavLink)`
@@ -53,6 +57,7 @@ const AdminNavItem = styled.a`
 
 export default () => {
 	const match = useRouteMatch<{ id: string }>();
+	const [isOpen, setIsOpen] = useState(false);
 	const internalId = ServerContext.useStoreState(
 		(state) => state.server.data?.internalId,
 	);
@@ -66,8 +71,17 @@ export default () => {
 	};
 
 	return (
-		<SidebarContainer>
-			<div css={tw`py-4 space-y-1`}>
+		<SidebarContainer $open={isOpen}>
+			<button
+				type={"button"}
+				onClick={() => setIsOpen(!isOpen)}
+				css={tw`flex items-center justify-between px-6 py-3 md:hidden text-neutral-300 hover:text-white transition-colors duration-150 border-b border-white/5`}
+			>
+				<span css={tw`text-sm font-medium uppercase tracking-wider`}>Menu</span>
+				{isOpen ? <X size={20} /> : <Menu size={20} />}
+			</button>
+
+			<div css={tw`py-4 space-y-1`} onClick={() => setIsOpen(false)}>
 				{routes.server
 					.filter((route) => !!route.name)
 					.map((route) =>
