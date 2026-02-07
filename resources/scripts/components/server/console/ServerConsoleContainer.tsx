@@ -1,11 +1,13 @@
 import Features from "@feature/Features";
 import { memo } from "react";
 import isEqual from "react-fast-compare";
+import tw from "twin.macro";
 import { Alert } from "@/components/elements/alert";
 import Can from "@/components/elements/Can";
 import ServerContentBlock from "@/components/elements/ServerContentBlock";
 import Spinner from "@/components/elements/Spinner";
 import Console from "@/components/server/console/Console";
+import McLogsButton from "@/components/server/console/McLogsButton";
 import PowerButtons from "@/components/server/console/PowerButtons";
 import ServerDetailsBlock from "@/components/server/console/ServerDetailsBlock";
 import StatGraphs from "@/components/server/console/StatGraphs";
@@ -45,13 +47,16 @@ const ServerConsoleContainer = () => {
 			)}
 			<div className={"grid grid-cols-4 gap-4 mb-4"}>
 				<div className={"hidden sm:block sm:col-span-2 lg:col-span-3 pr-4"}>
-					<h1
-						className={
-							"font-header font-medium text-2xl text-gray-50 leading-relaxed line-clamp-1"
-						}
-					>
-						{name}
-					</h1>
+					<div css={tw`flex items-center`}>
+						<h1
+							className={
+								"font-header font-medium text-2xl text-gray-50 leading-relaxed line-clamp-1"
+							}
+						>
+							{name}
+						</h1>
+						<McLogsButton />
+					</div>
 					<p className={"text-sm line-clamp-2"}>{description}</p>
 				</div>
 				<div className={"col-span-4 sm:col-span-2 lg:col-span-1 self-end"}>
