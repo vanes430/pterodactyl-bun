@@ -7,7 +7,6 @@ import Button from "@/components/elements/Button";
 import Can from "@/components/elements/Can";
 import ServerContentBlock from "@/components/elements/ServerContentBlock";
 import Spinner from "@/components/elements/Spinner";
-import SpinnerOverlay from "@/components/elements/SpinnerOverlay";
 import AllocationRow from "@/components/server/network/AllocationRow";
 import { useDeepCompareEffect } from "@/plugins/useDeepCompareEffect";
 import { useFlashKey } from "@/plugins/useFlash";
