@@ -25,14 +25,14 @@ export default ({
 
 	return (
 		<CopyOnClick text={copyOnClick}>
-			<div className={classNames(styles.stat_block, "bg-gray-600", className)}>
+			<div className={classNames(styles.stat_block, className)}>
 				<div
-					className={classNames(styles.status_bar, color || "bg-gray-700")}
+					className={classNames(styles.status_bar, color || "bg-white/10")}
 				/>
 				<div
-					className={classNames(styles.icon, color || "bg-gray-700", {
-						"text-gray-100": !color || color === "bg-gray-700",
-						"text-gray-50": color && color !== "bg-gray-700",
+					className={classNames(styles.icon, color || "bg-white/5", {
+						"text-gray-100": !color,
+						"text-gray-50": color,
 					})}
 				>
 					<Icon size={20} />

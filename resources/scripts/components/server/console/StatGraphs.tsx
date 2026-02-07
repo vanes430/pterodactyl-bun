@@ -40,11 +40,11 @@ export default () => {
 				...opts,
 				label: !index ? "Network In" : "Network Out",
 				borderColor: !index
-					? theme("colors.cyan.400")
-					: theme("colors.yellow.400"),
+					? theme("colors.cyan.500")
+					: theme("colors.yellow.500"),
 				backgroundColor: hexToRgba(
-					!index ? theme("colors.cyan.700") : theme("colors.yellow.700"),
-					0.5,
+					!index ? theme("colors.cyan.500") : theme("colors.yellow.500"),
+					0.1,
 				),
 			};
 		},
