@@ -15,45 +15,23 @@ This is a **Hard Fork** of the [Pterodactyl Panel](https://github.com/pterodacty
 
 ---
 
-## 📦 Installation (Standard Pterodactyl)
+## 📦 Installation
 
-This fork follows the standard Pterodactyl installation procedure. You should follow the [official documentation](https://pterodactyl.io/panel/1.0/getting_started.html) for web server and database configuration.
+To install this panel, please follow the **official Pterodactyl installation guide** for all system requirements, web server configuration, and database setup:
 
-### 1. Requirements
-- PHP `8.2` or `8.3` (with extensions: `cli`, `openssl`, `gd`, `mysql`, `PDO`, `mbstring`, `tokenizer`, `bcmath`, `xml` or `dom`, `curl`, `zip`, and `fpm`)
-- MySQL `8.0+` or MariaDB `10.6+`
-- Redis Server
-- A Webserver (Nginx or Apache)
-- **Bun** (Required for asset compilation)
+👉 **[Official Pterodactyl Documentation](https://pterodactyl.io/panel/1.0/getting_started.html)**
 
-### 2. Download & Install
+### Difference in Asset Compilation
+The only major difference in the installation process is the **Asset Compilation** step. Instead of using Yarn/Node, this fork uses **Bun**.
+
+Once you have finished the official installation steps (Composer, .env, etc.), run these commands to build the frontend:
+
 ```bash
-# Create directory
-mkdir -p /var/www/pterodactyl
-cd /var/www/pterodactyl
-
-# Clone this repo or download the release
-git clone https://github.com/your-username/pterodactyl-bun.git .
-
-# Install PHP dependencies
-composer install --no-dev --optimize-autoloader
-
-# Setup environment
-cp .env.example .env
-php artisan key:generate
-```
-
-### 3. Database & Permissions
-Follow the standard steps for database setup and permissioning as outlined in the official docs.
-
-### 4. Compile Assets
-Unlike the original panel which uses Yarn/Webpacker, this fork uses **Bun**.
-```bash
-# Install Bun (if not present)
+# 1. Install Bun (if not present)
 curl -fsSL https://bun.sh/install | bash
 source ~/.bashrc
 
-# Build the panel
+# 2. Build the panel assets
 bun install
 bun run build:prod
 ```
@@ -62,36 +40,26 @@ bun run build:prod
 
 ## 🛠️ Local Development
 
-If you want to modify the UI or contribute to the development of this fork:
+If you want to modify the UI or contribute to the development:
 
 ### 🚀 Development Workflow
 ```bash
-# 1. Install dependencies
-bun install
-
-# 2. Start the watcher (Auto-rebuild on changes)
+# 1. Start the watcher (Auto-rebuild on changes)
 bun run watch
 
-# 3. Access UI Laboratory
+# 2. Access UI Laboratory (Playground)
 # Visit http://your-panel.test/dev/playground
-# This route is only accessible when process.env.NODE_ENV is 'development'.
+# Note: This route is only accessible when process.env.NODE_ENV is 'development'.
 ```
 
 ### 🏗️ Flexible Build Modes
-We provide three specialized build modes via Bun:
+We provide three specialized build modes:
 
 | Command | Target | Features |
 | :--- | :--- | :--- |
 | `bun run package:dev` | Debugging | No Minify, No Hashing, Source Maps enabled. |
-| `bun run package:dev-hash` | Staging | No Minify, Filename Hashing enabled (Production structure). |
-| `bun run package:prod` | Production | Full Minification, Hashing, and Code Optimization. |
-
-### ✨ UI Components
-This fork uses a modernized stack:
-- **Icons**: Lucide React (Standardized across the panel).
-- **Styling**: Tailwind CSS + Styled Components + Twin.Macro.
-- **Avatars**: DiceBear API with local SVG fallback.
-- **Notifications**: react-hot-toast.
+| `bun run package:dev-hash` | Staging | No Minify, Filename Hashing enabled. |
+| `bun run package:prod` | Production | Full Minification, Hashing, and Optimization. |
 
 ---
 
