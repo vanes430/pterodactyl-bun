@@ -1,5 +1,11 @@
 import type React from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+	type PropsWithChildren,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import { createPortal } from "react-dom";
 import styled, { css } from "styled-components/macro";
 import tw from "twin.macro";
@@ -58,7 +64,7 @@ const ModalContainer = styled.div<{ alignTop?: boolean }>`
     }
 `;
 
-const Modal: React.FC<ModalProps> = ({
+const Modal: React.FC<PropsWithChildren<ModalProps>> = ({
 	visible,
 	appear,
 	dismissable,
@@ -152,7 +158,10 @@ const Modal: React.FC<ModalProps> = ({
 	);
 };
 
-const PortaledModal: React.FC<ModalProps> = ({ children, ...props }) => {
+const PortaledModal: React.FC<PropsWithChildren<ModalProps>> = ({
+	children,
+	...props
+}) => {
 	const element = useRef(document.getElementById("modal-portal"));
 
 	return createPortal(<Modal {...props}>{children}</Modal>, element.current!);

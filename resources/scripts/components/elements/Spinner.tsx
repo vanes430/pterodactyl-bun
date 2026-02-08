@@ -1,6 +1,6 @@
 import { RectangleEllipsis } from "lucide-react";
 import type React from "react";
-import { Suspense } from "react";
+import { type PropsWithChildren, Suspense } from "react";
 import styled, { keyframes } from "styled-components/macro";
 import tw from "twin.macro";
 import ErrorBoundary from "@/components/elements/ErrorBoundary";
@@ -16,7 +16,7 @@ interface Props {
 
 interface Spinner extends React.FC<Props> {
 	Size: Record<"SMALL" | "BASE" | "LARGE", SpinnerSize>;
-	Suspense: React.FC<Props>;
+	Suspense: React.FC<PropsWithChildren<Props>>;
 }
 
 const pulse = keyframes`
@@ -24,7 +24,7 @@ const pulse = keyframes`
     50% { opacity: 1; transform: scale(1.05); }
 `;
 
-const StyledIcon = styled(RectangleEllipsis)<{
+const StyledIcon = styled(RectangleEllipsis as React.FC<any>)<{
 	$size?: SpinnerSize;
 	$isBlue?: boolean;
 }>`

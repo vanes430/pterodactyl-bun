@@ -1,3 +1,4 @@
+import type { PropsWithChildren } from "react";
 import type { RouteProps } from "react-router";
 import { Route } from "react-router-dom";
 import Can from "@/components/elements/Can";
@@ -8,8 +9,12 @@ interface Props extends Omit<RouteProps, "path"> {
 	permission: string | string[] | null;
 }
 
-export default ({ permission, children, ...props }: Props) => (
-	<Route {...props}>
+export default ({
+	permission,
+	children,
+	...props
+}: PropsWithChildren<Props>) => (
+	<Route {...(props as any)}>
 		{!permission ? (
 			children
 		) : (

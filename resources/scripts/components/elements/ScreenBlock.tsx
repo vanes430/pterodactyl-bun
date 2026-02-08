@@ -30,7 +30,7 @@ const spin = keyframes`
     to { transform: rotate(360deg) }
 `;
 
-const ActionButton = styled(Button)`
+const ActionButton = styled(Button as React.FC<any>)`
     ${tw`rounded-full w-8 h-8 flex items-center justify-center p-0`} ;
 
     &.hover\\:spin:hover {

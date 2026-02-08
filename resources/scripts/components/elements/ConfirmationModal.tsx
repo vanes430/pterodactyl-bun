@@ -1,4 +1,5 @@
 import type React from "react";
+import type { PropsWithChildren } from "react";
 import { useContext } from "react";
 import tw from "twin.macro";
 import Button from "@/components/elements/Button";
@@ -12,7 +13,7 @@ type Props = {
 	showSpinnerOverlay?: boolean;
 };
 
-const ConfirmationModal: React.FC<Props> = ({
+const ConfirmationModal: React.FC<PropsWithChildren<Props>> = ({
 	title,
 	children,
 	buttonText,

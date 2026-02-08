@@ -1,6 +1,6 @@
 import { useField } from "formik";
 import type React from "react";
-import { memo, useCallback } from "react";
+import { memo, type PropsWithChildren, useCallback } from "react";
 import isEqual from "react-fast-compare";
 import tw from "twin.macro";
 import Input from "@/components/elements/Input";
@@ -13,7 +13,7 @@ interface Props {
 	className?: string;
 }
 
-const PermissionTitleBox: React.FC<Props> = memo(
+const PermissionTitleBox: React.FC<PropsWithChildren<Props>> = memo(
 	({ isEditable, title, permissions, className, children }) => {
 		const [{ value }, , { setValue }] = useField<string[]>("permissions");
 

@@ -120,7 +120,7 @@ export default ({
 }: Props) => {
 	const [editor, setEditor] = useState<CodeMirror.Editor>();
 
-	const ref = useCallback((node) => {
+	const ref = useCallback((node: HTMLTextAreaElement | null) => {
 		if (!node) return;
 
 		const e = CodeMirror.fromTextArea(node, {

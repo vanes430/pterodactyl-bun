@@ -21,7 +21,7 @@ interface State {
 
 type ExtendedComponentType<T> = (
 	C: React.ComponentType<T>,
-) => React.ComponentType<T & AsModalProps>;
+) => React.ComponentType<React.PropsWithChildren<T & AsModalProps>>;
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 function asModal<P extends {}>(

@@ -1,5 +1,5 @@
 import type React from "react";
-import { useEffect } from "react";
+import { type PropsWithChildren, useEffect } from "react";
 import tw from "twin.macro";
 import ContentContainer from "@/components/elements/ContentContainer";
 import FlashMessageRender from "@/components/FlashMessageRender";
@@ -10,7 +10,7 @@ export interface PageContentBlockProps {
 	showFlashKey?: string;
 }
 
-const PageContentBlock: React.FC<PageContentBlockProps> = ({
+const PageContentBlock: React.FC<PropsWithChildren<PageContentBlockProps>> = ({
 	title,
 	showFlashKey,
 	className,

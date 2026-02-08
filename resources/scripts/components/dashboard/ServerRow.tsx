@@ -31,7 +31,7 @@ const isAlarmState = (current: number, limit: number): boolean =>
 const IconWrapper = memo(
 	styled.div<{ $alarm: boolean }>`
         ${(props) => (props.$alarm ? tw`text-red-400` : tw`text-neutral-500`)};
-    `,
+    ` as React.FC<React.PropsWithChildren<{ $alarm: boolean }>>,
 	isEqual,
 );
 

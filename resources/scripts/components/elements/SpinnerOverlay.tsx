@@ -1,4 +1,5 @@
 import type React from "react";
+import type { PropsWithChildren } from "react";
 import tw from "twin.macro";
 import Fade from "@/components/elements/Fade";
 import Spinner, { type SpinnerSize } from "@/components/elements/Spinner";
@@ -10,7 +11,7 @@ interface Props {
 	backgroundOpacity?: number;
 }
 
-const SpinnerOverlay: React.FC<Props> = ({
+const SpinnerOverlay: React.FC<PropsWithChildren<Props>> = ({
 	size,
 	fixed,
 	visible,

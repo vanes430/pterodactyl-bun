@@ -7,13 +7,15 @@ const AspectRatioContainer = styled.div`
     ${tw`w-full`};
 `;
 
-const TransitionRouter: React.FC = ({ children }) => {
+const TransitionRouter: React.FC<React.PropsWithChildren<unknown>> = ({
+	children,
+}) => {
 	return (
 		<Route
 			render={({ location }) => (
 				<AspectRatioContainer>
 					{React.isValidElement(children)
-						? React.cloneElement(children as React.ReactElement<any>, {
+						? React.cloneElement(children as any, {
 								location,
 							})
 						: children}

@@ -19,7 +19,7 @@ interface Props<T> {
 	children: (props: RenderFuncProps<T>) => React.ReactNode;
 }
 
-const Block = styled(Button)`
+const Block = styled(Button as React.FC<any>)`
     ${tw`p-0 w-10 h-10`}
 
     &:not(:last-of-type) {

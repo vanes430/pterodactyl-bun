@@ -1,4 +1,5 @@
 import type React from "react";
+import type { PropsWithChildren } from "react";
 import PageContentBlock, {
 	type PageContentBlockProps,
 } from "@/components/elements/PageContentBlock";
@@ -8,7 +9,11 @@ interface Props extends PageContentBlockProps {
 	title: string;
 }
 
-const ServerContentBlock: React.FC<Props> = ({ title, children, ...props }) => {
+const ServerContentBlock: React.FC<PropsWithChildren<Props>> = ({
+	title,
+	children,
+	...props
+}) => {
 	const name = ServerContext.useStoreState((state) => state.server.data?.name);
 
 	return (

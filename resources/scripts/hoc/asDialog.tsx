@@ -22,7 +22,7 @@ function asDialog(
 					value={{ props, setProps, close: onClose }}
 				>
 					<Dialog {...props} open={open} onClose={onClose}>
-						<Component {...(rest as React.ComponentProps<typeof Component>)} />
+						<Component {...(rest as any)} />
 					</Dialog>
 				</DialogWrapperContext.Provider>
 			);

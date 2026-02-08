@@ -1,12 +1,15 @@
 import { Redirect, Route, type RouteProps } from "react-router";
 import { useStoreState } from "@/state/hooks";
 
-export default ({ children, ...props }: Omit<RouteProps, "render">) => {
+export default ({
+	children,
+	...props
+}: React.PropsWithChildren<Omit<RouteProps, "render">>) => {
 	const isAuthenticated = useStoreState((state) => !!state.user.data?.uuid);
 
 	return (
 		<Route
-			{...props}
+			{...(props as any)}
 			render={({ location }) =>
 				isAuthenticated ? (
 					children

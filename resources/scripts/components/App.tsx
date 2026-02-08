@@ -1,6 +1,5 @@
 import { StoreProvider } from "easy-peasy";
 import { lazy } from "react";
-import { hot } from "react-hot-loader/root";
 import { Toaster } from "react-hot-toast";
 import { Route, Router, Switch } from "react-router-dom";
 import tw from "twin.macro";
@@ -66,10 +65,13 @@ const App = () => {
 		store.getActions().settings.setSettings(SiteConfiguration!);
 	}
 
+	const Provider = StoreProvider as React.ComponentType<any>;
+	const ServerProvider = ServerContext.Provider as React.ComponentType<any>;
+
 	return (
 		<>
 			<GlobalStylesheet />
-			<StoreProvider store={store}>
+			<Provider store={store}>
 				<Toaster
 					position={"top-right"}
 					toastOptions={{
@@ -99,9 +101,9 @@ const App = () => {
 							)}
 							<AuthenticatedRoute path={"/server/:id"}>
 								<Spinner.Suspense>
-									<ServerContext.Provider>
+									<ServerProvider>
 										<ServerRouter />
-									</ServerContext.Provider>
+									</ServerProvider>
 								</Spinner.Suspense>
 							</AuthenticatedRoute>
 							<AuthenticatedRoute path={"/"}>
@@ -115,9 +117,9 @@ const App = () => {
 						</Switch>
 					</Router>
 				</div>
-			</StoreProvider>
+			</Provider>
 		</>
 	);
 };
 
-export default hot(App);
+export default App;

@@ -22,27 +22,30 @@ import { usePermissions } from "@/plugins/usePermissions";
 import { ServerContext } from "@/state/server";
 import styles from "./style.module.css";
 
-const Clickable: React.FC<{ file: FileObject }> = memo(({ file, children }) => {
-	const [canRead] = usePermissions(["file.read"]);
-	const [canReadContents] = usePermissions(["file.read-content"]);
-	const directory = ServerContext.useStoreState(
-		(state) => state.files.directory,
-	);
+const Clickable: React.FC<React.PropsWithChildren<{ file: FileObject }>> = memo(
+	({ file, children }) => {
+		const [canRead] = usePermissions(["file.read"]);
+		const [canReadContents] = usePermissions(["file.read-content"]);
+		const directory = ServerContext.useStoreState(
+			(state) => state.files.directory,
+		);
 
-	const match = useRouteMatch();
+		const match = useRouteMatch();
 
-	return (file.isFile && (!file.isEditable() || !canReadContents)) ||
-		(!file.isFile && !canRead) ? (
-		<div className={styles.details}>{children}</div>
-	) : (
-		<NavLink
-			className={styles.details}
-			to={`${match.url}${file.isFile ? "/edit" : ""}#${encodePathSegments(join(directory, file.name))}`}
-		>
-			{children}
-		</NavLink>
-	);
-}, isEqual);
+		return (file.isFile && (!file.isEditable() || !canReadContents)) ||
+			(!file.isFile && !canRead) ? (
+			<div className={styles.details}>{children}</div>
+		) : (
+			<NavLink
+				className={styles.details}
+				to={`${match.url}${file.isFile ? "/edit" : ""}#${encodePathSegments(join(directory, file.name))}`}
+			>
+				{children}
+			</NavLink>
+		);
+	},
+	isEqual,
+);
 
 const FileIcon = ({ file }: { file: FileObject }) => {
 	if (!file.isFile) return <Folder className={"text-blue-400"} size={20} />;
