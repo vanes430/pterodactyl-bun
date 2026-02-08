@@ -9,7 +9,7 @@ export default ({
 
 	return (
 		<Route
-			{...(props as any)}
+			{...props}
 			render={({ location }) =>
 				isAuthenticated ? (
 					children

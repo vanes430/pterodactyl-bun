@@ -14,7 +14,7 @@ export default ({
 	children,
 	...props
 }: PropsWithChildren<Props>) => (
-	<Route {...(props as any)}>
+	<Route {...props}>
 		{!permission ? (
 			children
 		) : (

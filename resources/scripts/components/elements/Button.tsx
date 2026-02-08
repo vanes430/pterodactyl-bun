@@ -1,5 +1,5 @@
 import type React from "react";
-import { type PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 import styled, { css } from "styled-components";
 import tw from "twin.macro";
 import Spinner from "@/components/elements/Spinner";
@@ -119,9 +119,12 @@ const Button: React.FC<PropsWithChildren<ComponentProps>> = ({
 
 type LinkProps = Omit<JSX.IntrinsicElements["a"], "ref" | keyof Props> & Props;
 
-const LinkButton: React.FC<PropsWithChildren<LinkProps>> = (props) => (
-	<ButtonStyle as={"a"} {...(props as any)} />
-);
+const LinkButton: React.FC<PropsWithChildren<LinkProps>> = (props) => {
+	const Component = ButtonStyle as unknown as React.FC<
+		PropsWithChildren<LinkProps & { as?: React.ElementType }>
+	>;
+	return <Component as={"a"} {...props} />;
+};
 
 export { LinkButton, ButtonStyle };
 export default Button;

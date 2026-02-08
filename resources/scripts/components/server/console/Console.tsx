@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { debounce } from "debounce";
+import debounce from "debounce";
 import { ChevronRight } from "lucide-react";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";

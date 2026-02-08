@@ -1,8 +1,7 @@
 import { type Actions, useStoreActions } from "easy-peasy";
-import QRCode from "qrcode.react";
+import { QRCodeSVG } from "qrcode.react";
 import type React from "react";
 import { useContext, useEffect, useState } from "react";
-import tw from "twin.macro";
 import enableAccountTwoFactor from "@/api/account/enableAccountTwoFactor";
 import getTwoFactorTokenData, {
 	type TwoFactorTokenData,
@@ -76,10 +75,9 @@ const ConfigureTwoFactorForm = ({ onTokens }: Props) => {
 				{!token ? (
 					<Spinner />
 				) : (
-					<QRCode
-						renderAs={"svg"}
+					<QRCodeSVG
 						value={token.image_url_data}
-						css={tw`w-full h-full shadow-none`}
+						className={"w-full h-full shadow-none"}
 					/>
 				)}
 			</div>

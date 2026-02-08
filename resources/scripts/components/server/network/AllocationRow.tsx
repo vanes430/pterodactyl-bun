@@ -1,4 +1,4 @@
-import { debounce } from "debounce";
+import debounce from "debounce";
 import { Network } from "lucide-react";
 import { memo, useCallback, useState } from "react";
 import isEqual from "react-fast-compare";

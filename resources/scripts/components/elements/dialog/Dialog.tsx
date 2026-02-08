@@ -1,6 +1,6 @@
 import { Dialog as HDialog } from "@headlessui/react";
 import { XIcon } from "@heroicons/react/solid";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, type Variants } from "framer-motion";
 import type React from "react";
 import { useRef, useState } from "react";
 import { Button } from "@/components/elements/button/index";
@@ -11,7 +11,7 @@ import {
 	styles,
 } from "./";
 
-const variants = {
+const variants: Variants = {
 	open: {
 		scale: 1,
 		opacity: 1,
@@ -26,14 +26,14 @@ const variants = {
 		scale: 0.75,
 		opacity: 0,
 		transition: {
-			type: "easeIn",
+			ease: "easeIn",
 			duration: 0.15,
 		},
 	},
 	bounce: {
 		scale: 0.95,
 		opacity: 1,
-		transition: { type: "linear", duration: 0.075 },
+		transition: { ease: "linear", duration: 0.075 },
 	},
 };
 
@@ -80,7 +80,7 @@ export default ({
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}
-						transition={{ duration: 0.15 }}
+						transition={{ duration: 0.15 } as any}
 						open={open}
 						onClose={onDialogClose}
 					>

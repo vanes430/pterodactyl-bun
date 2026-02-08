@@ -15,7 +15,7 @@ const TransitionRouter: React.FC<React.PropsWithChildren<unknown>> = ({
 			render={({ location }) => (
 				<AspectRatioContainer>
 					{React.isValidElement(children)
-						? React.cloneElement(children as any, {
+						? React.cloneElement(children as React.ReactElement, {
 								location,
 							})
 						: children}

@@ -1,4 +1,4 @@
-import { debounce } from "debounce";
+import debounce from "debounce";
 import { memo, useState } from "react";
 import isEqual from "react-fast-compare";
 import type { ServerEggVariable } from "@/api/server/types";
