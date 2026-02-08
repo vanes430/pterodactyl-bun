@@ -2,7 +2,7 @@ import { Form, Formik, type FormikHelpers } from "formik";
 import { Database, Eye, Trash2 } from "lucide-react";
 import { useState } from "react";
 import tw from "twin.macro";
-import { object, string } from "yup";
+import { z } from "zod";
 import { httpErrorToHuman } from "@/api/http";
 import deleteServerDatabase from "@/api/server/databases/deleteServerDatabase";
 import type { ServerDatabase } from "@/api/server/databases/getServerDatabases";
@@ -41,12 +41,13 @@ export default ({ database, className }: Props) => {
 		database.password ? `:${encodeURIComponent(database.password)}` : ""
 	}@${database.connectionString}/${database.name}`;
 
-	const schema = object().shape({
-		confirm: string()
-			.required("The database name must be provided.")
-			.oneOf(
-				[database.name.split("_", 2)[1], database.name],
-				"The database name must be provided.",
+	const schema = z.object({
+		confirm: z
+			.string()
+			.refine(
+				(v) =>
+					v === database.name || v === (database.name.split("_", 2)[1] || ""),
+				{ message: "The database name must be provided." },
 			),
 	});
 
@@ -74,7 +75,16 @@ export default ({ database, className }: Props) => {
 			<Formik
 				onSubmit={submit}
 				initialValues={{ confirm: "" }}
-				validationSchema={schema}
+				validate={(values) => {
+					const result = schema.safeParse(values);
+					if (result.success) return {};
+
+					const errors: Record<string, string> = {};
+					for (const error of result.error.issues) {
+						errors[error.path[0] as string] = error.message;
+					}
+					return errors;
+				}}
 				isInitialValid={false}
 			>
 				{({ isSubmitting, isValid, resetForm }) => (

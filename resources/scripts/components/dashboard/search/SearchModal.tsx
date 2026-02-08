@@ -11,7 +11,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components/macro";
 import tw from "twin.macro";
-import { object, string } from "yup";
+import { z } from "zod";
 import getServers from "@/api/getServers";
 import type { Server } from "@/api/server/getServer";
 import FormikFieldWrapper from "@/components/elements/FormikFieldWrapper";
@@ -26,6 +26,12 @@ type Props = RequiredModalProps;
 interface Values {
 	term: string;
 }
+
+const schema = z.object({
+	term: z
+		.string()
+		.min(3, "Please enter at least three characters to begin searching."),
+});
 
 const ServerResult = styled(Link)`
     ${tw`flex items-center bg-neutral-900 p-4 rounded border-l-4 border-neutral-900 no-underline transition-all duration-150`};
@@ -90,12 +96,16 @@ export default ({ ...props }: Props) => {
 	return (
 		<Formik
 			onSubmit={search}
-			validationSchema={object().shape({
-				term: string().min(
-					3,
-					"Please enter at least three characters to begin searching.",
-				),
-			})}
+			validate={(values) => {
+				const result = schema.safeParse(values);
+				if (result.success) return {};
+
+				const errors: Record<string, string> = {};
+				for (const error of result.error.issues) {
+					errors[error.path[0] as string] = error.message;
+				}
+				return errors;
+			}}
 			initialValues={{ term: "" } as Values}
 		>
 			{({ isSubmitting }) => (

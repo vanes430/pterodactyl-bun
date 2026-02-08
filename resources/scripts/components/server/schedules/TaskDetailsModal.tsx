@@ -7,7 +7,7 @@ import {
 } from "formik";
 import { useContext, useEffect } from "react";
 import tw from "twin.macro";
-import { boolean, number, object, string } from "yup";
+import { z } from "zod";
 import { httpErrorToHuman } from "@/api/http";
 import createOrUpdateScheduleTask from "@/api/server/schedules/createOrUpdateScheduleTask";
 import type { Schedule, Task } from "@/api/server/schedules/getServerSchedules";
@@ -38,20 +38,25 @@ interface Values {
 	continueOnFailure: boolean;
 }
 
-const schema = object().shape({
-	action: string().required().oneOf(["command", "power", "backup"]),
-	payload: string().when("action", {
-		is: (v) => v !== "backup",
-		then: string().required("A task payload must be provided."),
-		otherwise: string(),
-	}),
-	continueOnFailure: boolean(),
-	timeOffset: number()
-		.typeError("The time offset must be a valid number between 0 and 900.")
-		.required("A time offset value must be provided.")
-		.min(0, "The time offset must be at least 0 seconds.")
-		.max(900, "The time offset must be less than 900 seconds."),
-});
+const schema = z
+	.object({
+		action: z.enum(["command", "power", "backup"]),
+		payload: z.string(),
+		continueOnFailure: z.boolean(),
+		timeOffset: z.coerce
+			.number()
+			.min(0, "The time offset must be at least 0 seconds.")
+			.max(900, "The time offset must be less than 900 seconds."),
+	})
+	.superRefine((data, ctx) => {
+		if (data.action !== "backup" && data.payload.length === 0) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "A task payload must be provided.",
+				path: ["payload"],
+			});
+		}
+	});
 
 const ActionListener = (): null => {
 	const [{ value }, { initialValue: initialAction }] =
@@ -121,7 +126,16 @@ const TaskDetailsModal = ({ schedule, task }: Props) => {
 	return (
 		<Formik
 			onSubmit={submit}
-			validationSchema={schema}
+			validate={(values) => {
+				const result = schema.safeParse(values);
+				if (result.success) return {};
+
+				const errors: Record<string, string> = {};
+				for (const error of result.error.issues) {
+					errors[error.path[0] as string] = error.message;
+				}
+				return errors;
+			}}
 			initialValues={{
 				action: task?.action || "command",
 				payload: task?.payload || "",

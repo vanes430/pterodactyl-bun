@@ -2,7 +2,7 @@ import { type Actions, useStoreActions, useStoreState } from "easy-peasy";
 import { Form, Formik } from "formik";
 import { useContext, useEffect, useRef } from "react";
 import tw from "twin.macro";
-import { array, object, string } from "yup";
+import { z } from "zod";
 import createOrUpdateSubuser from "@/api/server/users/createOrUpdateSubuser";
 import Button from "@/components/elements/Button";
 import Can from "@/components/elements/Can";
@@ -26,6 +26,15 @@ interface Values {
 	email: string;
 	permissions: string[];
 }
+
+const schema = z.object({
+	email: z
+		.string()
+		.max(191, "Email addresses must not exceed 191 characters.")
+		.email("A valid email address must be provided.")
+		.min(1, "A valid email address must be provided."),
+	permissions: z.array(z.string()),
+});
 
 const EditSubuserModal = ({ subuser }: Props) => {
 	const ref = useRef<HTMLHeadingElement>(null);
@@ -106,13 +115,16 @@ const EditSubuserModal = ({ subuser }: Props) => {
 					permissions: subuser?.permissions || [],
 				} as Values
 			}
-			validationSchema={object().shape({
-				email: string()
-					.max(191, "Email addresses must not exceed 191 characters.")
-					.email("A valid email address must be provided.")
-					.required("A valid email address must be provided."),
-				permissions: array().of(string()),
-			})}
+			validate={(values) => {
+				const result = schema.safeParse(values);
+				if (result.success) return {};
+
+				const errors: Record<string, string> = {};
+				for (const error of result.error.issues) {
+					errors[error.path[0] as string] = error.message;
+				}
+				return errors;
+			}}
 		>
 			<Form>
 				<div css={tw`flex justify-between`}>

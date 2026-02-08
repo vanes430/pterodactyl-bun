@@ -7,7 +7,7 @@ import {
 } from "formik";
 import { useEffect, useState } from "react";
 import tw from "twin.macro";
-import { boolean, object, string } from "yup";
+import { z } from "zod";
 import createServerBackup from "@/api/server/backups/createServerBackup";
 import getServerBackups from "@/api/swr/getServerBackups";
 import Button from "@/components/elements/Button";
@@ -26,6 +26,12 @@ interface Values {
 	ignored: string;
 	isLocked: boolean;
 }
+
+const schema = z.object({
+	name: z.string().max(191, "Backup name must not exceed 191 characters."),
+	ignored: z.string(),
+	isLocked: z.boolean(),
+});
 
 const ModalContent = ({ ...props }: RequiredModalProps) => {
 	const { isSubmitting } = useFormikContext<Values>();
@@ -115,11 +121,16 @@ export default () => {
 				<Formik
 					onSubmit={submit}
 					initialValues={{ name: "", ignored: "", isLocked: false }}
-					validationSchema={object().shape({
-						name: string().max(191),
-						ignored: string(),
-						isLocked: boolean(),
-					})}
+					validate={(values) => {
+						const result = schema.safeParse(values);
+						if (result.success) return {};
+
+						const errors: Record<string, string> = {};
+						for (const error of result.error.issues) {
+							errors[error.path[0] as string] = error.message;
+						}
+						return errors;
+					}}
 				>
 					<ModalContent
 						appear

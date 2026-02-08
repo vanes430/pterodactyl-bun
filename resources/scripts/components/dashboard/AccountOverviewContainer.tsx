@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import styled from "styled-components/macro";
+import styled, { css } from "styled-components/macro";
 import tw from "twin.macro";
 import ConfigureTwoFactorForm from "@/components/dashboard/forms/ConfigureTwoFactorForm";
 import UpdateEmailAddressForm from "@/components/dashboard/forms/UpdateEmailAddressForm";
@@ -15,13 +15,15 @@ const Container = styled.div`
     & > div {
         ${tw`w-full`};
 
-        ${breakpoint("sm")`
+        ${css`
+					${breakpoint("sm")`
       width: calc(50% - 1rem);
     `}
 
-        ${breakpoint("md")`
+					${breakpoint("md")`
       ${tw`w-auto flex-1`};
     `}
+				`}
     }
 `;
 

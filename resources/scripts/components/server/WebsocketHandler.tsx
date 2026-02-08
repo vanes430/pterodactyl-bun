@@ -4,6 +4,7 @@ import tw from "twin.macro";
 import getWebsocketToken from "@/api/server/getWebsocketToken";
 import ContentContainer from "@/components/elements/ContentContainer";
 import Spinner from "@/components/elements/Spinner";
+import { usePermissions } from "@/plugins/usePermissions";
 import { Websocket } from "@/plugins/Websocket";
 import { ServerContext } from "@/state/server";
 
@@ -19,6 +20,7 @@ export default () => {
 		(state) => state.socket,
 	);
 	const uuid = ServerContext.useStoreState((state) => state.server.data?.uuid);
+	const [canConnect] = usePermissions("websocket.connect");
 	const setServerStatus = ServerContext.useStoreActions(
 		(actions) => actions.status.setServerStatus,
 	);
@@ -41,7 +43,17 @@ export default () => {
 		(uuid: string) => {
 			const socket = new Websocket();
 
-			socket.on("auth success", () => setConnectionState(true));
+			const timeout = setTimeout(() => {
+				setError(
+					"We're having trouble connecting to your server's websocket. This could be due to a network issue or the server being unreachable.",
+				);
+			}, 10000);
+
+			socket.on("auth success", () => {
+				clearTimeout(timeout);
+				setError("");
+				setConnectionState(true);
+			});
 			socket.on("SOCKET_CLOSE", () => setConnectionState(false));
 			socket.on("SOCKET_CONNECT_ERROR", () => {
 				setError(
@@ -95,7 +107,12 @@ export default () => {
 					// Once that is done, set the instance.
 					setInstance(socket);
 				})
-				.catch((error) => console.error(error));
+				.catch((error) => {
+					console.error(error);
+					setError(
+						"You do not have permission to connect to this server's websocket.",
+					);
+				});
 		},
 		[updateToken, setConnectionState, setServerStatus, setInstance],
 	);
@@ -113,12 +130,12 @@ export default () => {
 	useEffect(() => {
 		// If there is already an instance or there is no server, just exit out of this process
 		// since we don't need to make a new connection.
-		if (instance || !uuid) {
+		if (instance || !uuid || !canConnect) {
 			return;
 		}
 
 		connect(uuid);
-	}, [uuid, connect, instance]);
+	}, [uuid, connect, instance, canConnect]);
 
 	return error ? (
 		<CSSTransition timeout={150} in appear classNames={"fade"}>

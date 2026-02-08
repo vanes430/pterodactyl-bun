@@ -1,7 +1,7 @@
 import { Form, Formik, type FormikHelpers } from "formik";
 import { useState } from "react";
 import tw from "twin.macro";
-import { object, string } from "yup";
+import { z } from "zod";
 import { httpErrorToHuman } from "@/api/http";
 import createServerDatabase from "@/api/server/databases/createServerDatabase";
 import Button from "@/components/elements/Button";
@@ -16,19 +16,19 @@ interface Values {
 	connectionsFrom: string;
 }
 
-const schema = object().shape({
-	databaseName: string()
-		.required("A database name must be provided.")
+const schema = z.object({
+	databaseName: z
+		.string()
 		.min(3, "Database name must be at least 3 characters.")
 		.max(48, "Database name must not exceed 48 characters.")
-		.matches(
+		.regex(
 			/^[\w\-.]{3,48}$/,
 			"Database name should only contain alphanumeric characters, underscores, dashes, and/or periods.",
 		),
-	connectionsFrom: string().matches(
-		/^[\w\-/.%:]+$/,
-		"A valid host address must be provided.",
-	),
+	connectionsFrom: z
+		.string()
+		.regex(/^[\w\-/.%:]*$/, "A valid host address must be provided.")
+		.optional(),
 });
 
 export default () => {
@@ -63,7 +63,16 @@ export default () => {
 			<Formik
 				onSubmit={submit}
 				initialValues={{ databaseName: "", connectionsFrom: "" }}
-				validationSchema={schema}
+				validate={(values) => {
+					const result = schema.safeParse(values);
+					if (result.success) return {};
+
+					const errors: Record<string, string> = {};
+					for (const error of result.error.issues) {
+						errors[error.path[0] as string] = error.message;
+					}
+					return errors;
+				}}
 			>
 				{({ isSubmitting, resetForm }) => (
 					<Modal

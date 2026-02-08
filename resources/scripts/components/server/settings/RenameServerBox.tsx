@@ -7,7 +7,7 @@ import {
 	useFormikContext,
 } from "formik";
 import tw from "twin.macro";
-import { object, string } from "yup";
+import { z } from "zod";
 import { httpErrorToHuman } from "@/api/http";
 import renameServer from "@/api/server/renameServer";
 import { Button } from "@/components/elements/button/index";
@@ -24,6 +24,11 @@ interface Values {
 	name: string;
 	description: string;
 }
+
+const schema = z.object({
+	name: z.string().min(1, "A server name must be provided."),
+	description: z.string().optional(),
+});
 
 const RenameServerBox = () => {
 	const { isSubmitting } = useFormikContext<Values>();
@@ -77,10 +82,16 @@ export default () => {
 				name: server.name,
 				description: server.description,
 			}}
-			validationSchema={object().shape({
-				name: string().required().min(1),
-				description: string().nullable(),
-			})}
+			validate={(values) => {
+				const result = schema.safeParse(values);
+				if (result.success) return {};
+
+				const errors: Record<string, string> = {};
+				for (const error of result.error.issues) {
+					errors[error.path[0] as string] = error.message;
+				}
+				return errors;
+			}}
 		>
 			<RenameServerBox />
 		</Formik>

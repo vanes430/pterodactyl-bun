@@ -1,7 +1,7 @@
 import { Field, Form, Formik, type FormikHelpers } from "formik";
 import styled from "styled-components/macro";
 import tw from "twin.macro";
-import { object, string } from "yup";
+import { z } from "zod";
 import { createSSHKey, useSSHKeys } from "@/api/account/ssh-keys";
 import Button from "@/components/elements/Button";
 import FormikFieldWrapper from "@/components/elements/FormikFieldWrapper";
@@ -13,6 +13,11 @@ interface Values {
 	name: string;
 	publicKey: string;
 }
+
+const schema = z.object({
+	name: z.string().min(1, "A name must be provided for this SSH key."),
+	publicKey: z.string().min(1, "A public key must be provided."),
+});
 
 const CustomTextarea = styled(Textarea)`
     ${tw`h-32`}
@@ -41,10 +46,16 @@ export default () => {
 		<Formik
 			onSubmit={submit}
 			initialValues={{ name: "", publicKey: "" }}
-			validationSchema={object().shape({
-				name: string().required(),
-				publicKey: string().required(),
-			})}
+			validate={(values) => {
+				const result = schema.safeParse(values);
+				if (result.success) return {};
+
+				const errors: Record<string, string> = {};
+				for (const error of result.error.issues) {
+					errors[error.path[0] as string] = error.message;
+				}
+				return errors;
+			}}
 		>
 			{({ isSubmitting }) => (
 				<Form>

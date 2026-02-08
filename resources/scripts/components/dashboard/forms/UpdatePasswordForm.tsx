@@ -7,7 +7,7 @@ import {
 import { Form, Formik, type FormikHelpers } from "formik";
 import React from "react";
 import tw from "twin.macro";
-import * as Yup from "yup";
+import { z } from "zod";
 import updateAccountPassword from "@/api/account/updateAccountPassword";
 import { httpErrorToHuman } from "@/api/http";
 import { Button } from "@/components/elements/button/index";
@@ -21,19 +21,18 @@ interface Values {
 	confirmPassword: string;
 }
 
-const schema = Yup.object().shape({
-	current: Yup.string()
-		.min(1)
-		.required("You must provide your current password."),
-	password: Yup.string().min(8).required(),
-	confirmPassword: Yup.string().test(
-		"password",
-		"Password confirmation does not match the password you entered.",
-		function (value) {
-			return value === this.parent.password;
-		},
-	),
-});
+const schema = z
+	.object({
+		current: z.string().min(1, "You must provide your current password."),
+		password: z
+			.string()
+			.min(8, "Your new password should be at least 8 characters in length."),
+		confirmPassword: z.string().min(1, "You must confirm your new password."),
+	})
+	.refine((data) => data.password === data.confirmPassword, {
+		message: "Password confirmation does not match the password you entered.",
+		path: ["confirmPassword"],
+	});
 
 export default () => {
 	const user = useStoreState(
@@ -68,7 +67,16 @@ export default () => {
 	return (
 		<Formik
 			onSubmit={submit}
-			validationSchema={schema}
+			validate={(values) => {
+				const result = schema.safeParse(values);
+				if (result.success) return {};
+
+				const errors: Record<string, string> = {};
+				for (const error of result.error.issues) {
+					errors[error.path[0] as string] = error.message;
+				}
+				return errors;
+			}}
 			initialValues={{ current: "", password: "", confirmPassword: "" }}
 		>
 			{({ isSubmitting, isValid }) => (

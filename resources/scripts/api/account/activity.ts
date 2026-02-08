@@ -1,7 +1,7 @@
 import { toPaginatedSet } from "@definitions/helpers";
 import { type ActivityLog, Transformers } from "@definitions/user";
 import type { AxiosError } from "axios";
-import useSWR, { type ConfigInterface, type responseInterface } from "swr";
+import useSWR, { type SWRConfiguration, type SWRResponse } from "swr";
 import http, {
 	type PaginatedResult,
 	type QueryBuilderParams,
@@ -17,8 +17,8 @@ export type ActivityLogFilters = QueryBuilderParams<
 
 const useActivityLogs = (
 	filters?: ActivityLogFilters,
-	config?: ConfigInterface<PaginatedResult<ActivityLog>, AxiosError>,
-): responseInterface<PaginatedResult<ActivityLog>, AxiosError> => {
+	config?: SWRConfiguration<PaginatedResult<ActivityLog>, AxiosError>,
+): SWRResponse<PaginatedResult<ActivityLog>, AxiosError> => {
 	const key = useUserSWRKey([
 		"account",
 		"activity",

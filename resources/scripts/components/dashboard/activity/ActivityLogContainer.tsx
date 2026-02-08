@@ -1,3 +1,4 @@
+import type { ActivityLog } from "@definitions/user";
 import { DesktopComputerIcon, XCircleIcon } from "@heroicons/react/solid";
 import classNames from "classnames";
 import { useEffect, useState } from "react";
@@ -65,7 +66,7 @@ export default () => {
 						"bg-white/[0.03] border border-white/5 rounded-xl overflow-hidden shadow-lg"
 					}
 				>
-					{data?.items.map((activity) => (
+					{data?.items.map((activity: ActivityLog) => (
 						<ActivityLogEntry key={activity.id} activity={activity}>
 							{typeof activity.properties.useragent === "string" && (
 								<Tooltip

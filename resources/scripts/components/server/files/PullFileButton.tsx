@@ -1,6 +1,6 @@
 import { Form, Formik, type FormikHelpers } from "formik";
 import { useContext, useEffect, useState } from "react";
-import { object, string } from "yup";
+import { z } from "zod";
 import pullFile from "@/api/server/files/pullFile";
 import { Button } from "@/components/elements/button/index";
 import { Dialog, DialogWrapperContext } from "@/components/elements/dialog";
@@ -16,10 +16,8 @@ interface Values {
 	url: string;
 }
 
-const schema = object().shape({
-	url: string()
-		.required("A valid URL must be provided.")
-		.url("A valid URL must be provided."),
+const schema = z.object({
+	url: z.string().url("A valid URL must be provided."),
 });
 
 const PullFileDialog = asDialog({
@@ -56,7 +54,16 @@ const PullFileDialog = asDialog({
 	return (
 		<Formik
 			onSubmit={submit}
-			validationSchema={schema}
+			validate={(values) => {
+				const result = schema.safeParse(values);
+				if (result.success) return {};
+
+				const errors: Record<string, string> = {};
+				for (const error of result.error.issues) {
+					errors[error.path[0] as string] = error.message;
+				}
+				return errors;
+			}}
 			initialValues={{ url: "" }}
 		>
 			{({ submitForm }) => (

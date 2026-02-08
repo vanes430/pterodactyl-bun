@@ -1,7 +1,7 @@
 import { Form } from "formik";
 import type React from "react";
 import { forwardRef } from "react";
-import styled from "styled-components/macro";
+import styled, { css } from "styled-components/macro";
 import tw from "twin.macro";
 import FlashMessageRender from "@/components/FlashMessageRender";
 import { breakpoint } from "@/theme";
@@ -14,22 +14,24 @@ type Props = React.DetailedHTMLProps<
 };
 
 const Container = styled.div`
-    ${breakpoint("sm")`
+    ${css`
+			${breakpoint("sm")`
         ${tw`w-4/5 mx-auto`}
     `};
 
-    ${breakpoint("md")`
+			${breakpoint("md")`
         ${tw`p-10`}
     `};
 
-    ${breakpoint("lg")`
+			${breakpoint("lg")`
         ${tw`w-3/5`}
     `};
 
-    ${breakpoint("xl")`
+			${breakpoint("xl")`
         ${tw`w-full`}
         max-width: 700px;
     `};
+		`};
 `;
 
 export default forwardRef<HTMLFormElement, Props>(

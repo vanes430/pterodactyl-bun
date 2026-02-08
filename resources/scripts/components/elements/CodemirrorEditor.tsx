@@ -20,13 +20,8 @@ require("codemirror/addon/fold/comment-fold");
 require("codemirror/addon/fold/indent-fold");
 require("codemirror/addon/fold/markdown-fold");
 require("codemirror/addon/fold/xml-fold");
-require("codemirror/addon/hint/css-hint");
-require("codemirror/addon/hint/html-hint");
-require("codemirror/addon/hint/javascript-hint");
 require("codemirror/addon/hint/show-hint.css");
 require("codemirror/addon/hint/show-hint");
-require("codemirror/addon/hint/sql-hint");
-require("codemirror/addon/hint/xml-hint");
 require("codemirror/addon/mode/simple");
 require("codemirror/addon/dialog/dialog.css");
 require("codemirror/addon/dialog/dialog");
@@ -41,44 +36,12 @@ require("codemirror/addon/search/matchesonscrollbar");
 require("codemirror/addon/search/search");
 require("codemirror/addon/search/searchcursor");
 
-require("codemirror/mode/brainfuck/brainfuck");
-require("codemirror/mode/clike/clike");
-require("codemirror/mode/css/css");
-require("codemirror/mode/dart/dart");
-require("codemirror/mode/diff/diff");
-require("codemirror/mode/dockerfile/dockerfile");
-require("codemirror/mode/erlang/erlang");
-require("codemirror/mode/gfm/gfm");
-require("codemirror/mode/go/go");
-require("codemirror/mode/handlebars/handlebars");
-require("codemirror/mode/htmlembedded/htmlembedded");
-require("codemirror/mode/htmlmixed/htmlmixed");
-require("codemirror/mode/http/http");
-require("codemirror/mode/javascript/javascript");
-require("codemirror/mode/jsx/jsx");
-require("codemirror/mode/julia/julia");
-require("codemirror/mode/lua/lua");
-require("codemirror/mode/markdown/markdown");
-require("codemirror/mode/nginx/nginx");
-require("codemirror/mode/perl/perl");
-require("codemirror/mode/php/php");
-require("codemirror/mode/properties/properties");
-require("codemirror/mode/protobuf/protobuf");
-require("codemirror/mode/pug/pug");
-require("codemirror/mode/python/python");
-require("codemirror/mode/rpm/rpm");
-require("codemirror/mode/ruby/ruby");
-require("codemirror/mode/rust/rust");
-require("codemirror/mode/sass/sass");
-require("codemirror/mode/shell/shell");
-require("codemirror/mode/smarty/smarty");
-require("codemirror/mode/sql/sql");
-require("codemirror/mode/swift/swift");
-require("codemirror/mode/toml/toml");
-require("codemirror/mode/twig/twig");
-require("codemirror/mode/vue/vue");
-require("codemirror/mode/xml/xml");
+// Priority Languages (Commonly used in Pterodactyl)
 require("codemirror/mode/yaml/yaml");
+require("codemirror/mode/shell/shell");
+require("codemirror/mode/php/php");
+require("codemirror/mode/javascript/javascript");
+require("codemirror/mode/properties/properties");
 
 const EditorContainer = styled.div`
     min-height: 16rem;
@@ -169,9 +132,10 @@ export default ({
 			indentWithTabs: false,
 			lineWrapping: true,
 			lineNumbers: true,
+			// @ts-ignore
 			foldGutter: true,
 			fixedGutter: true,
-			scrollbarStyle: "overlay",
+			scrollbarStyle: "native",
 			coverGutterNextToScrollbar: false,
 			readOnly: false,
 			showCursorWhenSelecting: false,
@@ -180,7 +144,6 @@ export default ({
 			autocorrect: false,
 			autocapitalize: false,
 			lint: false,
-			// @ts-expect-error this property is actually used, the d.ts file for CodeMirror is incorrect.
 			autoCloseBrackets: true,
 			matchBrackets: true,
 			gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
@@ -198,7 +161,19 @@ export default ({
 	}, [filename, onModeChanged]);
 
 	useEffect(() => {
-		editor?.setOption("mode", mode);
+		if (!editor) return;
+
+		const modeInfo = modes.find((m) => m.mime === mode);
+		if (modeInfo && modeInfo.mode !== "null") {
+			import(`codemirror/mode/${modeInfo.mode}/${modeInfo.mode}.js`)
+				.then(() => editor.setOption("mode", mode))
+				.catch((e) => {
+					console.warn(`Failed to load CodeMirror mode [${modeInfo.mode}]:`, e);
+					editor.setOption("mode", "text/plain");
+				});
+		} else {
+			editor.setOption("mode", "text/plain");
+		}
 	}, [editor, mode]);
 
 	useEffect(() => {

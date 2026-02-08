@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { RouteComponentProps } from "react-router";
 import { Link } from "react-router-dom";
 import tw from "twin.macro";
-import { object, ref, string } from "yup";
+import { z } from "zod";
 import performPasswordReset from "@/api/auth/performPasswordReset";
 import { httpErrorToHuman } from "@/api/http";
 import LoginFormContainer from "@/components/auth/LoginFormContainer";
@@ -17,6 +17,20 @@ interface Values {
 	password: string;
 	passwordConfirmation: string;
 }
+
+const schema = z
+	.object({
+		password: z
+			.string()
+			.min(8, "Your new password should be at least 8 characters in length."),
+		passwordConfirmation: z
+			.string()
+			.min(1, "Your new password does not match."),
+	})
+	.refine((data) => data.password === data.passwordConfirmation, {
+		message: "Your new password does not match.",
+		path: ["passwordConfirmation"],
+	});
 
 export default ({
 	match,
@@ -66,18 +80,16 @@ export default ({
 				password: "",
 				passwordConfirmation: "",
 			}}
-			validationSchema={object().shape({
-				password: string()
-					.required("A new password is required.")
-					.min(
-						8,
-						"Your new password should be at least 8 characters in length.",
-					),
-				passwordConfirmation: string()
-					.required("Your new password does not match.")
-					// @ts-ignore
-					.oneOf([ref("password"), null], "Your new password does not match."),
-			})}
+			validate={(values) => {
+				const result = schema.safeParse(values);
+				if (result.success) return {};
+
+				const errors: Record<string, string> = {};
+				for (const error of result.error.issues) {
+					errors[error.path[0] as string] = error.message;
+				}
+				return errors;
+			}}
 		>
 			{({ isSubmitting }) => (
 				<LoginFormContainer title={"Reset Password"} css={tw`w-full flex`}>

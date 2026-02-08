@@ -13,7 +13,7 @@ import {
 	useHover,
 	useInteractions,
 	useRole,
-} from "@floating-ui/react-dom-interactions";
+} from "@floating-ui/react";
 import classNames from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
 import type React from "react";
@@ -44,20 +44,19 @@ export default ({ children, ...props }: Props) => {
 	const arrowEl = useRef<HTMLDivElement>(null);
 	const [open, setOpen] = useState(false);
 
-	const { x, y, reference, floating, middlewareData, strategy, context } =
-		useFloating({
-			open,
-			strategy: "fixed",
-			placement: props.placement || "top",
-			middleware: [
-				offset(props.arrow ? 10 : 6),
-				flip(),
-				shift({ padding: 6 }),
-				arrow({ element: arrowEl, padding: 6 }),
-			],
-			onOpenChange: setOpen,
-			whileElementsMounted: autoUpdate,
-		});
+	const { x, y, refs, middlewareData, strategy, context } = useFloating({
+		open,
+		strategy: "fixed",
+		placement: props.placement || "top",
+		middleware: [
+			offset(props.arrow ? 10 : 6),
+			flip(),
+			shift({ padding: 6 }),
+			arrow({ element: arrowEl, padding: 6 }),
+		],
+		onOpenChange: setOpen,
+		whileElementsMounted: autoUpdate,
+	});
 
 	const interactions = props.interactions || ["hover", "focus"];
 	const { getReferenceProps, getFloatingProps } = useInteractions([
@@ -83,7 +82,7 @@ export default ({ children, ...props }: Props) => {
 		<>
 			{cloneElement(
 				children,
-				getReferenceProps({ ref: reference, ...children.props }),
+				getReferenceProps({ ref: refs.setReference, ...children.props }),
 			)}
 			<AnimatePresence>
 				{open && (
@@ -98,7 +97,7 @@ export default ({ children, ...props }: Props) => {
 							duration: 0.075,
 						}}
 						{...getFloatingProps({
-							ref: floating,
+							ref: refs.setFloating,
 							className:
 								"bg-gray-900 text-sm text-gray-200 px-3 py-2 rounded pointer-events-none max-w-[24rem]",
 							style: {

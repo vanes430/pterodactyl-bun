@@ -7,7 +7,7 @@ import {
 import { Form, Formik, type FormikHelpers } from "formik";
 import React from "react";
 import tw from "twin.macro";
-import * as Yup from "yup";
+import { z } from "zod";
 import { httpErrorToHuman } from "@/api/http";
 import { Button } from "@/components/elements/button/index";
 import Field from "@/components/elements/Field";
@@ -19,11 +19,11 @@ interface Values {
 	password: string;
 }
 
-const schema = Yup.object().shape({
-	email: Yup.string().email().required(),
-	password: Yup.string().required(
-		"You must provide your current account password.",
-	),
+const schema = z.object({
+	email: z.string().email().min(1, "Email is required"),
+	password: z
+		.string()
+		.min(1, "You must provide your current account password."),
 });
 
 export default () => {
@@ -69,8 +69,17 @@ export default () => {
 	return (
 		<Formik
 			onSubmit={submit}
-			validationSchema={schema}
-			initialValues={{ email: user?.email, password: "" }}
+			validate={(values) => {
+				const result = schema.safeParse(values);
+				if (result.success) return {};
+
+				const errors: Record<string, string> = {};
+				for (const error of result.error.issues) {
+					errors[error.path[0] as string] = error.message;
+				}
+				return errors;
+			}}
+			initialValues={{ email: user?.email || "", password: "" }}
 		>
 			{({ isSubmitting, isValid }) => (
 				<React.Fragment>

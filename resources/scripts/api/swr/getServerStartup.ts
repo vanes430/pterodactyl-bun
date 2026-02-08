@@ -1,4 +1,4 @@
-import useSWR, { type ConfigInterface } from "swr";
+import useSWR, { type SWRConfiguration } from "swr";
 import http, { type FractalResponseList } from "@/api/http";
 import type { ServerEggVariable } from "@/api/server/types";
 import { rawDataToServerEggVariable } from "@/api/transformers";
@@ -12,7 +12,7 @@ interface Response {
 export default (
 	uuid: string,
 	initialData?: Response | null,
-	config?: ConfigInterface<Response>,
+	config?: SWRConfiguration<Response>,
 ) =>
 	useSWR(
 		[uuid, "/startup"],

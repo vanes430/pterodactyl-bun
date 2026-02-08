@@ -1,7 +1,7 @@
 import { Form, Formik, type FormikHelpers } from "formik";
 import { join } from "pathe";
 import tw from "twin.macro";
-import { object, string } from "yup";
+import { z } from "zod";
 import Button from "@/components/elements/Button";
 import Field from "@/components/elements/Field";
 import Modal, { type RequiredModalProps } from "@/components/elements/Modal";
@@ -14,6 +14,10 @@ type Props = RequiredModalProps & {
 interface Values {
 	fileName: string;
 }
+
+const schema = z.object({
+	fileName: z.string().min(1, "A file name must be provided."),
+});
 
 export default ({ onFileNamed, onDismissed, ...props }: Props) => {
 	const directory = ServerContext.useStoreState(
@@ -29,9 +33,16 @@ export default ({ onFileNamed, onDismissed, ...props }: Props) => {
 		<Formik
 			onSubmit={submit}
 			initialValues={{ fileName: "" }}
-			validationSchema={object().shape({
-				fileName: string().required().min(1),
-			})}
+			validate={(values) => {
+				const result = schema.safeParse(values);
+				if (result.success) return {};
+
+				const errors: Record<string, string> = {};
+				for (const error of result.error.issues) {
+					errors[error.path[0] as string] = error.message;
+				}
+				return errors;
+			}}
 		>
 			{({ resetForm }) => (
 				<Modal

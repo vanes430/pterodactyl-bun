@@ -1,4 +1,4 @@
-import { CloudDownloadIcon, CloudUploadIcon } from "@heroicons/react/solid";
+import { CloudDownload, CloudUpload } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { Line } from "react-chartjs-2";
 import { theme } from "twin.macro";
@@ -13,6 +13,9 @@ import { ServerContext } from "@/state/server";
 
 export default () => {
 	const status = ServerContext.useStoreState((state) => state.status.value);
+	const connected = ServerContext.useStoreState(
+		(state) => state.socket.connected,
+	);
 	const limits = ServerContext.useStoreState(
 		(state) => state.server.data?.limits,
 	);
@@ -51,12 +54,12 @@ export default () => {
 	});
 
 	useEffect(() => {
-		if (status === "offline") {
+		if (status === "offline" || !connected) {
 			cpu.clear();
 			memory.clear();
 			network.clear();
 		}
-	}, [status, cpu, memory, network]);
+	}, [status, connected, cpu, memory, network]);
 
 	useWebsocketEvent(SocketEvent.STATS, (data: string) => {
 		let values: any = {};
@@ -95,10 +98,10 @@ export default () => {
 				legend={
 					<>
 						<Tooltip arrow content={"Inbound"}>
-							<CloudDownloadIcon className={"mr-2 w-4 h-4 text-yellow-400"} />
+							<CloudDownload className={"mr-2 w-4 h-4 text-yellow-400"} />
 						</Tooltip>
 						<Tooltip arrow content={"Outbound"}>
-							<CloudUploadIcon className={"w-4 h-4 text-cyan-400"} />
+							<CloudUpload className={"w-4 h-4 text-cyan-400"} />
 						</Tooltip>
 					</>
 				}

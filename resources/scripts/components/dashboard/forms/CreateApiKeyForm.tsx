@@ -3,7 +3,7 @@ import { Field, Form, Formik, type FormikHelpers } from "formik";
 import { useState } from "react";
 import styled from "styled-components/macro";
 import tw from "twin.macro";
-import { object, string } from "yup";
+import { z } from "zod";
 import createApiKey from "@/api/account/createApiKey";
 import type { ApiKey } from "@/api/account/getApiKeys";
 import { httpErrorToHuman } from "@/api/http";
@@ -18,6 +18,13 @@ interface Values {
 	description: string;
 	allowedIps: string;
 }
+
+const schema = z.object({
+	description: z
+		.string()
+		.min(4, "A description of at least 4 characters must be provided."),
+	allowedIps: z.string().optional(),
+});
 
 const CustomTextarea = styled(Textarea)`
     ${tw`h-32`}
@@ -59,10 +66,16 @@ export default ({ onKeyCreated }: { onKeyCreated: (key: ApiKey) => void }) => {
 			<Formik
 				onSubmit={submit}
 				initialValues={{ description: "", allowedIps: "" }}
-				validationSchema={object().shape({
-					allowedIps: string(),
-					description: string().required().min(4),
-				})}
+				validate={(values) => {
+					const result = schema.safeParse(values);
+					if (result.success) return {};
+
+					const errors: Record<string, string> = {};
+					for (const error of result.error.issues) {
+						errors[error.path[0] as string] = error.message;
+					}
+					return errors;
+				}}
 			>
 				{({ isSubmitting }) => (
 					<Form>

@@ -1,17 +1,18 @@
 import Features from "@feature/Features";
-import { memo } from "react";
+import { lazy, memo } from "react";
 import isEqual from "react-fast-compare";
 import tw from "twin.macro";
 import { Alert } from "@/components/elements/alert";
 import Can from "@/components/elements/Can";
 import ServerContentBlock from "@/components/elements/ServerContentBlock";
 import Spinner from "@/components/elements/Spinner";
-import Console from "@/components/server/console/Console";
 import McLogsButton from "@/components/server/console/McLogsButton";
 import PowerButtons from "@/components/server/console/PowerButtons";
 import ServerDetailsBlock from "@/components/server/console/ServerDetailsBlock";
-import StatGraphs from "@/components/server/console/StatGraphs";
 import { ServerContext } from "@/state/server";
+
+const Console = lazy(() => import("@/components/server/console/Console"));
+const StatGraphs = lazy(() => import("@/components/server/console/StatGraphs"));
 
 export type PowerAction = "start" | "stop" | "restart" | "kill";
 

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, type RouteComponentProps } from "react-router-dom";
 import Reaptcha from "reaptcha";
 import tw from "twin.macro";
-import { object, string } from "yup";
+import { z } from "zod";
 import login from "@/api/auth/login";
 import LoginFormContainer from "@/components/auth/LoginFormContainer";
 import Button from "@/components/elements/Button";
@@ -15,6 +15,11 @@ interface Values {
 	username: string;
 	password: string;
 }
+
+const schema = z.object({
+	username: z.string().min(1, "A username or email must be provided."),
+	password: z.string().min(1, "Please enter your account password."),
+});
 
 const LoginContainer = ({ history }: RouteComponentProps) => {
 	const ref = useRef<Reaptcha>(null);
@@ -73,10 +78,16 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
 		<Formik
 			onSubmit={onSubmit}
 			initialValues={{ username: "", password: "" }}
-			validationSchema={object().shape({
-				username: string().required("A username or email must be provided."),
-				password: string().required("Please enter your account password."),
-			})}
+			validate={(values) => {
+				const result = schema.safeParse(values);
+				if (result.success) return {};
+
+				const errors: Record<string, string> = {};
+				for (const error of result.error.issues) {
+					errors[error.path[0] as string] = error.message;
+				}
+				return errors;
+			}}
 		>
 			{({ isSubmitting, setSubmitting, submitForm }) => (
 				<LoginFormContainer title={"Login to Continue"} css={tw`w-full flex`}>

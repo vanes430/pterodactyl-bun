@@ -1,4 +1,4 @@
-import styled from "styled-components/macro";
+import styled, { css } from "styled-components/macro";
 import tw from "twin.macro";
 import { breakpoint } from "@/theme";
 
@@ -6,9 +6,11 @@ const ContentContainer = styled.div`
     max-width: 1200px;
     ${tw`mx-4`};
 
-    ${breakpoint("xl")`
+    ${css`
+			${breakpoint("xl")`
         ${tw`mx-auto`};
     `};
+		`};
 `;
 ContentContainer.displayName = "ContentContainer";
 

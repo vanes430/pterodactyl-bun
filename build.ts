@@ -156,11 +156,22 @@ const result = await Bun.build({
 	entrypoints: ["./resources/scripts/index.tsx"],
 	outdir,
 	target: "browser",
+	loader: {
+		".woff": "file",
+		".woff2": "file",
+		".svg": "file",
+		".png": "file",
+		".jpg": "file",
+	},
 	minify: cliConfig.minify === false ? false : isProduction,
 	sourcemap: cliConfig.minify === false ? "external" : (isProduction ? "none" : "external"),
-	splitting: false,
+	splitting: true,
 	publicPath: cliConfig.publicPath || "/assets/",
-	naming: isProduction ? "[name].[hash].[ext]" : "[dir]/[name].[ext]",
+	naming: {
+		entry: isProduction ? "[name].[hash].[ext]" : "[dir]/[name].[ext]",
+		chunk: isProduction ? "[name].[hash].[ext]" : "[dir]/[name].[ext]",
+		asset: isProduction ? "[name].[hash].[ext]" : "[dir]/[name].[ext]",
+	},
 	env: "inline",
 	define: {
 		"process.env.DEBUG": JSON.stringify(!isProduction),
@@ -196,7 +207,7 @@ for (const output of result.outputs) {
 
 	const fileName = path.basename(output.path);
 	const relativePath = path.relative(outdir, output.path);
-	const publicPath = `/assets/${relativePath}`;
+	const publicPath = `${cliConfig.publicPath || "/assets/"}${relativePath}`;
 
 	// Map entry points to Pterodactyl's expected names
 	// Kita cari file yang MULAI dengan 'index' dan berakhir dengan '.js' atau '.css'
@@ -222,9 +233,11 @@ await Bun.write(
 
 const end = performance.now();
 console.table(
-	result.outputs.map((o) => ({
-		File: path.basename(o.path),
-		Size: formatFileSize(o.size),
-	})),
+	result.outputs
+		.filter((o) => o.size > 0)
+		.map((o) => ({
+			File: path.basename(o.path),
+			Size: formatFileSize(o.size),
+		})),
 );
 console.log(`\n✅ Build completed in ${(end - start).toFixed(2)}ms`);

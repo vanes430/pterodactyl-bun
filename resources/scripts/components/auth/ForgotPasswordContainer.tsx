@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import Reaptcha from "reaptcha";
 import tw from "twin.macro";
-import { object, string } from "yup";
+import { z } from "zod";
 import requestPasswordResetEmail from "@/api/auth/requestPasswordResetEmail";
 import { httpErrorToHuman } from "@/api/http";
 import LoginFormContainer from "@/components/auth/LoginFormContainer";
@@ -15,6 +15,13 @@ import useFlash from "@/plugins/useFlash";
 interface Values {
 	email: string;
 }
+
+const schema = z.object({
+	email: z
+		.string()
+		.min(1, "A valid email address must be provided to continue.")
+		.email("A valid email address must be provided to continue."),
+});
 
 export default () => {
 	const ref = useRef<Reaptcha>(null);
@@ -75,11 +82,16 @@ export default () => {
 		<Formik
 			onSubmit={handleSubmission}
 			initialValues={{ email: "" }}
-			validationSchema={object().shape({
-				email: string()
-					.email("A valid email address must be provided to continue.")
-					.required("A valid email address must be provided to continue."),
-			})}
+			validate={(values) => {
+				const result = schema.safeParse(values);
+				if (result.success) return {};
+
+				const errors: Record<string, string> = {};
+				for (const error of result.error.issues) {
+					errors[error.path[0] as string] = error.message;
+				}
+				return errors;
+			}}
 		>
 			{({ isSubmitting, setSubmitting, submitForm }) => (
 				<LoginFormContainer
