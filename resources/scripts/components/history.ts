@@ -1,3 +1,3 @@
 import { createBrowserHistory } from "history";
 
-export const browserHistory = createBrowserHistory({ basename: "/" });
+export const browserHistory = createBrowserHistory();

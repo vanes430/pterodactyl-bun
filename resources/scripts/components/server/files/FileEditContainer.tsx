@@ -1,6 +1,6 @@
 import { dirname } from "pathe";
 import { useEffect, useState } from "react";
-import { useHistory, useLocation, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import tw from "twin.macro";
 import { httpErrorToHuman } from "@/api/http";
 import getFileContents from "@/api/server/files/getFileContents";
@@ -29,7 +29,7 @@ export default () => {
 	const [modalVisible, setModalVisible] = useState(false);
 	const [mode, setMode] = useState("text/plain");
 
-	const history = useHistory();
+	const navigate = useNavigate();
 	const { hash } = useLocation();
 
 	const id = ServerContext.useStoreState((state) => state.server.data?.id);
@@ -70,7 +70,7 @@ export default () => {
 			)
 			.then(() => {
 				if (name) {
-					history.push(`/server/${id}/files/edit#/${encodePathSegments(name)}`);
+					navigate(`/server/${id}/files/edit#/${encodePathSegments(name)}`);
 					return;
 				}
 
@@ -84,7 +84,7 @@ export default () => {
 	};
 
 	if (error) {
-		return <ServerError message={error} onBack={() => history.goBack()} />;
+		return <ServerError message={error} onBack={() => navigate(-1)} />;
 	}
 
 	return (

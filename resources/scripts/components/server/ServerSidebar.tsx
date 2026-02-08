@@ -14,7 +14,7 @@ import {
 	X,
 } from "lucide-react";
 import { useState } from "react";
-import { NavLink, useRouteMatch } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import styled from "styled-components";
 import tw from "twin.macro";
 import Can from "@/components/elements/Can";
@@ -56,18 +56,19 @@ const AdminNavItem = styled.a`
 `;
 
 export default () => {
-	const match = useRouteMatch<{ id: string }>();
+	const { id } = useParams<{ id: string }>();
 	const [isOpen, setIsOpen] = useState(false);
 	const internalId = ServerContext.useStoreState(
 		(state) => state.server.data?.internalId,
 	);
 	const isRootAdmin = useStoreState((state) => state.user.data?.rootAdmin);
 
-	const to = (value: string, url = false) => {
+	const to = (value: string) => {
+		const baseUrl = `/server/${id}`;
 		if (value === "/") {
-			return url ? match.url : match.path;
+			return baseUrl;
 		}
-		return `${(url ? match.url : match.path).replace(/\/*$/, "")}/${value.replace(/^\/+/, "")}`;
+		return `${baseUrl}/${value.replace(/^\/+/, "")}`;
 	};
 
 	return (
@@ -87,7 +88,7 @@ export default () => {
 					.map((route) =>
 						route.permission ? (
 							<Can key={route.path} action={route.permission} matchAny>
-								<NavItem to={to(route.path, true)} exact={route.exact}>
+								<NavItem to={to(route.path)} end={route.exact}>
 									{/* Icon Mapping based on route name */}
 									{route.name === "Console" && <Terminal size={18} />}
 									{route.name === "Files" && <FileText size={18} />}
@@ -103,11 +104,7 @@ export default () => {
 								</NavItem>
 							</Can>
 						) : (
-							<NavItem
-								key={route.path}
-								to={to(route.path, true)}
-								exact={route.exact}
-							>
+							<NavItem key={route.path} to={to(route.path)} end={route.exact}>
 								{route.name === "Console" && <Terminal size={18} />}
 								{route.name === "Files" && <FileText size={18} />}
 								{route.name === "Databases" && <Database size={18} />}

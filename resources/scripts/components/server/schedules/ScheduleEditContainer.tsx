@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import { useCallback, useEffect, useState } from "react";
 import isEqual from "react-fast-compare";
-import { useHistory, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import tw from "twin.macro";
 import getServerSchedule from "@/api/server/schedules/getServerSchedule";
 import { Button } from "@/components/elements/button/index";
@@ -18,9 +18,9 @@ import ScheduleTaskRow from "@/components/server/schedules/ScheduleTaskRow";
 import useFlash from "@/plugins/useFlash";
 import { ServerContext } from "@/state/server";
 
-interface Params {
+type Params = {
 	id: string;
-}
+};
 
 const CronBox = ({ title, value }: { title: string; value: string }) => (
 	<div
@@ -49,8 +49,8 @@ const ActivePill = ({ active }: { active: boolean }) => (
 );
 
 export default () => {
-	const history = useHistory();
-	const { id: scheduleId } = useParams<Params>();
+	const navigate = useNavigate();
+	const { id: scheduleId } = useParams<"id">();
 
 	const id = ServerContext.useStoreState((state) => state.server.data?.id);
 	const uuid = ServerContext.useStoreState((state) => state.server.data?.uuid);
@@ -202,7 +202,7 @@ export default () => {
 						<Can action={"schedule.delete"}>
 							<DeleteScheduleButton
 								scheduleId={schedule.id}
-								onDeleted={() => history.push(`/server/${id}/schedules`)}
+								onDeleted={() => navigate(`/server/${id}/schedules`)}
 							/>
 						</Can>
 						{schedule.tasks.length > 0 && (

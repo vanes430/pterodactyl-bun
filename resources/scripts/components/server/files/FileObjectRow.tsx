@@ -11,7 +11,7 @@ import { join } from "pathe";
 import type React from "react";
 import { memo } from "react";
 import isEqual from "react-fast-compare";
-import { NavLink, useRouteMatch } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import tw from "twin.macro";
 import type { FileObject } from "@/api/server/files/loadDirectory";
 import FileDropdownMenu from "@/components/server/files/FileDropdownMenu";
@@ -30,7 +30,7 @@ const Clickable: React.FC<React.PropsWithChildren<{ file: FileObject }>> = memo(
 			(state) => state.files.directory,
 		);
 
-		const match = useRouteMatch();
+		const location = useLocation();
 
 		return (file.isFile && (!file.isEditable() || !canReadContents)) ||
 			(!file.isFile && !canRead) ? (
@@ -38,7 +38,7 @@ const Clickable: React.FC<React.PropsWithChildren<{ file: FileObject }>> = memo(
 		) : (
 			<NavLink
 				className={styles.details}
-				to={`${match.url}${file.isFile ? "/edit" : ""}#${encodePathSegments(join(directory, file.name))}`}
+				to={`${location.pathname}${file.isFile ? "/edit" : ""}#${encodePathSegments(join(directory, file.name))}`}
 			>
 				{children}
 			</NavLink>

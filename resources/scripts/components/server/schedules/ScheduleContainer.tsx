@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useHistory, useRouteMatch } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import tw from "twin.macro";
 import { httpErrorToHuman } from "@/api/http";
 import getServerSchedules from "@/api/server/schedules/getServerSchedules";
@@ -15,8 +15,8 @@ import useFlash from "@/plugins/useFlash";
 import { ServerContext } from "@/state/server";
 
 export default () => {
-	const match = useRouteMatch();
-	const history = useHistory();
+	const navigate = useNavigate();
+	const location = useLocation();
 
 	const uuid = ServerContext.useStoreState((state) => state.server.data?.uuid);
 	const { clearFlashes, addError } = useFlash();
@@ -57,11 +57,11 @@ export default () => {
 							<GreyRowBox
 								as={"a"}
 								key={schedule.id}
-								href={`${match.url}/${schedule.id}`}
+								href={`${location.pathname}/${schedule.id}`}
 								css={tw`cursor-pointer mb-2 flex-wrap`}
 								onClick={(e: any) => {
 									e.preventDefault();
-									history.push(`${match.url}/${schedule.id}`);
+									navigate(`${location.pathname}/${schedule.id}`);
 								}}
 							>
 								<ScheduleRow schedule={schedule} />

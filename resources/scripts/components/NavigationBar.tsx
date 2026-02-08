@@ -75,7 +75,7 @@ export default () => {
 				>
 					<SearchContainer />
 					<Tooltip placement={"bottom"} content={"Dashboard"}>
-						<NavLink to={"/"} exact>
+						<NavLink to={"/"} end>
 							<LayoutDashboard size={20} strokeWidth={2} />
 						</NavLink>
 					</Tooltip>

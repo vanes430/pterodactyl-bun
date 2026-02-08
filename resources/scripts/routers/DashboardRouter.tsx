@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router";
-import { Route, Switch } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import DashboardContainer from "@/components/dashboard/DashboardContainer";
 import { NotFound } from "@/components/elements/ScreenBlock";
 import Spinner from "@/components/elements/Spinner";
@@ -14,23 +14,17 @@ export default () => {
 		<>
 			<NavigationBar />
 			<React.Suspense fallback={<Spinner centered />}>
-				<Switch location={location}>
-					<Route path={"/"} exact>
-						<DashboardContainer />
-					</Route>
+				<Routes location={location}>
+					<Route path="/" element={<DashboardContainer />} />
 					{routes.account.map(({ path, component: Component }) => (
 						<Route
 							key={path}
 							path={`/account/${path}`.replace("//", "/")}
-							exact
-						>
-							<Component />
-						</Route>
+							element={<Component />}
+						/>
 					))}
-					<Route path={"*"}>
-						<NotFound />
-					</Route>
-				</Switch>
+					<Route path="*" element={<NotFound />} />
+				</Routes>
 			</React.Suspense>
 		</>
 	);

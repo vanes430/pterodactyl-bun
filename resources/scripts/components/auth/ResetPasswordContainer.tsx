@@ -1,8 +1,7 @@
 import { type Actions, useStoreActions } from "easy-peasy";
 import { Formik, type FormikHelpers } from "formik";
 import { useState } from "react";
-import type { RouteComponentProps } from "react-router";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import tw from "twin.macro";
 import { z } from "zod";
 import performPasswordReset from "@/api/auth/performPasswordReset";
@@ -32,10 +31,9 @@ const schema = z
 		path: ["passwordConfirmation"],
 	});
 
-export default ({
-	match,
-	location,
-}: RouteComponentProps<{ token: string }>) => {
+export default () => {
+	const { token } = useParams<{ token: string }>();
+	const location = useLocation();
 	const [email, setEmail] = useState("");
 
 	const { clearFlashes, addFlash } = useStoreActions(
@@ -53,7 +51,7 @@ export default ({
 	) => {
 		clearFlashes(undefined);
 		performPasswordReset(email, {
-			token: match.params.token,
+			token: token || "",
 			password,
 			passwordConfirmation,
 		})

@@ -1,7 +1,7 @@
 import { useStoreState } from "easy-peasy";
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router";
-import { Route, Switch, useRouteMatch } from "react-router-dom";
+import { Route, Routes, useParams } from "react-router-dom";
 import tw from "twin.macro";
 import { httpErrorToHuman } from "@/api/http";
 import ErrorBoundary from "@/components/elements/ErrorBoundary";
@@ -18,7 +18,7 @@ import routes from "@/routers/routes";
 import { ServerContext } from "@/state/server";
 
 export default () => {
-	const match = useRouteMatch<{ id: string }>();
+	const params = useParams<{ id: string }>();
 	const location = useLocation();
 
 	const rootAdmin = useStoreState((state) => state.user.data?.rootAdmin);
@@ -36,13 +36,6 @@ export default () => {
 		(actions) => actions.clearServerState,
 	);
 
-	const to = (value: string, url = false) => {
-		if (value === "/") {
-			return url ? match.url : match.path;
-		}
-		return `${(url ? match.url : match.path).replace(/\/*$/, "")}/${value.replace(/^\/+/, "")}`;
-	};
-
 	useEffect(
 		() => () => {
 			clearServerState();
@@ -53,15 +46,17 @@ export default () => {
 	useEffect(() => {
 		setError("");
 
-		getServer(match.params.id).catch((error) => {
-			console.error(error);
-			setError(httpErrorToHuman(error));
-		});
+		if (params.id) {
+			getServer(params.id).catch((error) => {
+				console.error(error);
+				setError(httpErrorToHuman(error));
+			});
+		}
 
 		return () => {
 			clearServerState();
 		};
-	}, [match.params.id, clearServerState, getServer]);
+	}, [params.id, clearServerState, getServer]);
 
 	return (
 		<React.Fragment key={"server-router"}>
@@ -86,23 +81,24 @@ export default () => {
 								<ConflictStateRenderer />
 							) : (
 								<ErrorBoundary>
-									<Switch location={location}>
+									<Routes location={location}>
 										{routes.server.map(
 											({ path, permission, component: Component }) => (
-												<PermissionRoute
+												<Route
 													key={path}
-													permission={permission}
-													path={to(path)}
-													exact
-												>
-													<Spinner.Suspense>
-														<Component />
-													</Spinner.Suspense>
-												</PermissionRoute>
+													path={path}
+													element={
+														<PermissionRoute permission={permission}>
+															<Spinner.Suspense>
+																<Component />
+															</Spinner.Suspense>
+														</PermissionRoute>
+													}
+												/>
 											),
 										)}
-										<Route path={"*"} component={NotFound} />
-									</Switch>
+										<Route path="*" element={<NotFound />} />
+									</Routes>
 								</ErrorBoundary>
 							)}
 						</div>

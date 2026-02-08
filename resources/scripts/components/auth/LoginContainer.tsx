@@ -1,7 +1,7 @@
 import { useStoreState } from "easy-peasy";
 import { Formik, type FormikHelpers } from "formik";
 import { useEffect, useRef, useState } from "react";
-import { Link, type RouteComponentProps } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Reaptcha from "reaptcha";
 import tw from "twin.macro";
 import { z } from "zod";
@@ -21,9 +21,10 @@ const schema = z.object({
 	password: z.string().min(1, "Please enter your account password."),
 });
 
-const LoginContainer = ({ history }: RouteComponentProps) => {
+const LoginContainer = () => {
 	const ref = useRef<Reaptcha>(null);
 	const [token, setToken] = useState("");
+	const navigate = useNavigate();
 
 	const { clearFlashes, clearAndAddHttpError } = useFlash();
 	const recaptcha = useStoreState((state) => state.settings.data?.recaptcha);
@@ -59,8 +60,9 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
 					return;
 				}
 
-				history.replace("/auth/login/checkpoint", {
-					token: response.confirmationToken,
+				navigate("/auth/login/checkpoint", {
+					state: { token: response.confirmationToken },
+					replace: true,
 				});
 			})
 			.catch((error) => {

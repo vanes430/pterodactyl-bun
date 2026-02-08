@@ -1,7 +1,7 @@
 import { StoreProvider } from "easy-peasy";
 import { lazy } from "react";
 import { Toaster } from "react-hot-toast";
-import { Route, Router, Switch } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import tw from "twin.macro";
 import { setupInterceptors } from "@/api/interceptors";
 import GlobalStylesheet from "@/assets/css/GlobalStylesheet";
@@ -85,37 +85,51 @@ const App = () => {
 				/>
 				<ProgressBar />
 				<div css={tw`mx-auto w-auto`}>
-					<Router history={browserHistory}>
-						<Switch>
-							<Route path={"/auth"}>
-								<Spinner.Suspense>
-									<AuthenticationRouter />
-								</Spinner.Suspense>
-							</Route>
-							{process.env.NODE_ENV === "development" && (
-								<Route path={"/dev/playground"} exact>
+					<BrowserRouter>
+						<Routes>
+							<Route
+								path="/auth/*"
+								element={
 									<Spinner.Suspense>
-										<PlaygroundContainer />
+										<AuthenticationRouter />
 									</Spinner.Suspense>
-								</Route>
+								}
+							/>
+							{process.env.NODE_ENV === "development" && (
+								<Route
+									path="/dev/playground"
+									element={
+										<Spinner.Suspense>
+											<PlaygroundContainer />
+										</Spinner.Suspense>
+									}
+								/>
 							)}
-							<AuthenticatedRoute path={"/server/:id"}>
-								<Spinner.Suspense>
-									<ServerProvider>
-										<ServerRouter />
-									</ServerProvider>
-								</Spinner.Suspense>
-							</AuthenticatedRoute>
-							<AuthenticatedRoute path={"/"}>
-								<Spinner.Suspense>
-									<DashboardRouter />
-								</Spinner.Suspense>
-							</AuthenticatedRoute>
-							<Route path={"*"}>
-								<NotFound />
-							</Route>
-						</Switch>
-					</Router>
+							<Route
+								path="/server/:id/*"
+								element={
+									<AuthenticatedRoute>
+										<Spinner.Suspense>
+											<ServerProvider>
+												<ServerRouter />
+											</ServerProvider>
+										</Spinner.Suspense>
+									</AuthenticatedRoute>
+								}
+							/>
+							<Route
+								path="/*"
+								element={
+									<AuthenticatedRoute>
+										<Spinner.Suspense>
+											<DashboardRouter />
+										</Spinner.Suspense>
+									</AuthenticatedRoute>
+								}
+							/>
+							<Route path="*" element={<NotFound />} />
+						</Routes>
+					</BrowserRouter>
 				</div>
 			</Provider>
 		</>

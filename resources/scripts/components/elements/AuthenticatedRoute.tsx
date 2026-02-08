@@ -1,24 +1,13 @@
-import { Redirect, Route, type RouteProps } from "react-router";
+import { Navigate, useLocation } from "react-router-dom";
 import { useStoreState } from "@/state/hooks";
 
-export default ({
-	children,
-	...props
-}: React.PropsWithChildren<Omit<RouteProps, "render">>) => {
+export default ({ children }: React.PropsWithChildren<unknown>) => {
 	const isAuthenticated = useStoreState((state) => !!state.user.data?.uuid);
+	const location = useLocation();
 
-	return (
-		<Route
-			{...props}
-			render={({ location }) =>
-				isAuthenticated ? (
-					children
-				) : (
-					<Redirect
-						to={{ pathname: "/auth/login", state: { from: location } }}
-					/>
-				)
-			}
-		/>
-	);
+	if (isAuthenticated) {
+		return <>{children}</>;
+	}
+
+	return <Navigate to="/auth/login" state={{ from: location }} replace />;
 };

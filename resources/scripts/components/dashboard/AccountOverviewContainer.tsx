@@ -28,11 +28,13 @@ const Container = styled.div`
 `;
 
 export default () => {
-	const { state } = useLocation<undefined | { twoFactorRedirect?: boolean }>();
+	const { state } = useLocation();
+	const twoFactorRedirect = (state as { twoFactorRedirect?: boolean })
+		?.twoFactorRedirect;
 
 	return (
 		<PageContentBlock title={"Account Overview"}>
-			{state?.twoFactorRedirect && (
+			{twoFactorRedirect && (
 				<MessageBox title={"2-Factor Required"} type={"error"}>
 					Your account must have two-factor authentication enabled in order to
 					continue.
@@ -42,7 +44,7 @@ export default () => {
 			<Container
 				css={[
 					tw`lg:grid lg:grid-cols-3 mb-10`,
-					state?.twoFactorRedirect ? tw`mt-4` : tw`mt-10`,
+					twoFactorRedirect ? tw`mt-4` : tw`mt-10`,
 				]}
 			>
 				<ContentBox title={"Update Password"} showFlashes={"account:password"}>
