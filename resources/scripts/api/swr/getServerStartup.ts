@@ -1,4 +1,5 @@
 import useSWR, { type SWRConfiguration } from "swr";
+import type { EggVariableAttributes } from "@/api/definitions/api";
 import http, { type FractalResponseList } from "@/api/http";
 import type { ServerEggVariable } from "@/api/server/types";
 import { rawDataToServerEggVariable } from "@/api/transformers";
@@ -17,11 +18,16 @@ export default (
 	useSWR(
 		[uuid, "/startup"],
 		async (): Promise<Response> => {
-			const { data } = await http.get(`/api/client/servers/${uuid}/startup`);
+			const { data } = await http.get<
+				FractalResponseList<EggVariableAttributes> & {
+					meta: {
+						startup_command: string;
+						docker_images: Record<string, string>;
+					};
+				}
+			>(`/api/client/servers/${uuid}/startup`);
 
-			const variables = ((data as FractalResponseList).data || []).map(
-				rawDataToServerEggVariable,
-			);
+			const variables = (data.data || []).map(rawDataToServerEggVariable);
 
 			return {
 				variables,

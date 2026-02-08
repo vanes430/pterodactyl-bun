@@ -1,7 +1,8 @@
-import http from "@/api/http";
+import http, { type FractalResponseData } from "@/api/http";
 import {
 	rawDataToServerDatabase,
 	type ServerDatabase,
+	type ServerDatabaseAttributes,
 } from "@/api/server/databases/getServerDatabases";
 
 export default (
@@ -10,7 +11,7 @@ export default (
 ): Promise<ServerDatabase> => {
 	return new Promise((resolve, reject) => {
 		http
-			.post(
+			.post<FractalResponseData<ServerDatabaseAttributes>>(
 				`/api/client/servers/${uuid}/databases`,
 				{
 					database: data.databaseName,

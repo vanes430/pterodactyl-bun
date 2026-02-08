@@ -10,8 +10,6 @@ export default async (
 		{ root: directory, file },
 		{
 			timeout: 300000,
-			timeoutErrorMessage:
-				"It looks like this archive is taking a long time to be unarchived. Once completed the unarchived files will appear.",
 		},
 	);
 };

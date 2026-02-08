@@ -1,4 +1,3 @@
-import { Form } from "formik";
 import type React from "react";
 import { forwardRef } from "react";
 import styled, { css } from "styled-components";
@@ -43,7 +42,7 @@ export default forwardRef<HTMLFormElement, Props>(
 				</h2>
 			)}
 			<FlashMessageRender css={tw`mb-2 px-1`} />
-			<Form {...props} ref={ref}>
+			<form {...props} ref={ref}>
 				<div
 					css={tw`md:flex w-full bg-white shadow-lg rounded-lg p-6 md:pl-0 mx-1`}
 				>
@@ -470,7 +469,7 @@ export default forwardRef<HTMLFormElement, Props>(
 					</div>
 					<div css={tw`flex-1`}>{props.children}</div>
 				</div>
-			</Form>
+			</form>
 			<p css={tw`text-center text-neutral-500 text-xs mt-4`}>
 				&copy; 2015 - {new Date().getFullYear()}&nbsp;
 				<a

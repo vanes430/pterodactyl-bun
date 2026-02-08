@@ -1,6 +1,7 @@
-import { Form, Formik, type FormikHelpers } from "formik";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { join } from "pathe";
 import { useContext, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import tw from "twin.macro";
 import { z } from "zod";
 import createDirectory from "@/api/server/files/createDirectory";
@@ -8,7 +9,7 @@ import type { FileObject } from "@/api/server/files/loadDirectory";
 import { Button } from "@/components/elements/button/index";
 import Code from "@/components/elements/Code";
 import { Dialog, DialogWrapperContext } from "@/components/elements/dialog";
-import Field from "@/components/elements/Field";
+import FormField from "@/components/elements/FormField";
 import FlashMessageRender from "@/components/FlashMessageRender";
 import type { WithClassname } from "@/components/types";
 import asDialog from "@/hoc/asDialog";
@@ -16,13 +17,11 @@ import useFileManagerSwr from "@/plugins/useFileManagerSwr";
 import { useFlashKey } from "@/plugins/useFlash";
 import { ServerContext } from "@/state/server";
 
-interface Values {
-	directoryName: string;
-}
-
 const schema = z.object({
 	directoryName: z.string().min(1, "A valid directory name must be provided."),
 });
+
+type Values = z.infer<typeof schema>;
 
 const generateDirectoryData = (name: string): FileObject => ({
 	key: `dir_${name.split("/", 1)[0] ?? name}`,
@@ -51,81 +50,82 @@ const NewDirectoryDialog = asDialog({
 	const { close } = useContext(DialogWrapperContext);
 	const { clearAndAddHttpError } = useFlashKey("files:directory-modal");
 
+	const {
+		register,
+		handleSubmit,
+		formState: { errors, isSubmitting },
+		watch,
+		reset,
+	} = useForm<Values>({
+		resolver: zodResolver(schema),
+		defaultValues: {
+			directoryName: "",
+		},
+	});
+
+	const directoryName = watch("directoryName");
+
 	useEffect(() => {
 		return () => {
 			clearAndAddHttpError();
 		};
 	}, [clearAndAddHttpError]);
 
-	const submit = (
-		{ directoryName }: Values,
-		{ setSubmitting }: FormikHelpers<Values>,
-	) => {
+	const onSubmit = ({ directoryName }: Values) => {
 		createDirectory(uuid, directory, directoryName)
 			.then(() =>
 				mutate(
-					(data) => [...data, generateDirectoryData(directoryName)],
+					(data) => [...(data || []), generateDirectoryData(directoryName)],
 					false,
 				),
 			)
-			.then(() => close())
+			.then(() => {
+				reset();
+				close();
+			})
 			.catch((error) => {
-				setSubmitting(false);
 				clearAndAddHttpError(error);
 			});
 	};
 
 	return (
-		<Formik
-			onSubmit={submit}
-			validate={(values) => {
-				const result = schema.safeParse(values);
-				if (result.success) return {};
-
-				const errors: Record<string, string> = {};
-				for (const error of result.error.issues) {
-					errors[error.path[0] as string] = error.message;
-				}
-				return errors;
-			}}
-			initialValues={{ directoryName: "" }}
-		>
-			{({ submitForm, values }) => (
-				<>
-					<FlashMessageRender key={"files:directory-modal"} />
-					<Form css={tw`m-0`}>
-						<Field
-							autoFocus
-							id={"directoryName"}
-							name={"directoryName"}
-							label={"Name"}
-						/>
-						<p css={tw`mt-2 text-sm md:text-base break-all`}>
-							<span css={tw`text-neutral-200`}>
-								This directory will be created as&nbsp;
-							</span>
-							<Code>
-								/home/container/
-								<span css={tw`text-cyan-200`}>
-									{join(directory, values.directoryName).replace(
-										/^(\.\.\/|\/)+/,
-										"",
-									)}
-								</span>
-							</Code>
-						</p>
-					</Form>
-					<Dialog.Footer>
-						<Button.Text className={"w-full sm:w-auto"} onClick={close}>
-							Cancel
-						</Button.Text>
-						<Button className={"w-full sm:w-auto"} onClick={submitForm}>
-							Create
-						</Button>
-					</Dialog.Footer>
-				</>
-			)}
-		</Formik>
+		<form css={tw`m-0`} onSubmit={handleSubmit(onSubmit)}>
+			<FlashMessageRender key={"files:directory-modal"} />
+			<FormField
+				autoFocus
+				id={"directoryName"}
+				label={"Name"}
+				{...register("directoryName")}
+				error={errors.directoryName?.message}
+			/>
+			<p css={tw`mt-2 text-sm md:text-base break-all`}>
+				<span css={tw`text-neutral-200`}>
+					This directory will be created as&nbsp;
+				</span>
+				<Code>
+					/home/container/
+					<span css={tw`text-cyan-200`}>
+						{join(directory, directoryName || "").replace(/^(\.\.\/|\/)+/, "")}
+					</span>
+				</Code>
+			</p>
+			<Dialog.Footer>
+				<Button.Text
+					className={"w-full sm:w-auto"}
+					onClick={close}
+					type={"button"}
+				>
+					Cancel
+				</Button.Text>
+				<Button
+					className={"w-full sm:w-auto"}
+					type={"submit"}
+					disabled={isSubmitting}
+				>
+					Create
+				</Button>
+			</Dialog.Footer>
+		</form>
 	);
 });
 
@@ -134,8 +134,8 @@ export default ({ className }: WithClassname) => {
 
 	return (
 		<>
-			<NewDirectoryDialog open={open} onClose={setOpen.bind(this, false)} />
-			<Button onClick={setOpen.bind(this, true)} className={className}>
+			<NewDirectoryDialog open={open} onClose={() => setOpen(false)} />
+			<Button onClick={() => setOpen(true)} className={className}>
 				<span>Create Directory</span>
 			</Button>
 		</>

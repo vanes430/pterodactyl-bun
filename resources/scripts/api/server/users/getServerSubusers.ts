@@ -1,7 +1,22 @@
-import http, { type FractalResponseData } from "@/api/http";
-import type { Subuser } from "@/state/server/subusers";
+import http, {
+	type FractalResponseData,
+	type FractalResponseList,
+} from "@/api/http";
+import type { Subuser, SubuserPermission } from "@/state/server/subusers";
 
-export const rawDataToServerSubuser = (data: FractalResponseData): Subuser => ({
+export interface SubuserResponseAttributes {
+	uuid: string;
+	username: string;
+	email: string;
+	image: string;
+	"2fa_enabled": boolean;
+	created_at: string;
+	permissions: SubuserPermission[];
+}
+
+export const rawDataToServerSubuser = (
+	data: FractalResponseData<SubuserResponseAttributes>,
+): Subuser => ({
 	uuid: data.attributes.uuid,
 	username: data.attributes.username,
 	email: data.attributes.email,
@@ -16,7 +31,9 @@ export const rawDataToServerSubuser = (data: FractalResponseData): Subuser => ({
 export default (uuid: string): Promise<Subuser[]> => {
 	return new Promise((resolve, reject) => {
 		http
-			.get(`/api/client/servers/${uuid}/users`)
+			.get<FractalResponseList<SubuserResponseAttributes>>(
+				`/api/client/servers/${uuid}/users`,
+			)
 			.then(({ data }) =>
 				resolve((data.data || []).map(rawDataToServerSubuser)),
 			)

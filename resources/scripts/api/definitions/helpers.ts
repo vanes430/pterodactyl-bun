@@ -7,35 +7,35 @@ import {
 	type PaginatedResult,
 } from "@/api/http";
 
-type TransformerFunc<T> = (callback: FractalResponseData) => T;
+type TransformerFunc<T, A = any> = (callback: FractalResponseData<A>) => T;
 
 const isList = (
 	data: FractalResponseList | FractalResponseData,
 ): data is FractalResponseList => data.object === "list";
 
-function transform<T, M>(
+function transform<T, M, A = any>(
 	data: null | undefined,
-	transformer: TransformerFunc<T>,
+	transformer: TransformerFunc<T, A>,
 	missing?: M,
 ): M;
-function transform<T, M>(
-	data: FractalResponseData | null | undefined,
-	transformer: TransformerFunc<T>,
+function transform<T, M, A = any>(
+	data: FractalResponseData<A> | null | undefined,
+	transformer: TransformerFunc<T, A>,
 	missing?: M,
 ): T | M;
-function transform<T, M>(
-	data: FractalResponseList | FractalPaginatedResponse | null | undefined,
-	transformer: TransformerFunc<T>,
+function transform<T, M, A = any>(
+	data: FractalResponseList<A> | FractalPaginatedResponse<A> | null | undefined,
+	transformer: TransformerFunc<T, A>,
 	missing?: M,
 ): T[] | M;
-function transform<T>(
+function transform<T, A = any>(
 	data:
-		| FractalResponseData
-		| FractalResponseList
-		| FractalPaginatedResponse
+		| FractalResponseData<A>
+		| FractalResponseList<A>
+		| FractalPaginatedResponse<A>
 		| null
 		| undefined,
-	transformer: TransformerFunc<T>,
+	transformer: TransformerFunc<T, A>,
 	missing: any = undefined,
 ) {
 	if (data === undefined || data === null) {
@@ -53,12 +53,12 @@ function transform<T>(
 	return transformer(data);
 }
 
-function toPaginatedSet<T extends TransformerFunc<Model>>(
-	response: FractalPaginatedResponse,
-	transformer: T,
-): PaginatedResult<ReturnType<T>> {
+function toPaginatedSet<M extends Model, A = any>(
+	response: FractalPaginatedResponse<A>,
+	transformer: TransformerFunc<M, A>,
+): PaginatedResult<M> {
 	return {
-		items: transform(response, transformer) as ReturnType<T>[],
+		items: transform(response, transformer),
 		pagination: getPaginationSet(response.meta.pagination),
 	};
 }

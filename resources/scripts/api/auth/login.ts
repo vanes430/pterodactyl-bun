@@ -12,6 +12,14 @@ export interface LoginData {
 	recaptchaData?: string | null;
 }
 
+interface RawLoginResponse {
+	data: {
+		complete: boolean;
+		intended?: string;
+		confirmation_token?: string;
+	};
+}
+
 export default ({
 	username,
 	password,
@@ -21,23 +29,18 @@ export default ({
 		http
 			.get("/sanctum/csrf-cookie")
 			.then(() =>
-				http.post("/auth/login", {
+				http.post<RawLoginResponse>("/auth/login", {
 					user: username,
 					password,
 					"g-recaptcha-response": recaptchaData,
 				}),
 			)
 			.then((response) => {
-				if (!(response.data instanceof Object)) {
-					return reject(
-						new Error("An error occurred while processing the login request."),
-					);
-				}
-
+				const { data } = response.data;
 				return resolve({
-					complete: response.data.data.complete,
-					intended: response.data.data.intended || undefined,
-					confirmationToken: response.data.data.confirmation_token || undefined,
+					complete: data.complete,
+					intended: data.intended || undefined,
+					confirmationToken: data.confirmation_token || undefined,
 				});
 			})
 			.catch(reject);

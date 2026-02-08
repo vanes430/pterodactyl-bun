@@ -1,56 +1,24 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { type Actions, useStoreActions } from "easy-peasy";
-import {
-	Form,
-	Formik,
-	Field as FormikField,
-	type FormikHelpers,
-	useFormikContext,
-} from "formik";
+import { useForm } from "react-hook-form";
 import tw from "twin.macro";
 import { z } from "zod";
 import { httpErrorToHuman } from "@/api/http";
 import renameServer from "@/api/server/renameServer";
 import { Button } from "@/components/elements/button/index";
-import Field from "@/components/elements/Field";
-import FormikFieldWrapper from "@/components/elements/FormikFieldWrapper";
+import FormField from "@/components/elements/FormField";
 import { Textarea } from "@/components/elements/Input";
-import Label from "@/components/elements/Label";
 import SpinnerOverlay from "@/components/elements/SpinnerOverlay";
 import TitledGreyBox from "@/components/elements/TitledGreyBox";
 import type { ApplicationStore } from "@/state";
 import { ServerContext } from "@/state/server";
-
-interface Values {
-	name: string;
-	description: string;
-}
 
 const schema = z.object({
 	name: z.string().min(1, "A server name must be provided."),
 	description: z.string().optional(),
 });
 
-const RenameServerBox = () => {
-	const { isSubmitting } = useFormikContext<Values>();
-
-	return (
-		<TitledGreyBox title={"Change Server Details"} css={tw`relative`}>
-			<SpinnerOverlay visible={isSubmitting} />
-			<Form css={tw`mb-0`}>
-				<Field id={"name"} name={"name"} label={"Server Name"} type={"text"} />
-				<div css={tw`mt-6`}>
-					<Label>Server Description</Label>
-					<FormikFieldWrapper name={"description"}>
-						<FormikField as={Textarea} name={"description"} rows={3} />
-					</FormikFieldWrapper>
-				</div>
-				<div css={tw`mt-6 text-right`}>
-					<Button type={"submit"}>Save</Button>
-				</div>
-			</Form>
-		</TitledGreyBox>
-	);
-};
+type Values = z.infer<typeof schema>;
 
 export default () => {
 	const server = ServerContext.useStoreState((state) => state.server.data!);
@@ -61,39 +29,55 @@ export default () => {
 		(actions: Actions<ApplicationStore>) => actions.flashes,
 	);
 
-	const submit = (
-		{ name, description }: Values,
-		{ setSubmitting }: FormikHelpers<Values>,
-	) => {
+	const {
+		register,
+		handleSubmit,
+		formState: { isSubmitting, errors },
+	} = useForm<Values>({
+		resolver: zodResolver(schema),
+		defaultValues: {
+			name: server.name,
+			description: server.description,
+		},
+	});
+
+	const onSubmit = ({ name, description }: Values) => {
 		clearFlashes("settings");
 		renameServer(server.uuid, name, description)
 			.then(() => setServer({ ...server, name, description }))
 			.catch((error) => {
 				console.error(error);
 				addError({ key: "settings", message: httpErrorToHuman(error) });
-			})
-			.then(() => setSubmitting(false));
+			});
 	};
 
 	return (
-		<Formik
-			onSubmit={submit}
-			initialValues={{
-				name: server.name,
-				description: server.description,
-			}}
-			validate={(values) => {
-				const result = schema.safeParse(values);
-				if (result.success) return {};
-
-				const errors: Record<string, string> = {};
-				for (const error of result.error.issues) {
-					errors[error.path[0] as string] = error.message;
-				}
-				return errors;
-			}}
-		>
-			<RenameServerBox />
-		</Formik>
+		<form onSubmit={handleSubmit(onSubmit)}>
+			<TitledGreyBox title={"Change Server Details"} css={tw`relative`}>
+				<SpinnerOverlay visible={isSubmitting} />
+				<div css={tw`mb-0`}>
+					<FormField
+						id={"name"}
+						label={"Server Name"}
+						type={"text"}
+						{...register("name")}
+						error={errors.name?.message}
+					/>
+					<div css={tw`mt-6`}>
+						<FormField
+							id={"description"}
+							label={"Server Description"}
+							as={Textarea}
+							rows={3}
+							{...register("description")}
+							error={errors.description?.message}
+						/>
+					</div>
+					<div css={tw`mt-6 text-right`}>
+						<Button type={"submit"}>Save</Button>
+					</div>
+				</div>
+			</TitledGreyBox>
+		</form>
 	);
 };

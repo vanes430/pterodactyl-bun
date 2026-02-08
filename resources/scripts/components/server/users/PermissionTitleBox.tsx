@@ -1,4 +1,3 @@
-import { useField } from "formik";
 import type React from "react";
 import { memo, type PropsWithChildren, useCallback } from "react";
 import isEqual from "react-fast-compare";
@@ -11,12 +10,20 @@ interface Props {
 	title: string;
 	permissions: string[];
 	className?: string;
+	value: string[];
+	setValue: (value: string[]) => void;
 }
 
 const PermissionTitleBox: React.FC<PropsWithChildren<Props>> = memo(
-	({ isEditable, title, permissions, className, children }) => {
-		const [{ value }, , { setValue }] = useField<string[]>("permissions");
-
+	({
+		isEditable,
+		title,
+		permissions,
+		className,
+		children,
+		value,
+		setValue,
+	}) => {
 		const onCheckboxClicked = useCallback(
 			(e: React.ChangeEvent<HTMLInputElement>) => {
 				if (e.currentTarget.checked) {

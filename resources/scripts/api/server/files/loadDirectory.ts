@@ -1,4 +1,5 @@
-import http from "@/api/http";
+import type { FileObjectAttributes } from "@/api/definitions/api";
+import http, { type FractalResponseList } from "@/api/http";
 import { rawDataToFileObject } from "@/api/transformers";
 
 export interface FileObject {
@@ -20,9 +21,12 @@ export default async (
 	uuid: string,
 	directory?: string,
 ): Promise<FileObject[]> => {
-	const { data } = await http.get(`/api/client/servers/${uuid}/files/list`, {
-		params: { directory: directory ?? "/" },
-	});
+	const { data } = await http.get<FractalResponseList<FileObjectAttributes>>(
+		`/api/client/servers/${uuid}/files/list`,
+		{
+			params: { directory: directory ?? "/" },
+		},
+	);
 
 	return (data.data || []).map(rawDataToFileObject);
 };

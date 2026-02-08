@@ -1,7 +1,7 @@
 import { CloudUploadIcon } from "@heroicons/react/outline";
-import axios, { type AxiosProgressEvent } from "axios";
 import { useEffect, useRef, useState } from "react";
 import tw from "twin.macro";
+import http from "@/api/http";
 import getFileUploadUrl from "@/api/server/files/getFileUploadUrl";
 import { Button } from "@/components/elements/button/index";
 import Fade from "@/components/elements/Fade";
@@ -76,7 +76,7 @@ export default ({ className }: WithClassname) => {
 		};
 	}, []);
 
-	const onUploadProgress = (data: AxiosProgressEvent, name: string) => {
+	const onUploadProgress = (data: ProgressEvent, name: string) => {
 		setUploadProgress({ name, loaded: data.loaded });
 	};
 
@@ -95,24 +95,22 @@ export default ({ className }: WithClassname) => {
 			});
 
 			return () =>
-				getFileUploadUrl(uuid).then((url) =>
-					axios
-						.post(
-							url,
-							{ files: file },
-							{
-								signal: controller.signal,
-								headers: { "Content-Type": "multipart/form-data" },
-								params: { directory },
-								onUploadProgress: (data) => onUploadProgress(data, file.name),
-							},
-						)
+				getFileUploadUrl(uuid).then((url) => {
+					const form = new FormData();
+					form.append("files", file);
+
+					return http
+						.upload(url, form, {
+							signal: controller.signal,
+							params: { directory },
+							onUploadProgress: (data) => onUploadProgress(data, file.name),
+						})
 						.then(() =>
 							timeouts.current.push(
 								setTimeout(() => removeFileUpload(file.name), 500),
 							),
-						),
-				);
+						);
+				});
 		});
 
 		Promise.all(uploads.map((fn) => fn()))

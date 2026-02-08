@@ -1,6 +1,7 @@
-import { Form, Formik, type FormikHelpers } from "formik";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Database, Eye, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import tw from "twin.macro";
 import { z } from "zod";
 import { httpErrorToHuman } from "@/api/http";
@@ -9,7 +10,7 @@ import type { ServerDatabase } from "@/api/server/databases/getServerDatabases";
 import Button from "@/components/elements/Button";
 import Can from "@/components/elements/Can";
 import CopyOnClick from "@/components/elements/CopyOnClick";
-import Field from "@/components/elements/Field";
+import FormField from "@/components/elements/FormField";
 import GreyRowBox from "@/components/elements/GreyRowBox";
 import Input from "@/components/elements/Input";
 import Label from "@/components/elements/Label";
@@ -51,10 +52,22 @@ export default ({ database, className }: Props) => {
 			),
 	});
 
-	const submit = (
-		_values: { confirm: string },
-		{ setSubmitting }: FormikHelpers<{ confirm: string }>,
-	) => {
+	type Values = z.infer<typeof schema>;
+
+	const {
+		register,
+		handleSubmit,
+		formState: { isValid, isSubmitting, errors },
+		reset,
+	} = useForm<Values>({
+		resolver: zodResolver(schema),
+		defaultValues: {
+			confirm: "",
+		},
+		mode: "onChange",
+	});
+
+	const onSubmit = () => {
 		if (!uuid) return;
 
 		clearFlashes(undefined);
@@ -62,73 +75,60 @@ export default ({ database, className }: Props) => {
 			.then(() => {
 				setVisible(false);
 				setTimeout(() => removeDatabase(database.id), 150);
+				reset();
 			})
 			.catch((error) => {
 				console.error(error);
-				setSubmitting(false);
 				addError({ key: "database:delete", message: httpErrorToHuman(error) });
 			});
 	};
 
 	return (
 		<>
-			<Formik
-				onSubmit={submit}
-				initialValues={{ confirm: "" }}
-				validate={(values) => {
-					const result = schema.safeParse(values);
-					if (result.success) return {};
-
-					const errors: Record<string, string> = {};
-					for (const error of result.error.issues) {
-						errors[error.path[0] as string] = error.message;
-					}
-					return errors;
+			<Modal
+				visible={visible}
+				dismissable={!isSubmitting}
+				showSpinnerOverlay={isSubmitting}
+				onDismissed={() => {
+					setVisible(false);
+					reset();
 				}}
-				isInitialValid={false}
 			>
-				{({ isSubmitting, isValid, resetForm }) => (
-					<Modal
-						visible={visible}
-						dismissable={!isSubmitting}
-						showSpinnerOverlay={isSubmitting}
-						onDismissed={() => {
-							setVisible(false);
-							resetForm();
-						}}
-					>
-						<FlashMessageRender byKey={"database:delete"} css={tw`mb-6`} />
-						<h2 css={tw`text-2xl mb-6`}>Confirm database deletion</h2>
-						<p css={tw`text-sm`}>
-							Deleting a database is a permanent action, it cannot be undone.
-							This will permanently delete the <strong>{database.name}</strong>{" "}
-							database and remove all associated data.
-						</p>
-						<Form css={tw`m-0 mt-6`}>
-							<Field
-								type={"text"}
-								id={"confirm_name"}
-								name={"confirm"}
-								label={"Confirm Database Name"}
-								description={"Enter the database name to confirm deletion."}
-							/>
-							<div css={tw`mt-6 text-right`}>
-								<Button
-									type={"button"}
-									isSecondary
-									css={tw`mr-2`}
-									onClick={() => setVisible(false)}
-								>
-									Cancel
-								</Button>
-								<Button type={"submit"} color={"red"} disabled={!isValid}>
-									Delete Database
-								</Button>
-							</div>
-						</Form>
-					</Modal>
-				)}
-			</Formik>
+				<FlashMessageRender byKey={"database:delete"} css={tw`mb-6`} />
+				<h2 css={tw`text-2xl mb-6`}>Confirm database deletion</h2>
+				<p css={tw`text-sm`}>
+					Deleting a database is a permanent action, it cannot be undone. This
+					will permanently delete the <strong>{database.name}</strong> database
+					and remove all associated data.
+				</p>
+				<form css={tw`m-0 mt-6`} onSubmit={handleSubmit(onSubmit)}>
+					<FormField
+						type={"text"}
+						id={"confirm_name"}
+						label={"Confirm Database Name"}
+						description={"Enter the database name to confirm deletion."}
+						{...register("confirm")}
+						error={errors.confirm?.message}
+					/>
+					<div css={tw`mt-6 text-right`}>
+						<Button
+							type={"button"}
+							isSecondary
+							css={tw`mr-2`}
+							onClick={() => setVisible(false)}
+						>
+							Cancel
+						</Button>
+						<Button
+							type={"submit"}
+							color={"red"}
+							disabled={!isValid || isSubmitting}
+						>
+							Delete Database
+						</Button>
+					</div>
+				</form>
+			</Modal>
 			<Modal
 				visible={connectionVisible}
 				onDismissed={() => setConnectionVisible(false)}

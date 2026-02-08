@@ -1,5 +1,13 @@
-import http, { getPaginationSet, type PaginatedResult } from "@/api/http";
-import { rawDataToServerObject, type Server } from "@/api/server/getServer";
+import http, {
+	type FractalPaginatedResponse,
+	getPaginationSet,
+	type PaginatedResult,
+} from "@/api/http";
+import {
+	rawDataToServerObject,
+	type Server,
+	type ServerResponseAttributes,
+} from "@/api/server/getServer";
 
 interface QueryParams {
 	query?: string;
@@ -13,7 +21,7 @@ export default ({
 }: QueryParams): Promise<PaginatedResult<Server>> => {
 	return new Promise((resolve, reject) => {
 		http
-			.get("/api/client", {
+			.get<FractalPaginatedResponse<ServerResponseAttributes>>("/api/client", {
 				params: {
 					"filter[*]": query,
 					...params,
@@ -21,9 +29,7 @@ export default ({
 			})
 			.then(({ data }) =>
 				resolve({
-					items: (data.data || []).map((datum: any) =>
-						rawDataToServerObject(datum),
-					),
+					items: data.data.map((datum) => rawDataToServerObject(datum)),
 					pagination: getPaginationSet(data.meta.pagination),
 				}),
 			)

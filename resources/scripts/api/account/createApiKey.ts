@@ -1,5 +1,5 @@
 import { type ApiKey, rawDataToApiKey } from "@/api/account/getApiKeys";
-import http from "@/api/http";
+import http, { type FractalResponseData } from "@/api/http";
 
 export default (
 	description: string,
@@ -7,10 +7,13 @@ export default (
 ): Promise<ApiKey & { secretToken: string }> => {
 	return new Promise((resolve, reject) => {
 		http
-			.post("/api/client/account/api-keys", {
-				description,
-				allowed_ips: allowedIps.length > 0 ? allowedIps.split("\n") : [],
-			})
+			.post<FractalResponseData & { meta: { secret_token: string } }>(
+				"/api/client/account/api-keys",
+				{
+					description,
+					allowed_ips: allowedIps.length > 0 ? allowedIps.split("\n") : [],
+				},
+			)
 			.then(({ data }) =>
 				resolve({
 					...rawDataToApiKey(data.attributes),

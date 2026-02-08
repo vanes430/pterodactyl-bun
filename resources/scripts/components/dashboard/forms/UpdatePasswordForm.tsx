@@ -12,8 +12,7 @@ import { z } from "zod";
 import updateAccountPassword from "@/api/account/updateAccountPassword";
 import { httpErrorToHuman } from "@/api/http";
 import { Button } from "@/components/elements/button/index";
-import Input from "@/components/elements/Input";
-import Label from "@/components/elements/Label";
+import FormField from "@/components/elements/FormField";
 import SpinnerOverlay from "@/components/elements/SpinnerOverlay";
 import type { ApplicationStore } from "@/state";
 
@@ -78,47 +77,33 @@ export default () => {
 		<React.Fragment>
 			<SpinnerOverlay size={"large"} visible={isSubmitting} />
 			<form css={tw`m-0`} onSubmit={handleSubmit(onSubmit)}>
-				<div>
-					<Label htmlFor={"current_password"}>Current Password</Label>
-					<Input
-						id={"current_password"}
-						type={"password"}
-						{...register("current")}
-						hasError={!!errors.current}
-					/>
-					{errors.current && (
-						<p css={tw`mt-1 text-xs text-red-500`}>{errors.current.message}</p>
-					)}
-				</div>
+				<FormField
+					id={"current_password"}
+					type={"password"}
+					label={"Current Password"}
+					{...register("current")}
+					error={errors.current?.message}
+				/>
 				<div css={tw`mt-6`}>
-					<Label htmlFor={"new_password"}>New Password</Label>
-					<Input
+					<FormField
 						id={"new_password"}
 						type={"password"}
+						label={"New Password"}
+						description={
+							"Your new password should be at least 8 characters in length and unique to this website."
+						}
 						{...register("password")}
-						hasError={!!errors.password}
+						error={errors.password?.message}
 					/>
-					<p css={tw`mt-1 text-xs text-neutral-500`}>
-						Your new password should be at least 8 characters in length and
-						unique to this website.
-					</p>
-					{errors.password && (
-						<p css={tw`mt-1 text-xs text-red-500`}>{errors.password.message}</p>
-					)}
 				</div>
 				<div css={tw`mt-6`}>
-					<Label htmlFor={"confirm_new_password"}>Confirm New Password</Label>
-					<Input
+					<FormField
 						id={"confirm_new_password"}
 						type={"password"}
+						label={"Confirm New Password"}
 						{...register("confirmPassword")}
-						hasError={!!errors.confirmPassword}
+						error={errors.confirmPassword?.message}
 					/>
-					{errors.confirmPassword && (
-						<p css={tw`mt-1 text-xs text-red-500`}>
-							{errors.confirmPassword.message}
-						</p>
-					)}
 				</div>
 				<div css={tw`mt-6`}>
 					<Button disabled={isSubmitting || !isValid}>Update Password</Button>

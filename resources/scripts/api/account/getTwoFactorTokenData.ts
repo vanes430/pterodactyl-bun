@@ -9,7 +9,7 @@ export interface TwoFactorTokenData {
 export default (): Promise<TwoFactorTokenData> => {
 	return new Promise((resolve, reject) => {
 		http
-			.get("/api/client/account/two-factor")
+			.get<{ data: TwoFactorTokenData }>("/api/client/account/two-factor")
 			.then(({ data }) => resolve(data.data))
 			.catch(reject);
 	});

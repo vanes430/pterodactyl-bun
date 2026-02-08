@@ -1,7 +1,8 @@
-import http from "@/api/http";
+import http, { type FractalResponseData } from "@/api/http";
 import {
 	rawDataToServerTask,
 	type Task,
+	type TaskAttributes,
 } from "@/api/server/schedules/getServerSchedules";
 
 interface Data {
@@ -17,7 +18,9 @@ export default async (
 	task: number | undefined,
 	data: Data,
 ): Promise<Task> => {
-	const { data: response } = await http.post(
+	const { data: response } = await http.post<
+		FractalResponseData<TaskAttributes>
+	>(
 		`/api/client/servers/${uuid}/schedules/${schedule}/tasks${task ? `/${task}` : ""}`,
 		{
 			action: data.action,

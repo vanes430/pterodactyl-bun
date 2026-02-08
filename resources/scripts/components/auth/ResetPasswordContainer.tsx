@@ -1,6 +1,7 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { type Actions, useStoreActions } from "easy-peasy";
-import { Formik, type FormikHelpers } from "formik";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { Link, useLocation, useParams } from "react-router-dom";
 import tw from "twin.macro";
 import { z } from "zod";
@@ -8,14 +9,10 @@ import performPasswordReset from "@/api/auth/performPasswordReset";
 import { httpErrorToHuman } from "@/api/http";
 import LoginFormContainer from "@/components/auth/LoginFormContainer";
 import Button from "@/components/elements/Button";
-import Field from "@/components/elements/Field";
+import FormField from "@/components/elements/FormField";
 import Input from "@/components/elements/Input";
+import Label from "@/components/elements/Label";
 import type { ApplicationStore } from "@/state";
-
-interface Values {
-	password: string;
-	passwordConfirmation: string;
-}
 
 const schema = z
 	.object({
@@ -31,6 +28,8 @@ const schema = z
 		path: ["passwordConfirmation"],
 	});
 
+type Values = z.infer<typeof schema>;
+
 export default () => {
 	const { token } = useParams<{ token: string }>();
 	const location = useLocation();
@@ -45,10 +44,19 @@ export default () => {
 		setEmail(parsed.get("email") || "");
 	}
 
-	const submit = (
-		{ password, passwordConfirmation }: Values,
-		{ setSubmitting }: FormikHelpers<Values>,
-	) => {
+	const {
+		register,
+		handleSubmit,
+		formState: { errors, isSubmitting },
+	} = useForm<Values>({
+		resolver: zodResolver(schema),
+		defaultValues: {
+			password: "",
+			passwordConfirmation: "",
+		},
+	});
+
+	const onSubmit = ({ password, passwordConfirmation }: Values) => {
 		clearFlashes(undefined);
 		performPasswordReset(email, {
 			token: token || "",
@@ -61,8 +69,6 @@ export default () => {
 			})
 			.catch((error) => {
 				console.error(error);
-
-				setSubmitting(false);
 				addFlash({
 					type: "error",
 					title: "Error",
@@ -72,66 +78,54 @@ export default () => {
 	};
 
 	return (
-		<Formik
-			onSubmit={submit}
-			initialValues={{
-				password: "",
-				passwordConfirmation: "",
-			}}
-			validate={(values) => {
-				const result = schema.safeParse(values);
-				if (result.success) return {};
-
-				const errors: Record<string, string> = {};
-				for (const error of result.error.issues) {
-					errors[error.path[0] as string] = error.message;
-				}
-				return errors;
-			}}
+		<LoginFormContainer
+			title={"Reset Password"}
+			css={tw`w-full flex`}
+			onSubmit={handleSubmit(onSubmit)}
 		>
-			{({ isSubmitting }) => (
-				<LoginFormContainer title={"Reset Password"} css={tw`w-full flex`}>
-					<div>
-						<label>Email</label>
-						<Input value={email} isLight disabled />
-					</div>
-					<div css={tw`mt-6`}>
-						<Field
-							light
-							label={"New Password"}
-							name={"password"}
-							type={"password"}
-							description={"Passwords must be at least 8 characters in length."}
-						/>
-					</div>
-					<div css={tw`mt-6`}>
-						<Field
-							light
-							label={"Confirm New Password"}
-							name={"passwordConfirmation"}
-							type={"password"}
-						/>
-					</div>
-					<div css={tw`mt-6`}>
-						<Button
-							size={"xlarge"}
-							type={"submit"}
-							disabled={isSubmitting}
-							isLoading={isSubmitting}
-						>
-							Reset Password
-						</Button>
-					</div>
-					<div css={tw`mt-6 text-center`}>
-						<Link
-							to={"/auth/login"}
-							css={tw`text-xs text-neutral-500 tracking-wide no-underline uppercase hover:text-neutral-600`}
-						>
-							Return to Login
-						</Link>
-					</div>
-				</LoginFormContainer>
-			)}
-		</Formik>
+			<div>
+				<Label isLight>Email</Label>
+				<Input value={email} isLight disabled />
+			</div>
+			<div css={tw`mt-6`}>
+				<FormField
+					id={"password"}
+					light
+					label={"New Password"}
+					{...register("password")}
+					type={"password"}
+					description={"Passwords must be at least 8 characters in length."}
+					error={errors.password?.message}
+				/>
+			</div>
+			<div css={tw`mt-6`}>
+				<FormField
+					id={"passwordConfirmation"}
+					light
+					label={"Confirm New Password"}
+					{...register("passwordConfirmation")}
+					type={"password"}
+					error={errors.passwordConfirmation?.message}
+				/>
+			</div>
+			<div css={tw`mt-6`}>
+				<Button
+					size={"xlarge"}
+					type={"submit"}
+					disabled={isSubmitting}
+					isLoading={isSubmitting}
+				>
+					Reset Password
+				</Button>
+			</div>
+			<div css={tw`mt-6 text-center`}>
+				<Link
+					to={"/auth/login"}
+					css={tw`text-xs text-neutral-500 tracking-wide no-underline uppercase hover:text-neutral-600`}
+				>
+					Return to Login
+				</Link>
+			</div>
+		</LoginFormContainer>
 	);
 };

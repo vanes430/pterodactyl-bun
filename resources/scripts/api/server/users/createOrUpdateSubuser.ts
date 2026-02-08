@@ -1,5 +1,8 @@
-import http from "@/api/http";
-import { rawDataToServerSubuser } from "@/api/server/users/getServerSubusers";
+import http, { type FractalResponseData } from "@/api/http";
+import {
+	rawDataToServerSubuser,
+	type SubuserResponseAttributes,
+} from "@/api/server/users/getServerSubusers";
 import type { Subuser } from "@/state/server/subusers";
 
 interface Params {
@@ -14,7 +17,7 @@ export default (
 ): Promise<Subuser> => {
 	return new Promise((resolve, reject) => {
 		http
-			.post(
+			.post<FractalResponseData<SubuserResponseAttributes>>(
 				`/api/client/servers/${uuid}/users${subuser ? `/${subuser.uuid}` : ""}`,
 				{
 					...params,

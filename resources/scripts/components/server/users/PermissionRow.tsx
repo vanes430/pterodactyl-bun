@@ -1,7 +1,7 @@
-import { useStoreState } from "easy-peasy";
+import type { UseFormRegisterReturn } from "react-hook-form";
 import styled from "styled-components";
 import tw from "twin.macro";
-import Checkbox from "@/components/elements/Checkbox";
+import CustomCheckbox from "@/components/elements/CustomCheckbox";
 import Label from "@/components/elements/Label";
 
 const Container = styled.label`
@@ -32,11 +32,19 @@ const Container = styled.label`
 interface Props {
 	permission: string;
 	disabled: boolean;
+	register: UseFormRegisterReturn;
+	checked: boolean;
+	description?: string;
 }
 
-const PermissionRow = ({ permission, disabled }: Props) => {
-	const [key, pkey] = permission.split(".", 2);
-	const permissions = useStoreState((state) => state.permissions.data);
+const PermissionRow = ({
+	permission,
+	disabled,
+	register,
+	checked,
+	description,
+}: Props) => {
+	const [, pkey] = permission.split(".", 2);
 
 	return (
 		<Container
@@ -44,22 +52,21 @@ const PermissionRow = ({ permission, disabled }: Props) => {
 			className={disabled ? "disabled" : undefined}
 		>
 			<div css={tw`p-2`}>
-				<Checkbox
+				<CustomCheckbox
 					id={`permission_${permission}`}
-					name={"permissions"}
 					value={permission}
 					css={tw`w-5 h-5 mr-2`}
 					disabled={disabled}
+					checked={checked}
+					{...register}
 				/>
 			</div>
 			<div css={tw`flex-1`}>
 				<Label as={"p"} css={tw`font-medium`}>
 					{pkey}
 				</Label>
-				{permissions[key].keys[pkey].length > 0 && (
-					<p css={tw`text-xs text-neutral-400 mt-1`}>
-						{permissions[key].keys[pkey]}
-					</p>
+				{description && description.length > 0 && (
+					<p css={tw`text-xs text-neutral-400 mt-1`}>{description}</p>
 				)}
 			</div>
 		</Container>

@@ -11,10 +11,15 @@ interface PasswordResetResponse {
 	sendToLogin: boolean;
 }
 
+interface RawResponse {
+	redirect_to?: string | null;
+	send_to_login: boolean;
+}
+
 export default (email: string, data: Data): Promise<PasswordResetResponse> => {
 	return new Promise((resolve, reject) => {
 		http
-			.post("/auth/password/reset", {
+			.post<RawResponse>("/auth/password/reset", {
 				email,
 				token: data.token,
 				password: data.password,

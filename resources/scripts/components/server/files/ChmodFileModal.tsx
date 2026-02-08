@@ -1,15 +1,15 @@
-import { Form, Formik, type FormikHelpers } from "formik";
+import { useForm } from "react-hook-form";
 import tw from "twin.macro";
 import chmodFiles from "@/api/server/files/chmodFiles";
 import Button from "@/components/elements/Button";
-import Field from "@/components/elements/Field";
+import FormField from "@/components/elements/FormField";
 import Modal, { type RequiredModalProps } from "@/components/elements/Modal";
 import { fileBitsToString } from "@/helpers";
 import useFileManagerSwr from "@/plugins/useFileManagerSwr";
 import useFlash from "@/plugins/useFlash";
 import { ServerContext } from "@/state/server";
 
-interface FormikValues {
+interface Values {
 	mode: string;
 }
 
@@ -31,15 +31,23 @@ const ChmodFileModal = ({ files, ...props }: OwnProps) => {
 		(actions) => actions.files.setSelectedFiles,
 	);
 
-	const submit = (
-		{ mode }: FormikValues,
-		{ setSubmitting }: FormikHelpers<FormikValues>,
-	) => {
+	const {
+		register,
+		handleSubmit,
+		formState: { isSubmitting },
+		reset,
+	} = useForm<Values>({
+		defaultValues: {
+			mode: files.length > 1 ? "" : files[0].mode || "",
+		},
+	});
+
+	const onSubmit = ({ mode }: Values) => {
 		clearFlashes("files");
 
 		mutate(
 			(data) =>
-				data.map((f) =>
+				data?.map((f) =>
 					f.name === files[0].file
 						? { ...f, mode: fileBitsToString(mode, !f.isFile), modeBits: mode }
 						: f,
@@ -56,42 +64,38 @@ const ChmodFileModal = ({ files, ...props }: OwnProps) => {
 			.then(() => setSelectedFiles([]))
 			.catch((error) => {
 				mutate();
-				setSubmitting(false);
 				clearAndAddHttpError({ key: "files", error });
 			})
-			.then(() => props.onDismissed());
+			.then(() => {
+				reset();
+				props.onDismissed();
+			});
 	};
 
 	return (
-		<Formik
-			onSubmit={submit}
-			initialValues={{ mode: files.length > 1 ? "" : files[0].mode || "" }}
+		<Modal
+			{...props}
+			dismissable={!isSubmitting}
+			showSpinnerOverlay={isSubmitting}
 		>
-			{({ isSubmitting }) => (
-				<Modal
-					{...props}
-					dismissable={!isSubmitting}
-					showSpinnerOverlay={isSubmitting}
-				>
-					<Form css={tw`m-0`}>
-						<div css={tw`flex flex-wrap items-end`}>
-							<div css={tw`w-full sm:flex-1 sm:mr-4`}>
-								<Field
-									type={"string"}
-									id={"file_mode"}
-									name={"mode"}
-									label={"File Mode"}
-									autoFocus
-								/>
-							</div>
-							<div css={tw`w-full sm:w-auto mt-4 sm:mt-0`}>
-								<Button css={tw`w-full`}>Update</Button>
-							</div>
-						</div>
-					</Form>
-				</Modal>
-			)}
-		</Formik>
+			<form css={tw`m-0`} onSubmit={handleSubmit(onSubmit)}>
+				<div css={tw`flex flex-wrap items-end`}>
+					<div css={tw`w-full sm:flex-1 sm:mr-4`}>
+						<FormField
+							id={"file_mode"}
+							label={"File Mode"}
+							autoFocus
+							{...register("mode")}
+						/>
+					</div>
+					<div css={tw`w-full sm:w-auto mt-4 sm:mt-0`}>
+						<Button css={tw`w-full`} type={"submit"}>
+							Update
+						</Button>
+					</div>
+				</div>
+			</form>
+		</Modal>
 	);
 };
 

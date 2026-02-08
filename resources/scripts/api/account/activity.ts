@@ -1,8 +1,10 @@
 import { toPaginatedSet } from "@definitions/helpers";
 import { type ActivityLog, Transformers } from "@definitions/user";
-import type { AxiosError } from "axios";
+import type { ActivityLogAttributes } from "@definitions/user/transformers";
 import useSWR, { type SWRConfiguration, type SWRResponse } from "swr";
 import http, {
+	type FractalPaginatedResponse,
+	type HttpRequestError,
 	type PaginatedResult,
 	type QueryBuilderParams,
 	withQueryBuilderParams,
@@ -17,8 +19,8 @@ export type ActivityLogFilters = QueryBuilderParams<
 
 const useActivityLogs = (
 	filters?: ActivityLogFilters,
-	config?: SWRConfiguration<PaginatedResult<ActivityLog>, AxiosError>,
-): SWRResponse<PaginatedResult<ActivityLog>, AxiosError> => {
+	config?: SWRConfiguration<PaginatedResult<ActivityLog>, HttpRequestError>,
+): SWRResponse<PaginatedResult<ActivityLog>, HttpRequestError> => {
 	const key = useUserSWRKey([
 		"account",
 		"activity",
@@ -28,7 +30,9 @@ const useActivityLogs = (
 	return useSWR<PaginatedResult<ActivityLog>>(
 		key,
 		async () => {
-			const { data } = await http.get("/api/client/account/activity", {
+			const { data } = await http.get<
+				FractalPaginatedResponse<ActivityLogAttributes>
+			>("/api/client/account/activity", {
 				params: {
 					...withQueryBuilderParams(filters),
 					include: ["actor"],

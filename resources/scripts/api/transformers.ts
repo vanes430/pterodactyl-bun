@@ -1,10 +1,16 @@
+import type {
+	AllocationAttributes,
+	EggVariableAttributes,
+	FileObjectAttributes,
+	ServerBackupAttributes,
+} from "@/api/definitions/api";
 import type { FractalResponseData } from "@/api/http";
 import type { FileObject } from "@/api/server/files/loadDirectory";
 import type { Allocation } from "@/api/server/getServer";
 import type { ServerBackup, ServerEggVariable } from "@/api/server/types";
 
 export const rawDataToServerAllocation = (
-	data: FractalResponseData,
+	data: FractalResponseData<AllocationAttributes>,
 ): Allocation => ({
 	id: data.attributes.id,
 	ip: data.attributes.ip,
@@ -14,7 +20,9 @@ export const rawDataToServerAllocation = (
 	isDefault: data.attributes.is_default,
 });
 
-export const rawDataToFileObject = (data: FractalResponseData): FileObject => ({
+export const rawDataToFileObject = (
+	data: FractalResponseData<FileObjectAttributes>,
+): FileObject => ({
 	key: `${data.attributes.is_file ? "file" : "dir"}_${data.attributes.name}`,
 	name: data.attributes.name,
 	mode: data.attributes.mode,
@@ -30,19 +38,19 @@ export const rawDataToFileObject = (data: FractalResponseData): FileObject => ({
 		return (
 			this.isFile &&
 			[
-				"application/vnd.rar", // .rar
-				"application/x-rar-compressed", // .rar (2)
-				"application/x-tar", // .tar
-				"application/x-br", // .tar.br
-				"application/x-bzip2", // .tar.bz2, .bz2
-				"application/gzip", // .tar.gz, .gz
+				"application/vnd.rar",
+				"application/x-rar-compressed",
+				"application/x-tar",
+				"application/x-br",
+				"application/x-bzip2",
+				"application/gzip",
 				"application/x-gzip",
-				"application/x-lzip", // .tar.lz4, .lz4 (not sure if this mime type is correct)
-				"application/x-sz", // .tar.sz, .sz (not sure if this mime type is correct)
-				"application/x-xz", // .tar.xz, .xz
-				"application/zstd", // .tar.zst, .zst
-				"application/zip", // .zip
-				"application/x-7z-compressed", // .7z
+				"application/x-lzip",
+				"application/x-sz",
+				"application/x-xz",
+				"application/zstd",
+				"application/zip",
+				"application/x-7z-compressed",
 			].indexOf(this.mimetype) >= 0
 		);
 	},
@@ -61,30 +69,30 @@ export const rawDataToFileObject = (data: FractalResponseData): FileObject => ({
 	},
 });
 
-export const rawDataToServerBackup = ({
-	attributes,
-}: FractalResponseData): ServerBackup => ({
-	uuid: attributes.uuid,
-	isSuccessful: attributes.is_successful,
-	isLocked: attributes.is_locked,
-	name: attributes.name,
-	ignoredFiles: attributes.ignored_files,
-	checksum: attributes.checksum,
-	bytes: attributes.bytes,
-	createdAt: new Date(attributes.created_at),
-	completedAt: attributes.completed_at
-		? new Date(attributes.completed_at)
+export const rawDataToServerBackup = (
+	data: FractalResponseData<ServerBackupAttributes>,
+): ServerBackup => ({
+	uuid: data.attributes.uuid,
+	isSuccessful: data.attributes.is_successful,
+	isLocked: data.attributes.is_locked,
+	name: data.attributes.name,
+	ignoredFiles: data.attributes.ignored_files,
+	checksum: data.attributes.checksum,
+	bytes: data.attributes.bytes,
+	createdAt: new Date(data.attributes.created_at),
+	completedAt: data.attributes.completed_at
+		? new Date(data.attributes.completed_at)
 		: null,
 });
 
-export const rawDataToServerEggVariable = ({
-	attributes,
-}: FractalResponseData): ServerEggVariable => ({
-	name: attributes.name,
-	description: attributes.description,
-	envVariable: attributes.env_variable,
-	defaultValue: attributes.default_value,
-	serverValue: attributes.server_value,
-	isEditable: attributes.is_editable,
-	rules: attributes.rules.split("|"),
+export const rawDataToServerEggVariable = (
+	data: FractalResponseData<EggVariableAttributes>,
+): ServerEggVariable => ({
+	name: data.attributes.name,
+	description: data.attributes.description,
+	envVariable: data.attributes.env_variable,
+	defaultValue: data.attributes.default_value,
+	serverValue: data.attributes.server_value,
+	isEditable: data.attributes.is_editable,
+	rules: data.attributes.rules.split("|"),
 });

@@ -1,6 +1,11 @@
 import { createContext, useContext } from "react";
 import useSWR from "swr";
-import http, { getPaginationSet, type PaginatedResult } from "@/api/http";
+import type { ServerBackupAttributes } from "@/api/definitions/api";
+import http, {
+	type FractalPaginatedResponse,
+	getPaginationSet,
+	type PaginatedResult,
+} from "@/api/http";
 import type { ServerBackup } from "@/api/server/types";
 import { rawDataToServerBackup } from "@/api/transformers";
 import { ServerContext } from "@/state/server";
@@ -19,7 +24,11 @@ export default () => {
 	const uuid = ServerContext.useStoreState((state) => state.server.data?.uuid);
 
 	return useSWR<BackupResponse>(["server:backups", uuid, page], async () => {
-		const { data } = await http.get(`/api/client/servers/${uuid}/backups`, {
+		const { data } = await http.get<
+			FractalPaginatedResponse<ServerBackupAttributes> & {
+				meta: { backup_count: number };
+			}
+		>(`/api/client/servers/${uuid}/backups`, {
 			params: { page },
 		});
 

@@ -1,6 +1,7 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useStoreState } from "easy-peasy";
-import { Formik, type FormikHelpers } from "formik";
 import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import Reaptcha from "reaptcha";
 import tw from "twin.macro";
@@ -9,12 +10,8 @@ import requestPasswordResetEmail from "@/api/auth/requestPasswordResetEmail";
 import { httpErrorToHuman } from "@/api/http";
 import LoginFormContainer from "@/components/auth/LoginFormContainer";
 import Button from "@/components/elements/Button";
-import Field from "@/components/elements/Field";
+import FormField from "@/components/elements/FormField";
 import useFlash from "@/plugins/useFlash";
-
-interface Values {
-	email: string;
-}
 
 const schema = z.object({
 	email: z
@@ -23,6 +20,8 @@ const schema = z.object({
 		.email("A valid email address must be provided to continue."),
 });
 
+type Values = z.infer<typeof schema>;
+
 export default () => {
 	const ref = useRef<Reaptcha>(null);
 	const [token, setToken] = useState("");
@@ -30,14 +29,24 @@ export default () => {
 	const { clearFlashes, addFlash } = useFlash();
 	const recaptcha = useStoreState((state) => state.settings.data?.recaptcha);
 
+	const {
+		register,
+		handleSubmit,
+		formState: { errors, isSubmitting },
+		reset,
+		getValues,
+	} = useForm<Values>({
+		resolver: zodResolver(schema),
+		defaultValues: {
+			email: "",
+		},
+	});
+
 	useEffect(() => {
 		clearFlashes(undefined);
 	}, [clearFlashes]);
 
-	const handleSubmission = (
-		{ email }: Values,
-		{ setSubmitting, resetForm }: FormikHelpers<Values>,
-	) => {
+	const onSubmit = (values: Values) => {
 		clearFlashes(undefined);
 
 		// If there is no token in the state yet, request the token and then abort this submit request
@@ -45,8 +54,6 @@ export default () => {
 		if (recaptcha?.enabled && !token) {
 			ref.current?.execute().catch((error) => {
 				console.error(error);
-
-				setSubmitting(false);
 				addFlash({
 					type: "error",
 					title: "Error",
@@ -57,9 +64,9 @@ export default () => {
 			return;
 		}
 
-		requestPasswordResetEmail(email, token)
+		requestPasswordResetEmail(values.email, token)
 			.then((response) => {
-				resetForm();
+				reset();
 				addFlash({ type: "success", title: "Success", message: response });
 			})
 			.catch((error) => {
@@ -70,78 +77,61 @@ export default () => {
 					message: httpErrorToHuman(error),
 				});
 			})
-			.then(() => {
+			.finally(() => {
 				setToken("");
 				if (ref.current) ref.current.reset();
-
-				setSubmitting(false);
 			});
 	};
 
 	return (
-		<Formik
-			onSubmit={handleSubmission}
-			initialValues={{ email: "" }}
-			validate={(values) => {
-				const result = schema.safeParse(values);
-				if (result.success) return {};
-
-				const errors: Record<string, string> = {};
-				for (const error of result.error.issues) {
-					errors[error.path[0] as string] = error.message;
-				}
-				return errors;
-			}}
+		<LoginFormContainer
+			title={"Request Password Reset"}
+			css={tw`w-full flex`}
+			onSubmit={handleSubmit(onSubmit)}
 		>
-			{({ isSubmitting, setSubmitting, submitForm }) => (
-				<LoginFormContainer
-					title={"Request Password Reset"}
-					css={tw`w-full flex`}
+			<FormField
+				id={"email"}
+				light
+				label={"Email"}
+				description={
+					"Enter your account email address to receive instructions on resetting your password."
+				}
+				{...register("email")}
+				type={"email"}
+				error={errors.email?.message}
+			/>
+			<div css={tw`mt-6`}>
+				<Button
+					type={"submit"}
+					size={"xlarge"}
+					disabled={isSubmitting}
+					isLoading={isSubmitting}
 				>
-					<Field
-						light
-						label={"Email"}
-						description={
-							"Enter your account email address to receive instructions on resetting your password."
-						}
-						name={"email"}
-						type={"email"}
-					/>
-					<div css={tw`mt-6`}>
-						<Button
-							type={"submit"}
-							size={"xlarge"}
-							disabled={isSubmitting}
-							isLoading={isSubmitting}
-						>
-							Send Email
-						</Button>
-					</div>
-					{recaptcha?.enabled && (
-						<Reaptcha
-							ref={ref}
-							size={"invisible"}
-							sitekey={recaptcha.siteKey || "_invalid_key"}
-							onVerify={(response) => {
-								setToken(response);
-								submitForm();
-							}}
-							onExpire={() => {
-								setSubmitting(false);
-								setToken("");
-							}}
-						/>
-					)}
-					<div css={tw`mt-6 text-center`}>
-						<Link
-							to={"/auth/login"}
-							css={tw`text-xs text-neutral-500 tracking-wide uppercase no-underline hover:text-neutral-700`}
-						>
-							Return to Login
-						</Link>
-					</div>
-				</LoginFormContainer>
+					Send Email
+				</Button>
+			</div>
+			{recaptcha?.enabled && (
+				<Reaptcha
+					ref={ref}
+					size={"invisible"}
+					sitekey={recaptcha.siteKey || "_invalid_key"}
+					onVerify={(response) => {
+						setToken(response);
+						onSubmit(getValues());
+					}}
+					onExpire={() => {
+						setToken("");
+					}}
+				/>
 			)}
-		</Formik>
+			<div css={tw`mt-6 text-center`}>
+				<Link
+					to={"/auth/login"}
+					css={tw`text-xs text-neutral-500 tracking-wide uppercase no-underline hover:text-neutral-700`}
+				>
+					Return to Login
+				</Link>
+			</div>
+		</LoginFormContainer>
 	);
 };

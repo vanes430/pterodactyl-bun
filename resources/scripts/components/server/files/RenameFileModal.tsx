@@ -1,15 +1,15 @@
-import { Form, Formik, type FormikHelpers } from "formik";
 import { join } from "pathe";
+import { useForm } from "react-hook-form";
 import tw from "twin.macro";
 import renameFiles from "@/api/server/files/renameFiles";
 import Button from "@/components/elements/Button";
-import Field from "@/components/elements/Field";
+import FormField from "@/components/elements/FormField";
 import Modal, { type RequiredModalProps } from "@/components/elements/Modal";
 import useFileManagerSwr from "@/plugins/useFileManagerSwr";
 import useFlash from "@/plugins/useFlash";
 import { ServerContext } from "@/state/server";
 
-interface FormikValues {
+interface Values {
 	name: string;
 }
 
@@ -29,10 +29,21 @@ const RenameFileModal = ({ files, useMoveTerminology, ...props }: OwnProps) => {
 		(actions) => actions.files.setSelectedFiles,
 	);
 
-	const submit = (
-		{ name }: FormikValues,
-		{ setSubmitting }: FormikHelpers<FormikValues>,
-	) => {
+	const {
+		register,
+		handleSubmit,
+		formState: { isSubmitting },
+		watch,
+		reset,
+	} = useForm<Values>({
+		defaultValues: {
+			name: files.length > 1 ? "" : files[0] || "",
+		},
+	});
+
+	const name = watch("name");
+
+	const onSubmit = ({ name }: Values) => {
 		clearFlashes("files");
 
 		const len = name.split("/").length;
@@ -40,12 +51,13 @@ const RenameFileModal = ({ files, useMoveTerminology, ...props }: OwnProps) => {
 			if (!useMoveTerminology && len === 1) {
 				// Rename the file within this directory.
 				mutate(
-					(data) => data.map((f) => (f.name === files[0] ? { ...f, name } : f)),
+					(data) =>
+						data?.map((f) => (f.name === files[0] ? { ...f, name } : f)),
 					false,
 				);
 			} else if (useMoveTerminology || len > 1) {
 				// Remove the file from this directory since they moved it elsewhere.
-				mutate((data) => data.filter((f) => f.name !== files[0]), false);
+				mutate((data) => data?.filter((f) => f.name !== files[0]), false);
 			}
 		}
 
@@ -63,61 +75,55 @@ const RenameFileModal = ({ files, useMoveTerminology, ...props }: OwnProps) => {
 			.then(() => setSelectedFiles([]))
 			.catch((error) => {
 				mutate();
-				setSubmitting(false);
 				clearAndAddHttpError({ key: "files", error });
 			})
-			.then(() => props.onDismissed());
+			.then(() => {
+				reset();
+				props.onDismissed();
+			});
 	};
 
 	return (
-		<Formik
-			onSubmit={submit}
-			initialValues={{ name: files.length > 1 ? "" : files[0] || "" }}
+		<Modal
+			{...props}
+			dismissable={!isSubmitting}
+			showSpinnerOverlay={isSubmitting}
 		>
-			{({ isSubmitting, values }) => (
-				<Modal
-					{...props}
-					dismissable={!isSubmitting}
-					showSpinnerOverlay={isSubmitting}
+			<form css={tw`m-0`} onSubmit={handleSubmit(onSubmit)}>
+				<div
+					css={[
+						tw`flex flex-wrap`,
+						useMoveTerminology ? tw`items-center` : tw`items-end`,
+					]}
 				>
-					<Form css={tw`m-0`}>
-						<div
-							css={[
-								tw`flex flex-wrap`,
-								useMoveTerminology ? tw`items-center` : tw`items-end`,
-							]}
-						>
-							<div css={tw`w-full sm:flex-1 sm:mr-4`}>
-								<Field
-									type={"string"}
-									id={"file_name"}
-									name={"name"}
-									label={"File Name"}
-									description={
-										useMoveTerminology
-											? "Enter the new name and directory of this file or folder, relative to the current directory."
-											: undefined
-									}
-									autoFocus
-								/>
-							</div>
-							<div css={tw`w-full sm:w-auto mt-4 sm:mt-0`}>
-								<Button css={tw`w-full`}>
-									{useMoveTerminology ? "Move" : "Rename"}
-								</Button>
-							</div>
-						</div>
-						{useMoveTerminology && (
-							<p css={tw`text-xs mt-2 text-neutral-400`}>
-								<strong css={tw`text-neutral-200`}>New location:</strong>
-								&nbsp;/home/container/
-								{join(directory, values.name).replace(/^(\.\.\/|\/)+/, "")}
-							</p>
-						)}
-					</Form>
-				</Modal>
-			)}
-		</Formik>
+					<div css={tw`w-full sm:flex-1 sm:mr-4`}>
+						<FormField
+							id={"file_name"}
+							label={"File Name"}
+							description={
+								useMoveTerminology
+									? "Enter the new name and directory of this file or folder, relative to the current directory."
+									: undefined
+							}
+							autoFocus
+							{...register("name")}
+						/>
+					</div>
+					<div css={tw`w-full sm:w-auto mt-4 sm:mt-0`}>
+						<Button css={tw`w-full`} type={"submit"}>
+							{useMoveTerminology ? "Move" : "Rename"}
+						</Button>
+					</div>
+				</div>
+				{useMoveTerminology && (
+					<p css={tw`text-xs mt-2 text-neutral-400`}>
+						<strong css={tw`text-neutral-200`}>New location:</strong>
+						&nbsp;/home/container/
+						{join(directory, name || "").replace(/^(\.\.\/|\/)+/, "")}
+					</p>
+				)}
+			</form>
+		</Modal>
 	);
 };
 

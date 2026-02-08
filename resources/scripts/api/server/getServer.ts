@@ -1,3 +1,7 @@
+import type {
+	AllocationAttributes,
+	EggVariableAttributes,
+} from "@/api/definitions/api";
 import http, {
 	type FractalResponseData,
 	type FractalResponseList,
@@ -51,9 +55,45 @@ export interface Server {
 	allocations: Allocation[];
 }
 
+export interface ServerResponseAttributes {
+	identifier: string;
+	internal_id: number;
+	uuid: string;
+	name: string;
+	node: string;
+	is_node_under_maintenance: boolean;
+	status: ServerStatus;
+	invocation: string;
+	docker_image: string;
+	sftp_details: {
+		ip: string;
+		port: number;
+	};
+	description: string | null;
+	limits: {
+		memory: number;
+		swap: number;
+		disk: number;
+		io: number;
+		cpu: number;
+		threads: string;
+	};
+	egg_features: string[];
+	feature_limits: {
+		databases: number;
+		allocations: number;
+		backups: number;
+	};
+	is_transferring: boolean;
+	relationships?: {
+		variables?: FractalResponseList<EggVariableAttributes>;
+		allocations?: FractalResponseList<AllocationAttributes>;
+	};
+}
+
 export const rawDataToServerObject = ({
 	attributes: data,
-}: FractalResponseData): Server => ({
+}: FractalResponseData<ServerResponseAttributes>): Server => ({
 	id: data.identifier,
 	internalId: data.internal_id,
 	uuid: data.uuid,
@@ -67,33 +107,30 @@ export const rawDataToServerObject = ({
 		ip: data.sftp_details.ip,
 		port: data.sftp_details.port,
 	},
-	description: data.description
-		? data.description.length > 0
-			? data.description
-			: null
-		: null,
+	description: data.description || "",
 	limits: { ...data.limits },
 	eggFeatures: data.egg_features || [],
 	featureLimits: { ...data.feature_limits },
 	isTransferring: data.is_transferring,
-	variables: (
-		(data.relationships?.variables as FractalResponseList | undefined)?.data ||
-		[]
-	).map(rawDataToServerEggVariable),
-	allocations: (
-		(data.relationships?.allocations as FractalResponseList | undefined)
-			?.data || []
-	).map(rawDataToServerAllocation),
+	variables: (data.relationships?.variables?.data || []).map(
+		rawDataToServerEggVariable,
+	),
+	allocations: (data.relationships?.allocations?.data || []).map(
+		rawDataToServerAllocation,
+	),
 });
 
 export default (uuid: string): Promise<[Server, string[]]> => {
 	return new Promise((resolve, reject) => {
 		http
-			.get(`/api/client/servers/${uuid}`)
+			.get<
+				FractalResponseData<ServerResponseAttributes> & {
+					meta: { is_server_owner: boolean; user_permissions: string[] };
+				}
+			>(`/api/client/servers/${uuid}`)
 			.then(({ data }) =>
 				resolve([
 					rawDataToServerObject(data),
-					// eslint-disable-next-line camelcase
 					data.meta?.is_server_owner
 						? ["*"]
 						: data.meta?.user_permissions || [],

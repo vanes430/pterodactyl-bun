@@ -1,4 +1,4 @@
-import http from "@/api/http";
+import http, { type FractalResponseList } from "@/api/http";
 
 export interface Schedule {
 	id: number;
@@ -33,7 +33,41 @@ export interface Task {
 	updatedAt: Date;
 }
 
-export const rawDataToServerTask = (data: any): Task => ({
+export interface TaskAttributes {
+	id: number;
+	sequence_id: number;
+	action: string;
+	payload: string;
+	time_offset: number;
+	is_queued: boolean;
+	continue_on_failure: boolean;
+	created_at: string;
+	updated_at: string;
+}
+
+export interface ScheduleAttributes {
+	id: number;
+	name: string;
+	cron: {
+		day_of_week: string;
+		month: string;
+		day_of_month: string;
+		hour: string;
+		minute: string;
+	};
+	is_active: boolean;
+	is_processing: boolean;
+	only_when_online: boolean;
+	last_run_at: string | null;
+	next_run_at: string | null;
+	created_at: string;
+	updated_at: string;
+	relationships?: {
+		tasks?: FractalResponseList<TaskAttributes>;
+	};
+}
+
+export const rawDataToServerTask = (data: TaskAttributes): Task => ({
 	id: data.id,
 	sequenceId: data.sequence_id,
 	action: data.action,
@@ -45,7 +79,9 @@ export const rawDataToServerTask = (data: any): Task => ({
 	updatedAt: new Date(data.updated_at),
 });
 
-export const rawDataToServerSchedule = (data: any): Schedule => ({
+export const rawDataToServerSchedule = (
+	data: ScheduleAttributes,
+): Schedule => ({
 	id: data.id,
 	name: data.name,
 	cron: {
@@ -63,19 +99,22 @@ export const rawDataToServerSchedule = (data: any): Schedule => ({
 	createdAt: new Date(data.created_at),
 	updatedAt: new Date(data.updated_at),
 
-	tasks: (data.relationships?.tasks?.data || []).map((row: any) =>
+	tasks: (data.relationships?.tasks?.data || []).map((row) =>
 		rawDataToServerTask(row.attributes),
 	),
 });
 
 export default async (uuid: string): Promise<Schedule[]> => {
-	const { data } = await http.get(`/api/client/servers/${uuid}/schedules`, {
-		params: {
-			include: ["tasks"],
+	const { data } = await http.get<FractalResponseList<ScheduleAttributes>>(
+		`/api/client/servers/${uuid}/schedules`,
+		{
+			params: {
+				include: ["tasks"],
+			},
 		},
-	});
+	);
 
-	return (data.data || []).map((row: any) =>
+	return (data.data || []).map((row) =>
 		rawDataToServerSchedule(row.attributes),
 	);
 };

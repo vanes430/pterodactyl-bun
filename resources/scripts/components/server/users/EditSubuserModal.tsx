@@ -1,12 +1,13 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { type Actions, useStoreActions, useStoreState } from "easy-peasy";
-import { Form, Formik } from "formik";
 import { useContext, useEffect, useRef } from "react";
+import { useForm } from "react-hook-form";
 import tw from "twin.macro";
 import { z } from "zod";
 import createOrUpdateSubuser from "@/api/server/users/createOrUpdateSubuser";
 import Button from "@/components/elements/Button";
 import Can from "@/components/elements/Can";
-import Field from "@/components/elements/Field";
+import FormField from "@/components/elements/FormField";
 import FlashMessageRender from "@/components/FlashMessageRender";
 import PermissionRow from "@/components/server/users/PermissionRow";
 import PermissionTitleBox from "@/components/server/users/PermissionTitleBox";
@@ -22,11 +23,6 @@ type Props = {
 	subuser?: Subuser;
 };
 
-interface Values {
-	email: string;
-	permissions: string[];
-}
-
 const schema = z.object({
 	email: z
 		.string()
@@ -35,6 +31,8 @@ const schema = z.object({
 		.min(1, "A valid email address must be provided."),
 	permissions: z.array(z.string()),
 });
+
+type Values = z.infer<typeof schema>;
 
 const EditSubuserModal = ({ subuser }: Props) => {
 	const ref = useRef<HTMLHeadingElement>(null);
@@ -79,7 +77,23 @@ const EditSubuserModal = ({ subuser }: Props) => {
 		return list.filter((key) => loggedInPermissions.indexOf(key) >= 0);
 	}, [isRootAdmin, permissions, loggedInPermissions]);
 
-	const submit = (values: Values) => {
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+		setValue,
+		watch,
+	} = useForm<Values>({
+		resolver: zodResolver(schema),
+		defaultValues: {
+			email: subuser?.email || "",
+			permissions: subuser?.permissions || [],
+		},
+	});
+
+	const watchedPermissions = watch("permissions");
+
+	const onSubmit = (values: Values) => {
 		setPropOverrides({ showSpinnerOverlay: true });
 		clearFlashes("user:edit");
 
@@ -107,96 +121,88 @@ const EditSubuserModal = ({ subuser }: Props) => {
 	);
 
 	return (
-		<Formik
-			onSubmit={submit}
-			initialValues={
-				{
-					email: subuser?.email || "",
-					permissions: subuser?.permissions || [],
-				} as Values
-			}
-			validate={(values) => {
-				const result = schema.safeParse(values);
-				if (result.success) return {};
-
-				const errors: Record<string, string> = {};
-				for (const error of result.error.issues) {
-					errors[error.path[0] as string] = error.message;
-				}
-				return errors;
-			}}
-		>
-			<Form>
-				<div css={tw`flex justify-between`}>
-					<h2 css={tw`text-2xl`} ref={ref}>
-						{subuser
-							? `${canEditUser ? "Modify" : "View"} permissions for ${subuser.email}`
-							: "Create new subuser"}
-					</h2>
-					<div>
-						<Button type={"submit"} css={tw`w-full sm:w-auto`}>
-							{subuser ? "Save" : "Invite User"}
-						</Button>
-					</div>
+		<form onSubmit={handleSubmit(onSubmit)}>
+			<div css={tw`flex justify-between`}>
+				<h2 css={tw`text-2xl`} ref={ref}>
+					{subuser
+						? `${canEditUser ? "Modify" : "View"} permissions for ${subuser.email}`
+						: "Create new subuser"}
+				</h2>
+				<div>
+					<Button type={"submit"} css={tw`w-full sm:w-auto`}>
+						{subuser ? "Save" : "Invite User"}
+					</Button>
 				</div>
-				<FlashMessageRender byKey={"user:edit"} css={tw`mt-4`} />
-				{!isRootAdmin && loggedInPermissions[0] !== "*" && (
-					<div css={tw`mt-4 pl-4 py-2 border-l-4 border-cyan-400`}>
-						<p css={tw`text-sm text-neutral-300`}>
-							Only permissions which your account is currently assigned may be
-							selected when creating or modifying other users.
-						</p>
-					</div>
-				)}
-				{!subuser && (
-					<div css={tw`mt-6`}>
-						<Field
-							name={"email"}
-							label={"User Email"}
-							description={
-								"Enter the email address of the user you wish to invite as a subuser for this server."
+			</div>
+			<FlashMessageRender byKey={"user:edit"} css={tw`mt-4`} />
+			{!isRootAdmin && loggedInPermissions[0] !== "*" && (
+				<div css={tw`mt-4 pl-4 py-2 border-l-4 border-cyan-400`}>
+					<p css={tw`text-sm text-neutral-300`}>
+						Only permissions which your account is currently assigned may be
+						selected when creating or modifying other users.
+					</p>
+				</div>
+			)}
+			{!subuser && (
+				<div css={tw`mt-6`}>
+					<FormField
+						id={"email"}
+						{...register("email")}
+						label={"User Email"}
+						description={
+							"Enter the email address of the user you wish to invite as a subuser for this server."
+						}
+						error={errors.email?.message}
+					/>
+				</div>
+			)}
+			<div css={tw`my-6`}>
+				{Object.keys(permissions)
+					.filter((key) => key !== "websocket")
+					.map((key, index) => (
+						<PermissionTitleBox
+							key={`permission_${key}`}
+							title={key}
+							isEditable={canEditUser}
+							permissions={Object.keys(permissions[key].keys).map(
+								(pkey) => `${key}.${pkey}`,
+							)}
+							css={index > 0 ? tw`mt-4` : undefined}
+							value={watchedPermissions}
+							setValue={(v) =>
+								setValue("permissions", v, {
+									shouldValidate: true,
+									shouldDirty: true,
+								})
 							}
-						/>
-					</div>
-				)}
-				<div css={tw`my-6`}>
-					{Object.keys(permissions)
-						.filter((key) => key !== "websocket")
-						.map((key, index) => (
-							<PermissionTitleBox
-								key={`permission_${key}`}
-								title={key}
-								isEditable={canEditUser}
-								permissions={Object.keys(permissions[key].keys).map(
-									(pkey) => `${key}.${pkey}`,
-								)}
-								css={index > 0 ? tw`mt-4` : undefined}
-							>
-								<p css={tw`text-sm text-neutral-400 mb-4`}>
-									{permissions[key].description}
-								</p>
-								{Object.keys(permissions[key].keys).map((pkey) => (
-									<PermissionRow
-										key={`permission_${key}.${pkey}`}
-										permission={`${key}.${pkey}`}
-										disabled={
-											!canEditUser ||
-											editablePermissions.indexOf(`${key}.${pkey}`) < 0
-										}
-									/>
-								))}
-							</PermissionTitleBox>
-						))}
+						>
+							<p css={tw`text-sm text-neutral-400 mb-4`}>
+								{permissions[key].description}
+							</p>
+							{Object.keys(permissions[key].keys).map((pkey) => (
+								<PermissionRow
+									key={`permission_${key}.${pkey}`}
+									permission={`${key}.${pkey}`}
+									disabled={
+										!canEditUser ||
+										editablePermissions.indexOf(`${key}.${pkey}`) < 0
+									}
+									register={register("permissions")}
+									checked={watchedPermissions.includes(`${key}.${pkey}`)}
+									description={permissions[key].keys[pkey]}
+								/>
+							))}
+						</PermissionTitleBox>
+					))}
+			</div>
+			<Can action={subuser ? "user.update" : "user.create"}>
+				<div css={tw`pb-6 flex justify-end`}>
+					<Button type={"submit"} css={tw`w-full sm:w-auto`}>
+						{subuser ? "Save" : "Invite User"}
+					</Button>
 				</div>
-				<Can action={subuser ? "user.update" : "user.create"}>
-					<div css={tw`pb-6 flex justify-end`}>
-						<Button type={"submit"} css={tw`w-full sm:w-auto`}>
-							{subuser ? "Save" : "Invite User"}
-						</Button>
-					</div>
-				</Can>
-			</Form>
-		</Formik>
+			</Can>
+		</form>
 	);
 };
 

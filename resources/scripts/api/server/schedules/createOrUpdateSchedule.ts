@@ -1,7 +1,8 @@
-import http from "@/api/http";
+import http, { type FractalResponseData } from "@/api/http";
 import {
 	rawDataToServerSchedule,
 	type Schedule,
+	type ScheduleAttributes,
 } from "@/api/server/schedules/getServerSchedules";
 
 type Data = Pick<Schedule, "cron" | "name" | "onlyWhenOnline" | "isActive"> & {
@@ -9,7 +10,7 @@ type Data = Pick<Schedule, "cron" | "name" | "onlyWhenOnline" | "isActive"> & {
 };
 
 export default async (uuid: string, schedule: Data): Promise<Schedule> => {
-	const { data } = await http.post(
+	const { data } = await http.post<FractalResponseData<ScheduleAttributes>>(
 		`/api/client/servers/${uuid}/schedules${schedule.id ? `/${schedule.id}` : ""}`,
 		{
 			is_active: schedule.isActive,

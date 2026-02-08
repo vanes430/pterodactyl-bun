@@ -1,9 +1,9 @@
-import { Form, Formik } from "formik";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import tw from "twin.macro";
 import updateStartupVariable from "@/api/server/updateStartupVariable";
 import Button from "@/components/elements/Button";
-import Field from "@/components/elements/Field";
+import FormField from "@/components/elements/FormField";
 import Modal from "@/components/elements/Modal";
 import FlashMessageRender from "@/components/FlashMessageRender";
 import { SocketEvent, SocketRequest } from "@/components/server/events";
@@ -25,6 +25,12 @@ const GSLTokenModalFeature = () => {
 		(state) => state.socket,
 	);
 
+	const { register, handleSubmit, reset } = useForm<Values>({
+		defaultValues: {
+			gslToken: "",
+		},
+	});
+
 	useEffect(() => {
 		if (!connected || !instance || status === "running") return;
 
@@ -43,7 +49,7 @@ const GSLTokenModalFeature = () => {
 		};
 	}, [connected, instance, status]);
 
-	const updateGSLToken = (values: Values) => {
+	const onSubmit = (values: Values) => {
 		setLoading(true);
 		clearFlashes("feature:gslToken");
 
@@ -55,12 +61,13 @@ const GSLTokenModalFeature = () => {
 
 				setLoading(false);
 				setVisible(false);
+				reset();
 			})
 			.catch((error) => {
 				console.error(error);
 				clearAndAddHttpError({ key: "feature:gslToken", error });
 			})
-			.then(() => setLoading(false));
+			.finally(() => setLoading(false));
 	};
 
 	useEffect(() => {
@@ -68,45 +75,44 @@ const GSLTokenModalFeature = () => {
 	}, [clearFlashes]);
 
 	return (
-		<Formik onSubmit={updateGSLToken} initialValues={{ gslToken: "" }}>
-			<Modal
-				visible={visible}
-				onDismissed={() => setVisible(false)}
-				closeOnBackground={false}
-				showSpinnerOverlay={loading}
-			>
-				<FlashMessageRender key={"feature:gslToken"} css={tw`mb-4`} />
-				<Form>
-					<h2 css={tw`text-2xl mb-4 text-neutral-100`}>Invalid GSL token!</h2>
-					<p css={tw`mt-4`}>
-						It seems like your Gameserver Login Token (GSL token) is invalid or
-						has expired.
-					</p>
-					<p css={tw`mt-4`}>
-						You can either generate a new one and enter it below or leave the
-						field blank to remove it completely.
-					</p>
-					<div css={tw`sm:flex items-center mt-4`}>
-						<Field
-							name={"gslToken"}
-							label={"GSL Token"}
-							description={
-								"Visit https://steamcommunity.com/dev/managegameservers to generate a token."
-							}
-							autoFocus
-						/>
-					</div>
-					<div css={tw`mt-8 sm:flex items-center justify-end`}>
-						<Button
-							type={"submit"}
-							css={tw`mt-4 sm:mt-0 sm:ml-4 w-full sm:w-auto`}
-						>
-							Update GSL Token
-						</Button>
-					</div>
-				</Form>
-			</Modal>
-		</Formik>
+		<Modal
+			visible={visible}
+			onDismissed={() => setVisible(false)}
+			closeOnBackground={false}
+			showSpinnerOverlay={loading}
+		>
+			<FlashMessageRender key={"feature:gslToken"} css={tw`mb-4`} />
+			<form onSubmit={handleSubmit(onSubmit)}>
+				<h2 css={tw`text-2xl mb-4 text-neutral-100`}>Invalid GSL token!</h2>
+				<p css={tw`mt-4`}>
+					It seems like your Gameserver Login Token (GSL token) is invalid or
+					has expired.
+				</p>
+				<p css={tw`mt-4`}>
+					You can either generate a new one and enter it below or leave the
+					field blank to remove it completely.
+				</p>
+				<div css={tw`sm:flex items-center mt-4`}>
+					<FormField
+						id={"gslToken"}
+						label={"GSL Token"}
+						description={
+							"Visit https://steamcommunity.com/dev/managegameservers to generate a token."
+						}
+						autoFocus
+						{...register("gslToken")}
+					/>
+				</div>
+				<div css={tw`mt-8 sm:flex items-center justify-end`}>
+					<Button
+						type={"submit"}
+						css={tw`mt-4 sm:mt-0 sm:ml-4 w-full sm:w-auto`}
+					>
+						Update GSL Token
+					</Button>
+				</div>
+			</form>
+		</Modal>
 	);
 };
 

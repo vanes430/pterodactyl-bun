@@ -1,7 +1,7 @@
 import { Model, UUID } from "@/api/definitions";
-import { SubuserPermission } from "@/state/server/subusers";
+export { type SubuserPermission } from "@/state/server/subusers";
 
-interface User extends Model {
+export interface User extends Model {
 	uuid: string;
 	username: string;
 	email: string;
@@ -12,14 +12,14 @@ interface User extends Model {
 	can(permission: SubuserPermission): boolean;
 }
 
-interface SSHKey extends Model {
+export interface SSHKey extends Model {
 	name: string;
 	publicKey: string;
 	fingerprint: string;
 	createdAt: Date;
 }
 
-interface ActivityLog extends Model<"actor"> {
+export interface ActivityLog extends Model<"actor"> {
 	id: string;
 	batch: UUID | null;
 	event: string;

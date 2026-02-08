@@ -1,4 +1,4 @@
-import http from "@/api/http";
+import http, { type FractalResponseData } from "@/api/http";
 
 export type ServerPowerState = "offline" | "starting" | "running" | "stopping";
 
@@ -13,10 +13,25 @@ export interface ServerStats {
 	uptime: number;
 }
 
+interface RawServerStats {
+	current_state: ServerPowerState;
+	is_suspended: boolean;
+	resources: {
+		memory_bytes: number;
+		cpu_absolute: number;
+		disk_bytes: number;
+		network_rx_bytes: number;
+		network_tx_bytes: number;
+		uptime: number;
+	};
+}
+
 export default (server: string): Promise<ServerStats> => {
 	return new Promise((resolve, reject) => {
 		http
-			.get(`/api/client/servers/${server}/resources`)
+			.get<FractalResponseData<RawServerStats>>(
+				`/api/client/servers/${server}/resources`,
+			)
 			.then(({ data: { attributes } }) =>
 				resolve({
 					status: attributes.current_state,

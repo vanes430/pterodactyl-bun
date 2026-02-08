@@ -1,16 +1,17 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	type Actions,
 	type State,
 	useStoreActions,
 	useStoreState,
 } from "easy-peasy";
-import { Form, Formik, type FormikHelpers } from "formik";
 import React from "react";
+import { useForm } from "react-hook-form";
 import tw from "twin.macro";
 import { z } from "zod";
 import { httpErrorToHuman } from "@/api/http";
 import { Button } from "@/components/elements/button/index";
-import Field from "@/components/elements/Field";
+import FormField from "@/components/elements/FormField";
 import SpinnerOverlay from "@/components/elements/SpinnerOverlay";
 import type { ApplicationStore } from "@/state";
 
@@ -38,20 +39,32 @@ export default () => {
 		(actions: Actions<ApplicationStore>) => actions.flashes,
 	);
 
-	const submit = (
-		values: Values,
-		{ resetForm, setSubmitting }: FormikHelpers<Values>,
-	) => {
+	const {
+		register,
+		handleSubmit,
+		formState: { errors, isSubmitting, isValid },
+		reset,
+	} = useForm<Values>({
+		resolver: zodResolver(schema),
+		mode: "onChange",
+		defaultValues: {
+			email: user?.email || "",
+			password: "",
+		},
+	});
+
+	const onSubmit = (values: Values) => {
 		clearFlashes("account:email");
 
 		updateEmail({ ...values })
-			.then(() =>
+			.then(() => {
 				addFlash({
 					type: "success",
 					key: "account:email",
 					message: "Your primary email has been updated.",
-				}),
-			)
+				});
+				reset({ email: values.email, password: "" });
+			})
 			.catch((error) =>
 				addFlash({
 					type: "error",
@@ -59,52 +72,33 @@ export default () => {
 					title: "Error",
 					message: httpErrorToHuman(error),
 				}),
-			)
-			.then(() => {
-				resetForm();
-				setSubmitting(false);
-			});
+			);
 	};
 
 	return (
-		<Formik
-			onSubmit={submit}
-			validate={(values) => {
-				const result = schema.safeParse(values);
-				if (result.success) return {};
-
-				const errors: Record<string, string> = {};
-				for (const error of result.error.issues) {
-					errors[error.path[0] as string] = error.message;
-				}
-				return errors;
-			}}
-			initialValues={{ email: user?.email || "", password: "" }}
-		>
-			{({ isSubmitting, isValid }) => (
-				<React.Fragment>
-					<SpinnerOverlay size={"large"} visible={isSubmitting} />
-					<Form css={tw`m-0`}>
-						<Field
-							id={"current_email"}
-							type={"email"}
-							name={"email"}
-							label={"Email"}
-						/>
-						<div css={tw`mt-6`}>
-							<Field
-								id={"confirm_password"}
-								type={"password"}
-								name={"password"}
-								label={"Confirm Password"}
-							/>
-						</div>
-						<div css={tw`mt-6`}>
-							<Button disabled={isSubmitting || !isValid}>Update Email</Button>
-						</div>
-					</Form>
-				</React.Fragment>
-			)}
-		</Formik>
+		<React.Fragment>
+			<SpinnerOverlay size={"large"} visible={isSubmitting} />
+			<form css={tw`m-0`} onSubmit={handleSubmit(onSubmit)}>
+				<FormField
+					id={"email"}
+					type={"email"}
+					label={"Email"}
+					{...register("email")}
+					error={errors.email?.message}
+				/>
+				<div css={tw`mt-6`}>
+					<FormField
+						id={"password"}
+						type={"password"}
+						label={"Confirm Password"}
+						{...register("password")}
+						error={errors.password?.message}
+					/>
+				</div>
+				<div css={tw`mt-6`}>
+					<Button disabled={isSubmitting || !isValid}>Update Email</Button>
+				</div>
+			</form>
+		</React.Fragment>
 	);
 };
