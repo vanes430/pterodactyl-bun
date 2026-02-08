@@ -1,5 +1,5 @@
+import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { CSSTransition } from "react-transition-group";
 import tw from "twin.macro";
 import getWebsocketToken from "@/api/server/getWebsocketToken";
 import ContentContainer from "@/components/elements/ContentContainer";
@@ -137,23 +137,31 @@ export default () => {
 		connect(uuid);
 	}, [uuid, connect, instance, canConnect]);
 
-	return error ? (
-		<CSSTransition timeout={150} in appear classNames={"fade"}>
-			<div css={tw`bg-red-500 py-2`}>
-				<ContentContainer css={tw`flex items-center justify-center`}>
-					{error === "connecting" ? (
-						<>
-							<Spinner size={"small"} />
-							<p css={tw`ml-2 text-sm text-red-100`}>
-								We&apos;re having some trouble connecting to your server, please
-								wait...
-							</p>
-						</>
-					) : (
-						<p css={tw`ml-2 text-sm text-white`}>{error}</p>
-					)}
-				</ContentContainer>
-			</div>
-		</CSSTransition>
-	) : null;
+	return (
+		<AnimatePresence>
+			{error && (
+				<motion.div
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					exit={{ opacity: 0 }}
+					transition={{ duration: 0.15 }}
+					css={tw`bg-red-500 py-2`}
+				>
+					<ContentContainer css={tw`flex items-center justify-center`}>
+						{error === "connecting" ? (
+							<>
+								<Spinner size={"small"} />
+								<p css={tw`ml-2 text-sm text-red-100`}>
+									We&apos;re having some trouble connecting to your server,
+									please wait...
+								</p>
+							</>
+						) : (
+							<p css={tw`ml-2 text-sm text-white`}>{error}</p>
+						)}
+					</ContentContainer>
+				</motion.div>
+			)}
+		</AnimatePresence>
+	);
 };

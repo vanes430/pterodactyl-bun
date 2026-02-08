@@ -1,17 +1,19 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	type Actions,
 	type State,
 	useStoreActions,
 	useStoreState,
 } from "easy-peasy";
-import { Form, Formik, type FormikHelpers } from "formik";
 import React from "react";
+import { useForm } from "react-hook-form";
 import tw from "twin.macro";
 import { z } from "zod";
 import updateAccountPassword from "@/api/account/updateAccountPassword";
 import { httpErrorToHuman } from "@/api/http";
 import { Button } from "@/components/elements/button/index";
-import Field from "@/components/elements/Field";
+import Input from "@/components/elements/Input";
+import Label from "@/components/elements/Label";
 import SpinnerOverlay from "@/components/elements/SpinnerOverlay";
 import type { ApplicationStore } from "@/state";
 
@@ -42,13 +44,22 @@ export default () => {
 		(actions: Actions<ApplicationStore>) => actions.flashes,
 	);
 
+	const {
+		register,
+		handleSubmit,
+		formState: { errors, isSubmitting, isValid },
+	} = useForm<Values>({
+		resolver: zodResolver(schema),
+		mode: "onChange",
+	});
+
 	if (!user) {
 		return null;
 	}
 
-	const submit = (values: Values, { setSubmitting }: FormikHelpers<Values>) => {
+	const onSubmit = (values: Values) => {
 		clearFlashes("account:password");
-		updateAccountPassword({ ...values })
+		return updateAccountPassword({ ...values })
 			.then(() => {
 				// @ts-expect-error this is valid
 				window.location = "/auth/login";
@@ -60,62 +71,59 @@ export default () => {
 					title: "Error",
 					message: httpErrorToHuman(error),
 				}),
-			)
-			.then(() => setSubmitting(false));
+			);
 	};
 
 	return (
-		<Formik
-			onSubmit={submit}
-			validate={(values) => {
-				const result = schema.safeParse(values);
-				if (result.success) return {};
-
-				const errors: Record<string, string> = {};
-				for (const error of result.error.issues) {
-					errors[error.path[0] as string] = error.message;
-				}
-				return errors;
-			}}
-			initialValues={{ current: "", password: "", confirmPassword: "" }}
-		>
-			{({ isSubmitting, isValid }) => (
-				<React.Fragment>
-					<SpinnerOverlay size={"large"} visible={isSubmitting} />
-					<Form css={tw`m-0`}>
-						<Field
-							id={"current_password"}
-							type={"password"}
-							name={"current"}
-							label={"Current Password"}
-						/>
-						<div css={tw`mt-6`}>
-							<Field
-								id={"new_password"}
-								type={"password"}
-								name={"password"}
-								label={"New Password"}
-								description={
-									"Your new password should be at least 8 characters in length and unique to this website."
-								}
-							/>
-						</div>
-						<div css={tw`mt-6`}>
-							<Field
-								id={"confirm_new_password"}
-								type={"password"}
-								name={"confirmPassword"}
-								label={"Confirm New Password"}
-							/>
-						</div>
-						<div css={tw`mt-6`}>
-							<Button disabled={isSubmitting || !isValid}>
-								Update Password
-							</Button>
-						</div>
-					</Form>
-				</React.Fragment>
-			)}
-		</Formik>
+		<React.Fragment>
+			<SpinnerOverlay size={"large"} visible={isSubmitting} />
+			<form css={tw`m-0`} onSubmit={handleSubmit(onSubmit)}>
+				<div>
+					<Label htmlFor={"current_password"}>Current Password</Label>
+					<Input
+						id={"current_password"}
+						type={"password"}
+						{...register("current")}
+						hasError={!!errors.current}
+					/>
+					{errors.current && (
+						<p css={tw`mt-1 text-xs text-red-500`}>{errors.current.message}</p>
+					)}
+				</div>
+				<div css={tw`mt-6`}>
+					<Label htmlFor={"new_password"}>New Password</Label>
+					<Input
+						id={"new_password"}
+						type={"password"}
+						{...register("password")}
+						hasError={!!errors.password}
+					/>
+					<p css={tw`mt-1 text-xs text-neutral-500`}>
+						Your new password should be at least 8 characters in length and
+						unique to this website.
+					</p>
+					{errors.password && (
+						<p css={tw`mt-1 text-xs text-red-500`}>{errors.password.message}</p>
+					)}
+				</div>
+				<div css={tw`mt-6`}>
+					<Label htmlFor={"confirm_new_password"}>Confirm New Password</Label>
+					<Input
+						id={"confirm_new_password"}
+						type={"password"}
+						{...register("confirmPassword")}
+						hasError={!!errors.confirmPassword}
+					/>
+					{errors.confirmPassword && (
+						<p css={tw`mt-1 text-xs text-red-500`}>
+							{errors.confirmPassword.message}
+						</p>
+					)}
+				</div>
+				<div css={tw`mt-6`}>
+					<Button disabled={isSubmitting || !isValid}>Update Password</Button>
+				</div>
+			</form>
+		</React.Fragment>
 	);
 };
