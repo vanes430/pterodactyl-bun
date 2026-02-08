@@ -168,9 +168,9 @@ const result = await Bun.build({
 	splitting: true,
 	publicPath: cliConfig.publicPath || "/assets/",
 	naming: {
-		entry: isProduction ? "[name].[hash].[ext]" : "[dir]/[name].[ext]",
-		chunk: isProduction ? "[name].[hash].[ext]" : "[dir]/[name].[ext]",
-		asset: isProduction ? "[name].[hash].[ext]" : "[dir]/[name].[ext]",
+		entry: "[name].[hash].[ext]",
+		chunk: "[name].[hash].[ext]",
+		asset: "[name].[hash].[ext]",
 	},
 	env: "inline",
 	define: {

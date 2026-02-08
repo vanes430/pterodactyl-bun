@@ -1,5 +1,6 @@
 {
 	"name": "pterodactyl-panel",
+	"version": "1.0.0-canary",
 	"engines": {
 		"node": ">=22"
 	},
