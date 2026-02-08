@@ -50,7 +50,7 @@ export default () => {
 			{!databases.length && loading ? (
 				<Spinner size={"large"} centered />
 			) : (
-				<Fade timeout={150}>
+				<Fade timeout={150} in>
 					{databases.length > 0 ? (
 						databases.map((database, index) => (
 							<DatabaseRow
@@ -61,23 +61,30 @@ export default () => {
 						))
 					) : (
 						<p css={tw`text-center text-sm text-neutral-300`}>
-							{(databaseLimit || 0) > 0
-								? "It looks like you have no databases."
-								: "Databases cannot be created for this server."}
+							{databaseLimit > 0
+								? "It looks like there are no databases currently allocated to this server."
+								: "Databases cannot be created for this server because the database limit is set to 0."}
+						</p>
+					)}
+					{databaseLimit === 0 && databases.length > 0 && (
+						<p css={tw`text-center text-sm text-neutral-300 mt-4`}>
+							Databases cannot be created for this server because the database
+							limit is set to 0.
 						</p>
 					)}
 					<Can action={"database.create"}>
-						<div css={tw`mt-6 flex items-center justify-end`}>
-							{(databaseLimit || 0) > 0 && databases.length > 0 && (
+						<div
+							css={tw`mt-6 flex flex-col sm:flex-row items-center justify-end`}
+						>
+							{databaseLimit > 0 && databases.length > 0 && (
 								<p css={tw`text-sm text-neutral-300 mb-4 sm:mr-6 sm:mb-0`}>
 									{databases.length} of {databaseLimit} databases have been
 									allocated to this server.
 								</p>
 							)}
-							{(databaseLimit || 0) > 0 &&
-								databaseLimit !== databases.length && (
-									<CreateDatabaseButton css={tw`flex justify-end mt-6`} />
-								)}
+							{databaseLimit > 0 && databaseLimit > databases.length && (
+								<CreateDatabaseButton css={tw`w-full sm:w-auto`} />
+							)}
 						</div>
 					</Can>
 				</Fade>

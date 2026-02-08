@@ -1,8 +1,7 @@
 import classNames from "classnames";
 import copy from "copy-to-clipboard";
-import React, { useEffect, useState } from "react";
-import Fade from "@/components/elements/Fade";
-import Portal from "@/components/elements/Portal";
+import React from "react";
+import { toast } from "react-hot-toast";
 
 interface CopyOnClickProps {
 	text: string | number | null | undefined;
@@ -15,20 +14,6 @@ const CopyOnClick = ({
 	showInNotification = true,
 	children,
 }: CopyOnClickProps) => {
-	const [copied, setCopied] = useState(false);
-
-	useEffect(() => {
-		if (!copied) return;
-
-		const timeout = setTimeout(() => {
-			setCopied(false);
-		}, 2500);
-
-		return () => {
-			clearTimeout(timeout);
-		};
-	}, [copied]);
-
 	if (!React.isValidElement(children)) {
 		throw new Error(
 			"Component passed to <CopyOnClick/> must be a valid React element.",
@@ -42,37 +27,36 @@ const CopyOnClick = ({
 				className: classNames(children.props.className || "", "cursor-pointer"),
 				onClick: (e: React.MouseEvent<HTMLElement>) => {
 					copy(String(text));
-					setCopied(true);
+					if (showInNotification) {
+						toast.success(
+							<div className={"flex flex-col text-left"}>
+								<span
+									className={
+										"text-[10px] uppercase tracking-wider text-neutral-400"
+									}
+								>
+									Copied
+								</span>
+								<span className={"font-mono text-sm break-all my-1 text-white"}>
+									"{String(text)}"
+								</span>
+								<span
+									className={
+										"text-[10px] uppercase tracking-wider text-neutral-400"
+									}
+								>
+									to clipboard
+								</span>
+							</div>,
+						);
+					}
 					if (typeof children.props.onClick === "function") {
 						children.props.onClick(e);
 					}
 				},
 			});
 
-	return (
-		<>
-			{copied && (
-				<Portal>
-					<Fade in appear timeout={250} key={copied ? "visible" : "invisible"}>
-						<div className={"fixed z-50 bottom-0 right-0 m-4"}>
-							<div
-								className={
-									"rounded-md py-3 px-4 text-gray-200 bg-neutral-600/95 shadow"
-								}
-							>
-								<p>
-									{showInNotification
-										? `Copied "${String(text)}" to clipboard.`
-										: "Copied text to clipboard."}
-								</p>
-							</div>
-						</div>
-					</Fade>
-				</Portal>
-			)}
-			{child}
-		</>
-	);
+	return <>{child}</>;
 };
 
 export default CopyOnClick;

@@ -73,12 +73,8 @@ const NewDirectoryDialog = asDialog({
 
 	const onSubmit = ({ directoryName }: Values) => {
 		createDirectory(uuid, directory, directoryName)
-			.then(() =>
-				mutate(
-					(data) => [...(data || []), generateDirectoryData(directoryName)],
-					false,
-				),
-			)
+			.then(() => mutate())
+			.then(() => mutate(undefined, { revalidate: true }))
 			.then(() => {
 				reset();
 				close();
@@ -89,8 +85,12 @@ const NewDirectoryDialog = asDialog({
 	};
 
 	return (
-		<form css={tw`m-0`} onSubmit={handleSubmit(onSubmit)}>
-			<FlashMessageRender key={"files:directory-modal"} />
+		<form
+			id={"new-directory-form"}
+			css={tw`m-0`}
+			onSubmit={handleSubmit(onSubmit)}
+		>
+			<FlashMessageRender byKey={"files:directory-modal"} />
 			<FormField
 				autoFocus
 				id={"directoryName"}
@@ -120,6 +120,7 @@ const NewDirectoryDialog = asDialog({
 				<Button
 					className={"w-full sm:w-auto"}
 					type={"submit"}
+					form={"new-directory-form"}
 					disabled={isSubmitting}
 				>
 					Create

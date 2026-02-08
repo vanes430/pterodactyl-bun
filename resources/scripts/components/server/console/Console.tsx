@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import debounce from "debounce";
-import { ChevronRight } from "lucide-react";
+import { ArrowBigDownDash, ChevronsRight, Send } from "lucide-react";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { theme as th } from "twin.macro";
@@ -14,7 +14,6 @@ import { SocketEvent, SocketRequest } from "@/components/server/events";
 import useEventListener from "@/plugins/useEventListener";
 import { usePermissions } from "@/plugins/usePermissions";
 import { usePersistedState } from "@/plugins/usePersistedState";
-import { ScrollDownHelperAddon } from "@/plugins/XtermScrollDownHelperAddon";
 import { ServerContext } from "@/state/server";
 
 import "xterm/css/xterm.css";
@@ -45,6 +44,8 @@ const theme = {
 const terminalProps: ITerminalOptions = {
 	disableStdin: true,
 	cursorStyle: "underline",
+	cursorInactiveStyle: "none",
+	cursorBlink: false,
 	allowTransparency: true,
 	fontSize: 12,
 	fontFamily: th("fontFamily.mono"),
@@ -52,8 +53,7 @@ const terminalProps: ITerminalOptions = {
 };
 
 export default () => {
-	const TERMINAL_PRELUDE =
-		"\u001b[1m\u001b[33mcontainer@pterodactyl~ \u001b[0m";
+	const TERMINAL_PRELUDE = "\u001b[1m\u001b[32m>\u001b[0m ";
 	const ref = useRef<HTMLDivElement>(null);
 	const terminal = useMemo(() => new Terminal({ ...terminalProps }), []);
 	const fitAddon = useMemo(() => new FitAddon(), []);
@@ -63,7 +63,6 @@ export default () => {
 		[searchAddon],
 	);
 	const webLinksAddon = useMemo(() => new WebLinksAddon(), []);
-	const scrollDownHelperAddon = useMemo(() => new ScrollDownHelperAddon(), []);
 	const { connected, instance } = ServerContext.useStoreState(
 		(state) => state.socket,
 	);
@@ -79,6 +78,8 @@ export default () => {
 		[],
 	);
 	const [historyIndex, setHistoryIndex] = useState(-1);
+	const [loading, setLoading] = useState(true);
+	const [isScrolledUp, setIsScrolledUp] = useState(false);
 	// SearchBarAddon has hardcoded z-index: 999 :(
 	const zIndex = `
     .xterm-search-bar__addon {
@@ -86,12 +87,14 @@ export default () => {
     }`;
 
 	const handleConsoleOutput = useCallback(
-		(line: string, prelude = false) =>
+		(line: string, prelude = false) => {
+			setLoading(false);
 			terminal.writeln(
 				(prelude ? TERMINAL_PRELUDE : "") +
 					line.replace(/(?:\r\n|\r|\n)$/im, "") +
 					"\u001b[0m",
-			),
+			);
+		},
 		[terminal],
 	);
 
@@ -108,23 +111,39 @@ export default () => {
 	);
 
 	const handleDaemonErrorOutput = useCallback(
-		(line: string) =>
+		(line: string) => {
+			setLoading(false);
 			terminal.writeln(
 				TERMINAL_PRELUDE +
 					"\u001b[1m\u001b[41m" +
 					line.replace(/(?:\r\n|\r|\n)$/im, "") +
 					"\u001b[0m",
-			),
+			);
+		},
 		[terminal],
 	);
 
 	const handlePowerChangeEvent = useCallback(
-		(state: string) =>
+		(state: string) => {
 			terminal.writeln(
 				`${TERMINAL_PRELUDE}Server marked as ${state}...\u001b[0m`,
-			),
+			);
+		},
 		[terminal],
 	);
+
+	const inputRef = useRef<HTMLInputElement>(null);
+
+	const submit = (command: string) => {
+		if (command.length > 0) {
+			setHistory((prevHistory) => [command, ...prevHistory!].slice(0, 32));
+			setHistoryIndex(-1);
+			instance?.send("send command", command);
+			if (inputRef.current) {
+				inputRef.current.value = "";
+			}
+		}
+	};
 
 	const handleCommandKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === "ArrowUp") {
@@ -145,15 +164,18 @@ export default () => {
 			e.currentTarget.value = history?.[newIndex] || "";
 		}
 
-		const command = e.currentTarget.value;
-		if (e.key === "Enter" && command.length > 0) {
-			setHistory((prevHistory) => [command, ...prevHistory!].slice(0, 32));
-			setHistoryIndex(-1);
-
-			instance?.send("send command", command);
-			e.currentTarget.value = "";
+		if (e.key === "Enter") {
+			submit(e.currentTarget.value);
 		}
 	};
+
+	useEffect(() => {
+		let timeout: NodeJS.Timeout;
+		if (connected && loading) {
+			timeout = setTimeout(() => setLoading(false), 3000);
+		}
+		return () => clearTimeout(timeout);
+	}, [connected, loading]);
 
 	useEffect(() => {
 		if (connected && ref.current && !terminal.element) {
@@ -161,11 +183,18 @@ export default () => {
 			terminal.loadAddon(searchAddon);
 			terminal.loadAddon(searchBar);
 			terminal.loadAddon(webLinksAddon);
-			terminal.loadAddon(scrollDownHelperAddon);
 
 			terminal.open(ref.current);
 			fitAddon.fit();
 			searchBar.addNewStyle(zIndex);
+
+			const updateScrollState = () => {
+				const { viewportY, baseY } = terminal.buffer.active;
+				setIsScrolledUp(viewportY < baseY - 1);
+			};
+
+			terminal.onScroll(updateScrollState);
+			terminal.onLineFeed(updateScrollState);
 
 			// Add support for capturing keys
 			terminal.attachCustomKeyEventHandler((e: KeyboardEvent) => {
@@ -182,15 +211,7 @@ export default () => {
 				return true;
 			});
 		}
-	}, [
-		terminal,
-		connected,
-		fitAddon,
-		scrollDownHelperAddon,
-		searchAddon,
-		searchBar,
-		webLinksAddon,
-	]);
+	}, [terminal, connected, fitAddon, searchAddon, searchBar, webLinksAddon]);
 
 	useEventListener(
 		"resize",
@@ -231,6 +252,8 @@ export default () => {
 				instance.addListener(key, listeners[key]);
 			});
 			instance.send(SocketRequest.SEND_LOGS);
+		} else {
+			setLoading(true);
 		}
 
 		return () => {
@@ -253,7 +276,7 @@ export default () => {
 
 	return (
 		<div className={classNames(styles.terminal, "relative")}>
-			<SpinnerOverlay visible={!connected} size={"large"} />
+			<SpinnerOverlay visible={!connected || loading} size={"large"} />
 
 			<div
 				className={classNames(styles.container, styles.overflows_container, {
@@ -268,12 +291,29 @@ export default () => {
 				<div className={"h-full"}>
 					<div id={styles.terminal} ref={ref} />
 				</div>
+				{isScrolledUp && (
+					<div className={"absolute bottom-4 right-8 z-20"}>
+						<button
+							type={"button"}
+							onClick={() => {
+								terminal.scrollToBottom();
+								setIsScrolledUp(false);
+							}}
+							className={
+								"flex items-center justify-center p-2 rounded-full bg-neutral-800/80 text-cyan-400 hover:bg-neutral-700 transition-colors duration-100 shadow-lg border border-white/10"
+							}
+						>
+							<ArrowBigDownDash size={24} />
+						</button>
+					</div>
+				)}
 			</div>
 			{canSendCommands && (
 				<div
 					className={classNames("relative mt-2", styles.overflows_container)}
 				>
 					<input
+						ref={inputRef}
 						className={classNames("peer", styles.command_input)}
 						type={"text"}
 						placeholder={"Type a command..."}
@@ -289,8 +329,19 @@ export default () => {
 							styles.command_icon,
 						)}
 					>
-						<ChevronRight size={16} />
+						<ChevronsRight size={16} />
 					</div>
+					<button
+						type={"button"}
+						aria-label={"Send command"}
+						disabled={!instance || !connected}
+						onClick={() => submit(inputRef.current?.value || "")}
+						className={classNames(
+							"absolute right-0 top-0 h-full flex items-center px-3 text-gray-400 hover:text-cyan-400 transition-colors duration-100 disabled:opacity-50 disabled:cursor-not-allowed",
+						)}
+					>
+						<Send size={18} />
+					</button>
 				</div>
 			)}
 		</div>

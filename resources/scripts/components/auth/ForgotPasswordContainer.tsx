@@ -46,12 +46,21 @@ export default () => {
 		clearFlashes(undefined);
 	}, [clearFlashes]);
 
-	const onSubmit = (values: Values) => {
+	const onSubmit = (
+		values: Values,
+		recaptchaTokenOrEvent?: string | React.BaseSyntheticEvent,
+	) => {
 		clearFlashes(undefined);
 
+		// Extract the recaptcha token if it's passed as a string, otherwise use the token from state
+		const recaptchaToken =
+			typeof recaptchaTokenOrEvent === "string"
+				? recaptchaTokenOrEvent
+				: undefined;
+		const t = recaptchaToken || token;
 		// If there is no token in the state yet, request the token and then abort this submit request
 		// since it will be re-submitted when the recaptcha data is returned by the component.
-		if (recaptcha?.enabled && !token) {
+		if (recaptcha?.enabled && !t) {
 			ref.current?.execute().catch((error) => {
 				console.error(error);
 				addFlash({
@@ -64,7 +73,7 @@ export default () => {
 			return;
 		}
 
-		requestPasswordResetEmail(values.email, token)
+		requestPasswordResetEmail(values.email, t)
 			.then((response) => {
 				reset();
 				addFlash({ type: "success", title: "Success", message: response });
@@ -84,32 +93,41 @@ export default () => {
 	};
 
 	return (
-		<LoginFormContainer
-			title={"Request Password Reset"}
-			css={tw`w-full flex`}
-			onSubmit={handleSubmit(onSubmit)}
-		>
-			<FormField
-				id={"email"}
-				light
-				label={"Email"}
-				description={
-					"Enter your account email address to receive instructions on resetting your password."
-				}
-				{...register("email")}
-				type={"email"}
-				error={errors.email?.message}
-			/>
-			<div css={tw`mt-6`}>
-				<Button
-					type={"submit"}
-					size={"xlarge"}
-					disabled={isSubmitting}
-					isLoading={isSubmitting}
-				>
-					Send Email
-				</Button>
-			</div>
+		<>
+			<LoginFormContainer
+				title={"Request Password Reset"}
+				css={tw`w-full flex`}
+				onSubmit={handleSubmit(onSubmit)}
+			>
+				<FormField
+					id={"email"}
+					label={"Email"}
+					description={
+						"Enter your account email address to receive instructions on resetting your password."
+					}
+					{...register("email")}
+					type={"email"}
+					error={errors.email?.message}
+				/>
+				<div css={tw`mt-6`}>
+					<Button
+						type={"submit"}
+						size={"xlarge"}
+						disabled={isSubmitting}
+						isLoading={isSubmitting}
+					>
+						Send Email
+					</Button>
+				</div>
+				<div css={tw`mt-6 text-center`}>
+					<Link
+						to={"/auth/login"}
+						css={tw`text-xs text-neutral-500 tracking-wide uppercase no-underline hover:text-neutral-700`}
+					>
+						Return to Login
+					</Link>
+				</div>
+			</LoginFormContainer>
 			{recaptcha?.enabled && (
 				<Reaptcha
 					ref={ref}
@@ -117,21 +135,13 @@ export default () => {
 					sitekey={recaptcha.siteKey || "_invalid_key"}
 					onVerify={(response) => {
 						setToken(response);
-						onSubmit(getValues());
+						onSubmit(getValues(), response);
 					}}
 					onExpire={() => {
 						setToken("");
 					}}
 				/>
 			)}
-			<div css={tw`mt-6 text-center`}>
-				<Link
-					to={"/auth/login"}
-					css={tw`text-xs text-neutral-500 tracking-wide uppercase no-underline hover:text-neutral-700`}
-				>
-					Return to Login
-				</Link>
-			</div>
-		</LoginFormContainer>
+		</>
 	);
 };

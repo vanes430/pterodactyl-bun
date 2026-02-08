@@ -12,7 +12,7 @@ interface Props {
 }
 
 export const DropdownButtonRow = styled.button<{ danger?: boolean }>`
-    ${tw`p-2 flex items-center rounded w-full text-neutral-300`};
+    ${tw`p-2 flex items-center rounded w-full text-neutral-300 cursor-pointer select-none`};
     transition: 150ms all ease;
 
     &:hover {
@@ -43,8 +43,12 @@ class DropdownMenu extends React.PureComponent<Props, State> {
 		const menu = this.menu.current;
 
 		if (this.state.visible && !prevState.visible && menu) {
-			document.addEventListener("click", this.windowListener);
-			document.addEventListener("contextmenu", this.contextMenuListener);
+			setTimeout(() => {
+				if (this.state.visible) {
+					document.addEventListener("click", this.windowListener);
+					document.addEventListener("contextmenu", this.contextMenuListener);
+				}
+			}, 0);
 
 			const { posX, posY } = this.state;
 			const { clientWidth, clientHeight } = menu;
@@ -100,12 +104,17 @@ class DropdownMenu extends React.PureComponent<Props, State> {
 		this.setState({ visible: false });
 	};
 
-	triggerMenu = (posX: number, posY: number) =>
-		this.setState((s) => ({
-			posX: !s.visible ? posX : s.posX,
-			posY: !s.visible ? posY : s.posY,
-			visible: !s.visible,
-		}));
+	triggerMenu = (posX: number, posY: number) => {
+		if (this.state.visible) {
+			this.setState({ visible: false }, () => {
+				setTimeout(() => {
+					this.setState({ posX, posY, visible: true });
+				}, 20);
+			});
+		} else {
+			this.setState({ posX, posY, visible: true });
+		}
+	};
 
 	render() {
 		const portal = document.getElementById("modal-portal");
@@ -115,7 +124,12 @@ class DropdownMenu extends React.PureComponent<Props, State> {
 				{this.props.renderToggle(this.onClickHandler)}
 				{portal &&
 					createPortal(
-						<Fade timeout={150} in={this.state.visible} unmountOnExit>
+						<Fade
+							timeout={100}
+							in={this.state.visible}
+							unmountOnExit
+							appear={false}
+						>
 							<div
 								ref={this.menu}
 								onClick={(e) => {
@@ -123,7 +137,7 @@ class DropdownMenu extends React.PureComponent<Props, State> {
 									this.setState({ visible: false });
 								}}
 								style={{ width: "12rem", position: "absolute", zIndex: 9999 }}
-								css={tw`bg-neutral-900/80 backdrop-blur-xl p-2 rounded-xl border border-white/10 shadow-2xl text-neutral-300`}
+								css={tw`bg-neutral-900/80 backdrop-blur-xl p-2 rounded-xl border border-white/10 shadow-2xl text-neutral-300 cursor-default select-none`}
 							>
 								{this.props.children}
 							</div>

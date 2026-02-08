@@ -72,7 +72,7 @@ const EulaModalFeature = () => {
 			closeOnBackground={false}
 			showSpinnerOverlay={loading}
 		>
-			<FlashMessageRender key={"feature:eula"} css={tw`mb-4`} />
+			<FlashMessageRender byKey={"feature:eula"} css={tw`mb-4`} />
 			<h2 css={tw`text-2xl mb-4 text-neutral-100`}>
 				Accept Minecraft&reg; EULA
 			</h2>

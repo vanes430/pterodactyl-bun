@@ -10,27 +10,39 @@ interface Props
 	description?: string;
 	error?: string;
 	isLight?: boolean;
+	light?: boolean;
 	as?: React.ElementType;
 	[key: string]: any;
 }
 
 const FormField = forwardRef<any, Props>(
 	(
-		{ label, description, error, isLight, as: Component = Input, id, ...props },
+		{
+			label,
+			description,
+			error,
+			isLight,
+			light,
+			as: Component = Input,
+			id,
+			...props
+		},
 		ref,
 	) => {
+		const $isLight = isLight || light;
+
 		return (
 			<div>
 				{label && (
-					<Label htmlFor={id} isLight={isLight}>
+					<Label htmlFor={id} $isLight={$isLight}>
 						{label}
 					</Label>
 				)}
 				<Component
 					id={id}
 					ref={ref}
-					isLight={isLight}
-					hasError={!!error}
+					$isLight={$isLight}
+					$hasError={!!error}
 					{...props}
 				/>
 				{error ? (

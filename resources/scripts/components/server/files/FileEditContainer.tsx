@@ -88,7 +88,7 @@ export default () => {
 	}
 
 	return (
-		<PageContentBlock>
+		<PageContentBlock isextended>
 			<FlashMessageRender byKey={"files:view"} css={tw`mb-4`} />
 			<ErrorBoundary>
 				<div css={tw`mb-4`}>

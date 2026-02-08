@@ -1,5 +1,6 @@
 {
 	"name": "pterodactyl/panel",
+	"version": "1.0.0-alpha",
 	"description": "The free, open-source game management panel. Supporting Minecraft, Spigot, BungeeCord, and SRCDS servers.",
 	"license": "MIT",
 	"authors": [

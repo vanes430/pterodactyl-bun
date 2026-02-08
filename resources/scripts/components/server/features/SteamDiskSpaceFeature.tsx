@@ -51,7 +51,7 @@ const SteamDiskSpaceFeature = () => {
 			closeOnBackground={false}
 			showSpinnerOverlay={loading}
 		>
-			<FlashMessageRender key={"feature:steamDiskSpace"} css={tw`mb-4`} />
+			<FlashMessageRender byKey={"feature:steamDiskSpace"} css={tw`mb-4`} />
 			{isAdmin ? (
 				<>
 					<div css={tw`mt-4 sm:flex items-center`}>

@@ -21,7 +21,8 @@ echo "🗜️ Creating panel.tar.gz..."
 
 # List exclude patterns
 EXCLUDES=(
-    --exclude='node_modules'
+    --exclude='./node_modules'
+    --exclude='./vendor'
     --exclude='.git'
     --exclude='.github'
     --exclude='storage/framework/cache/*'

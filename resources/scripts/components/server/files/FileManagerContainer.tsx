@@ -59,6 +59,7 @@ export default () => {
 		clearFlashes("files");
 		setSelectedFiles([]);
 		setDirectory(hashToPath(hash));
+		window.scrollTo(0, 0);
 	}, [hash, clearFlashes, setDirectory, setSelectedFiles]);
 
 	useEffect(() => {
@@ -78,7 +79,11 @@ export default () => {
 	}
 
 	return (
-		<ServerContentBlock title={"File Manager"} showFlashKey={"files"}>
+		<ServerContentBlock
+			title={"File Manager"}
+			showFlashKey={"files"}
+			isextended
+		>
 			<ErrorBoundary>
 				<div className={"flex flex-wrap-reverse md:flex-nowrap mb-4"}>
 					<FileManagerBreadcrumbs

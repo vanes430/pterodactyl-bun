@@ -37,7 +37,7 @@ import { ServerContext } from "@/state/server";
 type ModalType = "rename" | "move" | "chmod";
 
 const StyledRow = styled.div<{ $danger?: boolean }>`
-    ${tw`p-2 flex items-center rounded-lg`};
+    ${tw`p-2 flex items-center rounded-lg cursor-pointer select-none`};
     ${(props) =>
 			props.$danger
 				? tw`hover:bg-red-500/10 hover:text-red-400`

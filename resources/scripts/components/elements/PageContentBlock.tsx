@@ -8,12 +8,14 @@ export interface PageContentBlockProps {
 	title?: string;
 	className?: string;
 	showFlashKey?: string;
+	isextended?: boolean;
 }
 
 const PageContentBlock: React.FC<PropsWithChildren<PageContentBlockProps>> = ({
 	title,
 	showFlashKey,
 	className,
+	isextended,
 	children,
 }) => {
 	useEffect(() => {
@@ -24,7 +26,10 @@ const PageContentBlock: React.FC<PropsWithChildren<PageContentBlockProps>> = ({
 
 	return (
 		<>
-			<ContentContainer css={tw`my-2 sm:my-4`} className={className}>
+			<ContentContainer
+				css={[tw`my-2 sm:my-4`, isextended && tw`max-w-[1600px]`]}
+				className={className}
+			>
 				{showFlashKey && (
 					<FlashMessageRender byKey={showFlashKey} css={tw`mb-4`} />
 				)}

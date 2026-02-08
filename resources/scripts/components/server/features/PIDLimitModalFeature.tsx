@@ -56,7 +56,7 @@ const PIDLimitModalFeature = () => {
 			closeOnBackground={false}
 			showSpinnerOverlay={loading}
 		>
-			<FlashMessageRender key={"feature:pidLimit"} css={tw`mb-4`} />
+			<FlashMessageRender byKey={"feature:pidLimit"} css={tw`mb-4`} />
 			{isAdmin ? (
 				<>
 					<div css={tw`mt-4 sm:flex items-center`}>

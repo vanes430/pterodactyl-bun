@@ -9,7 +9,7 @@ export default () => {
 	const uuid = ServerContext.useStoreState((state) => state.server.data?.uuid);
 
 	return useSWR<Allocation[]>(
-		["server:allocations", uuid],
+		uuid ? ["server:allocations", uuid] : null,
 		async () => {
 			const { data } = await http.get<
 				FractalResponseList<AllocationAttributes>
@@ -17,6 +17,6 @@ export default () => {
 
 			return (data.data || []).map(rawDataToServerAllocation);
 		},
-		{ revalidateOnFocus: false, revalidateOnMount: false },
+		{ revalidateOnFocus: false },
 	);
 };

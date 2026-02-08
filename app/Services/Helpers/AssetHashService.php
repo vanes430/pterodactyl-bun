@@ -80,6 +80,7 @@ class AssetHashService
     {
         $attributes = [
             'src' => $this->url($resource),
+            'type' => 'module',
             'crossorigin' => 'anonymous',
         ];
 

@@ -51,7 +51,7 @@ const PullFileDialog = asDialog({
 
 	const onSubmit = ({ url }: Values) => {
 		pullFile(uuid, directory, url)
-			.then(() => mutate())
+			.then(() => mutate(undefined, { revalidate: true }))
 			.then(() => {
 				reset();
 				close();
@@ -62,8 +62,12 @@ const PullFileDialog = asDialog({
 	};
 
 	return (
-		<form className={"m-0"} onSubmit={handleSubmit(onSubmit)}>
-			<FlashMessageRender key={"files:pull-modal"} />
+		<form
+			id={"pull-file-form"}
+			className={"m-0"}
+			onSubmit={handleSubmit(onSubmit)}
+		>
+			<FlashMessageRender byKey={"files:pull-modal"} />
 			<FormField
 				autoFocus
 				id={"url"}
@@ -85,6 +89,7 @@ const PullFileDialog = asDialog({
 				<Button
 					className={"w-full sm:w-auto"}
 					type={"submit"}
+					form={"pull-file-form"}
 					disabled={isSubmitting}
 				>
 					Download

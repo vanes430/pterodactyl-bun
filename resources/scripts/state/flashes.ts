@@ -36,14 +36,14 @@ const flashes: FlashStore = {
 		if (!payload.error) {
 			state.items = [];
 		} else {
-			console.error(payload.error);
+			const message = httpErrorToHuman(payload.error);
 
 			state.items = [
 				{
 					type: "error",
 					title: "Error",
 					key: payload.key,
-					message: httpErrorToHuman(payload.error),
+					message,
 				},
 			];
 		}

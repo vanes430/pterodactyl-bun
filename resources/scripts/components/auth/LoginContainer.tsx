@@ -44,12 +44,19 @@ const LoginContainer = () => {
 		clearFlashes(undefined);
 	}, [clearFlashes]);
 
-	const onSubmit = (values: Values) => {
+	const onSubmit = (
+		values: Values,
+		recaptchaTokenOrEvent?: string | React.BaseSyntheticEvent,
+	) => {
 		clearFlashes(undefined);
 
-		// If there is no token in the state yet, request the token and then abort this submit request
-		// since it will be re-submitted when the recaptcha data is returned by the component.
-		if (recaptcha?.enabled && !token) {
+		// Extract the recaptcha token if it's passed as a string, otherwise use the token from state
+		const recaptchaToken =
+			typeof recaptchaTokenOrEvent === "string"
+				? recaptchaTokenOrEvent
+				: undefined;
+		const t = recaptchaToken || token;
+		if (recaptcha?.enabled && !t) {
 			ref.current?.execute().catch((error) => {
 				console.error(error);
 				clearAndAddHttpError({ error });
@@ -58,7 +65,11 @@ const LoginContainer = () => {
 			return;
 		}
 
-		login({ ...values, recaptchaData: token })
+		login({
+			username: String(values.username),
+			password: String(values.password),
+			recaptchaData: t,
+		})
 			.then((response) => {
 				if (response.complete) {
 					// @ts-expect-error this is valid
@@ -76,46 +87,56 @@ const LoginContainer = () => {
 
 				setToken("");
 				if (ref.current) ref.current.reset();
-				clearAndAddHttpError({ error });
+				clearAndAddHttpError({
+					error: error instanceof Error ? error : new Error(String(error)),
+				});
 			});
 	};
 
 	return (
-		<LoginFormContainer
-			title={"Login to Continue"}
-			css={tw`w-full flex`}
-			onSubmit={handleSubmit(onSubmit)}
-		>
-			<FormField
-				id={"username"}
-				light
-				type={"text"}
-				label={"Username or Email"}
-				{...register("username")}
-				disabled={isSubmitting}
-				error={errors.username?.message}
-			/>
-			<div css={tw`mt-6`}>
+		<>
+			<LoginFormContainer
+				title={"Login to Continue"}
+				css={tw`w-full flex`}
+				onSubmit={handleSubmit(onSubmit)}
+			>
 				<FormField
-					id={"password"}
-					light
-					type={"password"}
-					label={"Password"}
-					{...register("password")}
+					id={"username"}
+					type={"text"}
+					label={"Username or Email"}
+					{...register("username")}
 					disabled={isSubmitting}
-					error={errors.password?.message}
+					error={errors.username?.message}
 				/>
-			</div>
-			<div css={tw`mt-6`}>
-				<Button
-					type={"submit"}
-					size={"xlarge"}
-					isLoading={isSubmitting}
-					disabled={isSubmitting}
-				>
-					Login
-				</Button>
-			</div>
+				<div css={tw`mt-6`}>
+					<FormField
+						id={"password"}
+						type={"password"}
+						label={"Password"}
+						{...register("password")}
+						disabled={isSubmitting}
+						error={errors.password?.message}
+					/>
+				</div>
+				<div css={tw`mt-6`}>
+					<Button
+						type={"submit"}
+						size={"xlarge"}
+						isLoading={isSubmitting}
+						disabled={isSubmitting}
+					>
+						Login
+					</Button>
+				</div>
+				<div css={tw`mt-6 text-center`}>
+					<Link
+						to={"/auth/password"}
+						css={tw`text-xs text-neutral-500 tracking-wide no-underline uppercase hover:text-neutral-600`}
+					>
+						Forgot password?
+					</Link>
+				</div>
+			</LoginFormContainer>
 			{recaptcha?.enabled && (
 				<Reaptcha
 					ref={ref}
@@ -123,23 +144,14 @@ const LoginContainer = () => {
 					sitekey={recaptcha.siteKey || "_invalid_key"}
 					onVerify={(response) => {
 						setToken(response);
-						// Re-trigger submit with the token
-						onSubmit(getValues());
+						onSubmit(getValues(), response);
 					}}
 					onExpire={() => {
 						setToken("");
 					}}
 				/>
 			)}
-			<div css={tw`mt-6 text-center`}>
-				<Link
-					to={"/auth/password"}
-					css={tw`text-xs text-neutral-500 tracking-wide no-underline uppercase hover:text-neutral-600`}
-				>
-					Forgot password?
-				</Link>
-			</div>
-		</LoginFormContainer>
+		</>
 	);
 };
 

@@ -7,8 +7,14 @@ interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 const CustomCheckbox = forwardRef<HTMLInputElement, Props>(
-	({ className, ...props }, ref) => (
-		<Input ref={ref} {...props} type={"checkbox"} className={className} />
+	({ className, hasError, ...props }, ref) => (
+		<Input
+			ref={ref}
+			$hasError={hasError}
+			{...props}
+			type={"checkbox"}
+			className={className}
+		/>
 	),
 );
 

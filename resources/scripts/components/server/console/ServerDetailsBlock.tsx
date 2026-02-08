@@ -116,7 +116,7 @@ const ServerDetailsBlock = ({ className }: { className?: string }) => {
 	});
 
 	return (
-		<div className={classNames("grid grid-cols-6 gap-2 md:gap-4", className)}>
+		<div className={classNames("grid grid-cols-12 gap-2 md:gap-4", className)}>
 			<StatBlock icon={Wifi} title={"Address"} copyOnClick={allocation}>
 				{allocation}
 			</StatBlock>

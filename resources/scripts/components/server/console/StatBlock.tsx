@@ -25,19 +25,23 @@ export default ({
 
 	return (
 		<CopyOnClick text={copyOnClick}>
-			<div className={classNames(styles.stat_block, className)}>
+			<div className={classNames(styles.stat_block, className, "min-w-0")}>
 				<div
 					className={classNames(styles.status_bar, color || "bg-white/10")}
 				/>
 				<div
 					className={classNames(styles.icon, color || "bg-white/5", {
-						"text-gray-100": !color,
+						"text-cyan-400": !color,
 						"text-gray-50": color,
 					})}
 				>
 					<Icon size={20} />
 				</div>
-				<div className={"flex flex-col justify-center overflow-hidden w-full"}>
+				<div
+					className={
+						"flex flex-col justify-center overflow-hidden w-full min-w-0"
+					}
+				>
 					<p
 						className={
 							"font-header font-medium leading-tight text-xs md:text-sm text-neutral-400"

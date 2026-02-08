@@ -61,7 +61,7 @@ class SoftwareVersionService
      */
     public function isLatestPanel(): bool
     {
-        if (config('app.version') === 'canary') {
+        if (config('app.version') === 'canary' || config('app.version') === '1.0.0-alpha') {
             return true;
         }
 

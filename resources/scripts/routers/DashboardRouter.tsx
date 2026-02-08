@@ -14,7 +14,7 @@ export default () => {
 		<>
 			<NavigationBar />
 			<React.Suspense fallback={<Spinner centered />}>
-				<Routes location={location}>
+				<Routes>
 					<Route path="/" element={<DashboardContainer />} />
 					{routes.account.map(({ path, component: Component }) => (
 						<Route

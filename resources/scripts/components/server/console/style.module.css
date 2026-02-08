@@ -1,6 +1,6 @@
 .stat_block {
 	@apply flex items-center rounded-lg shadow-lg relative overflow-hidden;
-	@apply col-span-3 md:col-span-2 lg:col-span-6;
+	@apply col-span-6 md:col-span-4 lg:col-span-12;
 	@apply px-3 py-2 md:p-3 lg:p-4;
 	@apply bg-white/[0.03] border border-white/[0.05];
 
@@ -21,19 +21,14 @@
 }
 
 .terminal {
-	@apply flex flex-col w-full;
+	@apply flex flex-col w-full min-w-0;
 
 	& .overflows_container {
-		@apply -ml-4 sm:ml-0;
-		width: calc(100% + 2rem);
-
-		@screen sm {
-			@apply w-full;
-		}
+		@apply w-full;
 	}
 
 	& > .container {
-		@apply rounded-lg p-2 sm:p-3 bg-neutral-900/50 min-h-[16rem] flex-1 font-mono text-sm border border-white/[0.05];
+		@apply relative rounded-lg p-2 sm:p-3 bg-neutral-900/50 min-h-[16rem] flex-1 font-mono text-sm border border-white/[0.05];
 
 		& .dots {
 			@apply flex space-x-1.5 mb-3 px-1;
@@ -71,7 +66,7 @@
 	}
 
 	& .command_input {
-		@apply relative bg-neutral-900/50 px-2 text-gray-100 pl-10 pr-4 py-2 w-full font-mono text-sm rounded-lg border border-white/[0.05];
+		@apply relative bg-neutral-900/50 px-2 text-gray-100 pl-10 pr-12 py-2 w-full font-mono text-sm rounded-lg border border-white/[0.05];
 		@apply focus:ring-0 outline-none focus-visible:outline-none;
 		@apply transition-colors duration-100;
 		@apply active:border-cyan-500/50 focus:border-cyan-500/50;

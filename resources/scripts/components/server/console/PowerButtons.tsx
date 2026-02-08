@@ -4,14 +4,15 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/elements/button/index";
 import Can from "@/components/elements/Can";
 import { Dialog } from "@/components/elements/dialog";
-import type { PowerAction } from "@/components/server/console/ServerConsoleContainer";
 import { ServerContext } from "@/state/server";
+
+export type PowerAction = "start" | "stop" | "restart" | "kill";
 
 interface PowerButtonProps {
 	className?: string;
 }
 
-export default ({ className }: PowerButtonProps) => {
+const PowerButtons = ({ className }: PowerButtonProps) => {
 	const [open, setOpen] = useState(false);
 	const status = ServerContext.useStoreState((state) => state.status.value);
 	const instance = ServerContext.useStoreState(
@@ -92,3 +93,5 @@ export default ({ className }: PowerButtonProps) => {
 		</div>
 	);
 };
+
+export default PowerButtons;

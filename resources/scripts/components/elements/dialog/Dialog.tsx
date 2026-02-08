@@ -4,12 +4,9 @@ import { AnimatePresence, motion, type Variants } from "framer-motion";
 import type React from "react";
 import { useRef, useState } from "react";
 import { Button } from "@/components/elements/button/index";
-import {
-	DialogContext,
-	type IconPosition,
-	type RenderDialogProps,
-	styles,
-} from "./";
+import { DialogContext } from "./context";
+import styles from "./style.module.css";
+import type { IconPosition, RenderDialogProps } from "./types.d";
 
 const variants: Variants = {
 	open: {
@@ -75,7 +72,6 @@ export default ({
 			{open && (
 				<DialogContext.Provider value={{ setIcon, setFooter, setIconPosition }}>
 					<HDialog
-						static
 						as={motion.div}
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}

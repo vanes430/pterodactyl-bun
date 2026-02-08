@@ -139,7 +139,23 @@ export default ({
 		e.preventDefault();
 		e.stopPropagation();
 		copy(text);
-		toast.success("IP address copied to clipboard!");
+		toast.success(
+			<div className={"flex flex-col text-left"}>
+				<span
+					className={"text-[10px] uppercase tracking-wider text-neutral-400"}
+				>
+					Copied
+				</span>
+				<span className={"font-mono text-sm break-all my-1 text-white"}>
+					&quot;{text}&quot;
+				</span>
+				<span
+					className={"text-[10px] uppercase tracking-wider text-neutral-400"}
+				>
+					to clipboard
+				</span>
+			</div>,
+		);
 	};
 
 	return (

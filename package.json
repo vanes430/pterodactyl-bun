@@ -1,6 +1,6 @@
 {
 	"name": "pterodactyl-panel",
-	"version": "1.0.0-canary",
+	"version": "1.0.0-alpha",
 	"engines": {
 		"node": ">=22"
 	},
@@ -30,6 +30,7 @@
 		"react-hook-form": "^7.71.1",
 		"react-hot-toast": "^2.6.0",
 		"react-i18next": "^16.5.4",
+		"react-icons": "^5.5.0",
 		"react-router": "6",
 		"react-router-dom": "6",
 		"reaptcha": "^1.7.2",

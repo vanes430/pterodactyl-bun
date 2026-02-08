@@ -1,6 +1,6 @@
 import { StoreProvider } from "easy-peasy";
-import { lazy } from "react";
-import { Toaster } from "react-hot-toast";
+import { lazy, useEffect } from "react";
+import { Toaster, toast, useToasterStore } from "react-hot-toast";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import tw from "twin.macro";
 import { setupInterceptors } from "@/api/interceptors";
@@ -47,6 +47,17 @@ interface ExtendedWindow extends Window {
 setupInterceptors(browserHistory);
 
 const App = () => {
+	const { toasts } = useToasterStore();
+
+	useEffect(() => {
+		toasts
+			.filter((t) => t.visible)
+			.filter((_, i) => i >= 3)
+			.forEach((t) => {
+				toast.dismiss(t.id);
+			});
+	}, [toasts]);
+
 	const { PterodactylUser, SiteConfiguration } = window as ExtendedWindow;
 	if (PterodactylUser && !store.getState().user.data) {
 		store.getActions().user.setUserData({
@@ -73,7 +84,7 @@ const App = () => {
 			<GlobalStylesheet />
 			<Provider store={store}>
 				<Toaster
-					position={"top-right"}
+					position={"bottom-right"}
 					toastOptions={{
 						duration: 4000,
 						style: {
@@ -85,7 +96,9 @@ const App = () => {
 				/>
 				<ProgressBar />
 				<div css={tw`mx-auto w-auto`}>
-					<BrowserRouter>
+					<BrowserRouter
+						future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+					>
 						<Routes>
 							<Route
 								path="/auth/*"

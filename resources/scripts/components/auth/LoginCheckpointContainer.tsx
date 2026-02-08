@@ -35,7 +35,7 @@ export default () => {
 
 	const onSubmit = ({ code, recoveryCode }: Values) => {
 		if (!token) return;
-		loginCheckpoint(token, code, recoveryCode)
+		loginCheckpoint(String(token), String(code), String(recoveryCode))
 			.then((response) => {
 				if (response.complete) {
 					// @ts-expect-error this is valid
@@ -59,7 +59,6 @@ export default () => {
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<div css={tw`mt-6`}>
 					<FormField
-						light
 						id={isMissingDevice ? "recoveryCode" : "code"}
 						label={isMissingDevice ? "Recovery Code" : "Authentication Code"}
 						description={

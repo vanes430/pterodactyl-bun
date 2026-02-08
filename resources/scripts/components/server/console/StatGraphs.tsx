@@ -1,5 +1,5 @@
 import { CloudDownload, CloudUpload } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { Line } from "react-chartjs-2";
 import { theme } from "twin.macro";
 import Tooltip from "@/components/elements/tooltip/Tooltip";
@@ -20,70 +20,88 @@ export default () => {
 		(state) => state.server.data?.limits,
 	);
 	const previous = useRef<Record<"tx" | "rx", number>>({ tx: -1, rx: -1 });
+	const isCleared = useRef(false);
 
 	const cpu = useChartTickLabel("CPU", limits.cpu, "%", 2);
 	const memory = useChartTickLabel("Memory", limits.memory, "MiB");
-	const network = useChart("Network", {
-		sets: 2,
-		options: {
-			scales: {
-				y: {
-					ticks: {
-						callback(value) {
-							return bytesToString(
-								typeof value === "string" ? parseInt(value, 10) : value,
-							);
+	const network = useChart(
+		"Network",
+		useMemo(
+			() => ({
+				sets: 2,
+				options: {
+					scales: {
+						y: {
+							ticks: {
+								callback(value) {
+									return bytesToString(
+										typeof value === "string" ? parseInt(value, 10) : value,
+									);
+								},
+							},
 						},
 					},
 				},
-			},
-		},
-		callback(opts, index) {
-			return {
-				...opts,
-				label: !index ? "Network In" : "Network Out",
-				borderColor: !index
-					? theme("colors.cyan.500")
-					: theme("colors.yellow.500"),
-				backgroundColor: hexToRgba(
-					!index ? theme("colors.cyan.500") : theme("colors.yellow.500"),
-					0.1,
-				),
-			};
-		},
-	});
+				callback(opts, index) {
+					return {
+						...opts,
+						label: !index ? "Network In" : "Network Out",
+						borderColor: !index
+							? theme("colors.cyan.500")
+							: theme("colors.yellow.500"),
+						backgroundColor: hexToRgba(
+							!index ? theme("colors.cyan.500") : theme("colors.yellow.500"),
+							0.1,
+						),
+					};
+				},
+			}),
+			[],
+		),
+	);
 
 	useEffect(() => {
 		if (status === "offline" || !connected) {
-			cpu.clear();
-			memory.clear();
-			network.clear();
+			if (!isCleared.current) {
+				cpu.clear();
+				memory.clear();
+				network.clear();
+				isCleared.current = true;
+			}
+		} else {
+			isCleared.current = false;
 		}
 	}, [status, connected, cpu, memory, network]);
 
-	useWebsocketEvent(SocketEvent.STATS, (data: string) => {
-		let values: any = {};
-		try {
-			values = JSON.parse(data);
-		} catch (_e) {
-			return;
-		}
-		cpu.push(values.cpu_absolute);
-		memory.push(Math.floor(values.memory_bytes / 1024 / 1024));
-		network.push([
-			previous.current.tx < 0
-				? 0
-				: Math.max(0, values.network.tx_bytes - previous.current.tx),
-			previous.current.rx < 0
-				? 0
-				: Math.max(0, values.network.rx_bytes - previous.current.rx),
-		]);
+	useWebsocketEvent(
+		SocketEvent.STATS,
+		useCallback(
+			(data: string) => {
+				let values: any = {};
+				try {
+					values = JSON.parse(data);
+				} catch (_e) {
+					return;
+				}
+				cpu.push(values.cpu_absolute);
+				memory.push(Math.floor(values.memory_bytes / 1024 / 1024));
+				network.push([
+					previous.current.tx < 0
+						? 0
+						: Math.max(0, values.network.tx_bytes - previous.current.tx),
+					previous.current.rx < 0
+						? 0
+						: Math.max(0, values.network.rx_bytes - previous.current.rx),
+				]);
 
-		previous.current = {
-			tx: values.network.tx_bytes,
-			rx: values.network.rx_bytes,
-		};
-	});
+				previous.current = {
+					tx: values.network.tx_bytes,
+					rx: values.network.rx_bytes,
+				};
+			},
+			[cpu, memory, network],
+		),
+	);
 
 	return (
 		<>

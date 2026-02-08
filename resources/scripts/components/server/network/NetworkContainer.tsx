@@ -30,10 +30,6 @@ const NetworkContainer = () => {
 	const { data, error, mutate } = getServerAllocations();
 
 	useEffect(() => {
-		mutate(allocations);
-	}, [allocations, mutate]);
-
-	useEffect(() => {
 		clearAndAddHttpError(error);
 	}, [error, clearAndAddHttpError]);
 
@@ -49,11 +45,7 @@ const NetworkContainer = () => {
 		setLoading(true);
 		createServerAllocation(uuid)
 			.then((allocation) => {
-				setServerFromState((s) => ({
-					...s,
-					allocations: s.allocations.concat(allocation),
-				}));
-				return mutate(data?.concat(allocation), false);
+				return mutate(data?.concat(allocation));
 			})
 			.catch((error) => clearAndAddHttpError(error))
 			.then(() => setLoading(false));

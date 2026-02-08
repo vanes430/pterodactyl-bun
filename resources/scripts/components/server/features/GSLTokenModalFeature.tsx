@@ -81,7 +81,7 @@ const GSLTokenModalFeature = () => {
 			closeOnBackground={false}
 			showSpinnerOverlay={loading}
 		>
-			<FlashMessageRender key={"feature:gslToken"} css={tw`mb-4`} />
+			<FlashMessageRender byKey={"feature:gslToken"} css={tw`mb-4`} />
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<h2 css={tw`text-2xl mb-4 text-neutral-100`}>Invalid GSL token!</h2>
 				<p css={tw`mt-4`}>

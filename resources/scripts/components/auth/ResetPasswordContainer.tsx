@@ -84,13 +84,12 @@ export default () => {
 			onSubmit={handleSubmit(onSubmit)}
 		>
 			<div>
-				<Label isLight>Email</Label>
-				<Input value={email} isLight disabled />
+				<Label>Email</Label>
+				<Input value={email} disabled />
 			</div>
 			<div css={tw`mt-6`}>
 				<FormField
 					id={"password"}
-					light
 					label={"New Password"}
 					{...register("password")}
 					type={"password"}
@@ -101,7 +100,6 @@ export default () => {
 			<div css={tw`mt-6`}>
 				<FormField
 					id={"passwordConfirmation"}
-					light
 					label={"Confirm New Password"}
 					{...register("passwordConfirmation")}
 					type={"password"}

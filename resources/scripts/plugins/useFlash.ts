@@ -1,6 +1,7 @@
 import { type Actions, useStoreActions } from "easy-peasy";
 import { useCallback, useMemo } from "react";
 import { toast } from "react-hot-toast";
+import { httpErrorToHuman } from "@/api/http";
 import type { ApplicationStore } from "@/state";
 import type { FlashMessage } from "@/state/flashes";
 
@@ -33,6 +34,14 @@ const useFlash = () => {
 	return {
 		...actions,
 		addFlash,
+		clearAndAddHttpError: useCallback(
+			(payload: { error?: any; key?: string }) =>
+				actions.clearAndAddHttpError({
+					...payload,
+					error: payload.error ? httpErrorToHuman(payload.error) : undefined,
+				}),
+			[actions],
+		),
 	};
 };
 

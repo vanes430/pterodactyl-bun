@@ -2,8 +2,8 @@ import styled, { css } from "styled-components";
 import tw from "twin.macro";
 
 export interface Props {
-	isLight?: boolean;
-	hasError?: boolean;
+	$isLight?: boolean;
+	$hasError?: boolean;
 }
 
 const light = css<Props>`
@@ -42,7 +42,7 @@ const inputStyle = css<Props>`
 
     & + .input-help {
         ${tw`mt-1 text-xs text-neutral-400`};
-        ${(props) => props.hasError && tw`text-red-400`};
+        ${(props) => props.$hasError && tw`text-red-400`};
     }
 
     &:required,
@@ -52,15 +52,15 @@ const inputStyle = css<Props>`
 
     &:not(:disabled):not(:read-only):focus {
         ${tw`bg-white/[0.05] border-cyan-500/50 ring-2 ring-cyan-500/20`};
-        ${(props) => props.hasError && tw`border-red-500/50 ring-red-500/20`};
+        ${(props) => props.$hasError && tw`border-red-500/50 ring-red-500/20`};
     }
 
     &:disabled {
         ${tw`opacity-50 cursor-not-allowed`};
     }
 
-    ${(props) => props.isLight && light};
-    ${(props) => props.hasError && tw`text-red-100 border-red-500/50 hover:border-red-500`};
+    ${(props) => props.$isLight && light};
+    ${(props) => props.$hasError && tw`text-red-100 border-red-500/50 hover:border-red-500`};
 `;
 
 const Input = styled.input<Props>`

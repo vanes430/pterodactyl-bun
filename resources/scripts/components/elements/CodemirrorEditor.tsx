@@ -44,19 +44,19 @@ require("codemirror/mode/javascript/javascript");
 require("codemirror/mode/properties/properties");
 
 const EditorContainer = styled.div`
-    min-height: 16rem;
-    height: calc(100vh - 20rem);
-    ${tw`relative`};
+    min-height: 32rem;
+    height: calc(100vh - 16rem);
+    ${tw`relative w-full`};
 
     > div {
-        ${tw`rounded h-full`};
+        ${tw`rounded h-full w-full`};
     }
 
     .CodeMirror {
         font-family: "JetBrains Mono", "Fira Code", "Source Code Pro", monospace;
         font-size: 13px;
         line-height: 1.5rem;
-        ${tw`rounded`};
+        ${tw`rounded h-full`};
     }
 
     .CodeMirror-linenumber {

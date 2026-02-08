@@ -26,15 +26,13 @@ const DeleteAllocationButton = ({ allocation }: Props) => {
 		clearFlashes();
 
 		mutate((data) => data?.filter((a) => a.id !== allocation), false);
-		setServerFromState((s) => ({
-			...s,
-			allocations: s.allocations.filter((a) => a.id !== allocation),
-		}));
 
-		deleteServerAllocation(uuid, allocation).catch((error) => {
-			clearAndAddHttpError(error);
-			mutate();
-		});
+		deleteServerAllocation(uuid, allocation)
+			.then(() => mutate())
+			.catch((error) => {
+				clearAndAddHttpError(error);
+				mutate();
+			});
 	};
 
 	return (
@@ -53,9 +51,17 @@ const DeleteAllocationButton = ({ allocation }: Props) => {
 				size={Button.Sizes.Small}
 				shape={Button.Shapes.IconSquare}
 				type={"button"}
+				className={
+					"!p-2 !bg-transparent hover:!bg-red-500/10 !border-none group"
+				}
 				onClick={() => setConfirm(true)}
 			>
-				<Trash2 size={16} />
+				<Trash2
+					size={16}
+					className={
+						"text-neutral-500 group-hover:text-red-400 transition-colors duration-75"
+					}
+				/>
 			</Button.Danger>
 		</>
 	);

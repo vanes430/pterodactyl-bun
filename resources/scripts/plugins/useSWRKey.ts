@@ -8,7 +8,21 @@ type Context = string | string[] | (string | number | null | {})[];
 function useSWRKey(context: Context, prefix: string | null = null): string {
 	const key = useDeepCompareMemo((): string => {
 		return (Array.isArray(context) ? context : [context])
-			.map((value) => JSON.stringify(value))
+			.map((value) => {
+				try {
+					return JSON.stringify(value);
+				} catch (e) {
+					console.error("Failed to stringify SWR key value:", e, value);
+					const cache = new Set();
+					return JSON.stringify(value, (_key, val) => {
+						if (typeof val === "object" && val !== null) {
+							if (cache.has(val)) return "[Circular]";
+							cache.add(val);
+						}
+						return val;
+					});
+				}
+			})
 			.join(":");
 	}, [context]);
 

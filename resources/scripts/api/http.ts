@@ -8,6 +8,7 @@ export class HttpRequestError extends Error {
 	) {
 		super(message);
 		this.name = "HttpRequestError";
+		Object.defineProperty(this, "response", { enumerable: false });
 	}
 }
 
@@ -174,10 +175,35 @@ class HttpClient {
 		},
 	) {
 		const isFormData = data instanceof FormData;
+		let body: any;
+		if (isFormData) {
+			body = data;
+		} else {
+			try {
+				body = JSON.stringify(data);
+			} catch (e) {
+				console.error("Failed to stringify request data:", e, data);
+				// Fallback to a safe stringify if possible, or just send an empty object string
+				// to avoid crashing the entire application.
+				const cache = new Set();
+				body = JSON.stringify(data, (_key, value) => {
+					if (typeof value === "object" && value !== null) {
+						try {
+							if (cache.has(value)) return "[Circular]";
+							cache.add(value);
+						} catch (e) {
+							return "[Unaccessible]";
+						}
+					}
+					return value;
+				});
+			}
+		}
+
 		return this.request<T>(url, {
 			...config,
 			method: "POST",
-			body: isFormData ? data : JSON.stringify(data),
+			body,
 			headers: {
 				...(isFormData ? {} : { "Content-Type": "application/json" }),
 				...config?.headers,
@@ -193,10 +219,25 @@ class HttpClient {
 			timeout?: number;
 		},
 	) {
+		let body: any;
+		try {
+			body = JSON.stringify(data);
+		} catch (e) {
+			console.error("Failed to stringify request data:", e, data);
+			const cache = new Set();
+			body = JSON.stringify(data, (_key, value) => {
+				if (typeof value === "object" && value !== null) {
+					if (cache.has(value)) return "[Circular]";
+					cache.add(value);
+				}
+				return value;
+			});
+		}
+
 		return this.request<T>(url, {
 			...config,
 			method: "PUT",
-			body: JSON.stringify(data),
+			body,
 			headers: {
 				"Content-Type": "application/json",
 				...config?.headers,
@@ -212,10 +253,25 @@ class HttpClient {
 			timeout?: number;
 		},
 	) {
+		let body: any;
+		try {
+			body = JSON.stringify(data);
+		} catch (e) {
+			console.error("Failed to stringify request data:", e, data);
+			const cache = new Set();
+			body = JSON.stringify(data, (_key, value) => {
+				if (typeof value === "object" && value !== null) {
+					if (cache.has(value)) return "[Circular]";
+					cache.add(value);
+				}
+				return value;
+			});
+		}
+
 		return this.request<T>(url, {
 			...config,
 			method: "PATCH",
-			body: JSON.stringify(data),
+			body,
 			headers: {
 				"Content-Type": "application/json",
 				...config?.headers,
@@ -302,6 +358,7 @@ class HttpClient {
 }
 
 const http = new HttpClient({
+	credentials: "same-origin",
 	headers: {
 		"X-Requested-With": "XMLHttpRequest",
 		Accept: "application/json",
@@ -312,6 +369,28 @@ http.interceptors.request.use((req) => {
 	if (typeof req.window === "undefined") {
 		store.getActions().progress.startContinuous();
 	}
+
+	const getCookie = (name: string) => {
+		const value = `; ${document.cookie}`;
+		const parts = value.split(`; ${name}=`);
+		if (parts.length === 2) return parts.pop()?.split(";").shift();
+	};
+
+	let token = getCookie("XSRF-TOKEN");
+	if (!token) {
+		const element = document.querySelector('meta[name="csrf-token"]');
+		if (element) {
+			token = element.getAttribute("content") || undefined;
+		}
+	}
+
+	if (token) {
+		req.headers = {
+			...req.headers,
+			"X-XSRF-TOKEN": decodeURIComponent(token),
+		};
+	}
+
 	return req;
 });
 
@@ -331,6 +410,10 @@ http.interceptors.response.use(
 export default http;
 
 export function httpErrorToHuman(error: unknown): string {
+	if (typeof error === "string") {
+		return error;
+	}
+
 	if (error instanceof HttpRequestError && error.data) {
 		const data = error.data as {
 			errors?: { detail: string }[];

@@ -50,9 +50,8 @@ const ModalContainer = styled.div<{ alignTop?: boolean }>`
 
     margin-bottom: auto;
 
-    & > .close-icon {
-        ${tw`absolute right-0 p-2 text-white cursor-pointer opacity-50 transition-all duration-150 ease-linear hover:opacity-100`};
-        top: -2.5rem;
+    & .close-icon {
+        ${tw`absolute right-4 top-4 p-2 text-white cursor-pointer opacity-50 transition-all duration-150 ease-linear hover:opacity-100 z-50`};
 
         &:hover {
             ${tw`transform rotate-90`}
@@ -117,23 +116,6 @@ const Modal: React.FC<PropsWithChildren<ModalProps>> = ({
 				}}
 			>
 				<ModalContainer alignTop={top}>
-					{isDismissable && (
-						<div className={"close-icon"} onClick={() => setRender(false)}>
-							<svg
-								xmlns={"http://www.w3.org/2000/svg"}
-								fill={"none"}
-								viewBox={"0 0 24 24"}
-								stroke={"currentColor"}
-							>
-								<path
-									strokeLinecap={"round"}
-									strokeLinejoin={"round"}
-									strokeWidth={"2"}
-									d={"M6 18L18 6M6 6l12 12"}
-								/>
-							</svg>
-						</div>
-					)}
 					{showSpinnerOverlay && (
 						<Fade timeout={150} appear in>
 							<div
@@ -148,8 +130,25 @@ const Modal: React.FC<PropsWithChildren<ModalProps>> = ({
 						</Fade>
 					)}
 					<div
-						css={tw`bg-neutral-900/80 backdrop-blur-xl p-3 sm:p-4 md:p-6 rounded-xl shadow-2xl overflow-y-scroll border border-white/10 transition-all duration-150`}
+						css={tw`relative bg-neutral-900/80 backdrop-blur-xl p-3 sm:p-4 md:p-6 rounded-xl shadow-2xl overflow-y-scroll border border-white/10 transition-all duration-150`}
 					>
+						{isDismissable && (
+							<div className={"close-icon"} onClick={() => setRender(false)}>
+								<svg
+									xmlns={"http://www.w3.org/2000/svg"}
+									fill={"none"}
+									viewBox={"0 0 24 24"}
+									stroke={"currentColor"}
+								>
+									<path
+										strokeLinecap={"round"}
+										strokeLinejoin={"round"}
+										strokeWidth={"2"}
+										d={"M6 18L18 6M6 6l12 12"}
+									/>
+								</svg>
+							</div>
+						)}
 						{children}
 					</div>
 				</ModalContainer>

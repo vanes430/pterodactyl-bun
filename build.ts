@@ -202,21 +202,26 @@ if (!result.success) {
 
 // 📄 Generate manifest.json
 const manifest: Record<string, any> = {};
+
 for (const output of result.outputs) {
-	if (output.path.endsWith(".map")) continue; // Jangan masukkan sourcemap ke manifest
+	if (output.path.endsWith(".map")) continue;
 
 	const fileName = path.basename(output.path);
 	const relativePath = path.relative(outdir, output.path);
 	const publicPath = `${cliConfig.publicPath || "/assets/"}${relativePath}`;
 
 	// Map entry points to Pterodactyl's expected names
-	// Kita cari file yang MULAI dengan 'index' dan berakhir dengan '.js' atau '.css'
-	if (fileName.startsWith("index.") || fileName === "index.js") {
+	if (output.kind === "entry-point") {
 		if (fileName.endsWith(".js")) {
 			manifest["main.js"] = { src: publicPath, integrity: "" };
 		} else if (fileName.endsWith(".css")) {
 			manifest["main.css"] = { src: publicPath, integrity: "" };
 		}
+	}
+
+	// Fallback for CSS if it's not marked as entry-point but is the main CSS
+	if (!manifest["main.css"] && fileName.startsWith("index.") && fileName.endsWith(".css")) {
+		manifest["main.css"] = { src: publicPath, integrity: "" };
 	}
 
 	// Store versioned name as well

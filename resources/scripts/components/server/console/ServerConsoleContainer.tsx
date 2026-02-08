@@ -1,22 +1,21 @@
 import Features from "@feature/Features";
-import { lazy, memo } from "react";
+import { lazy, memo, useEffect, useState } from "react";
 import isEqual from "react-fast-compare";
 import tw from "twin.macro";
 import { Alert } from "@/components/elements/alert";
 import Can from "@/components/elements/Can";
 import ServerContentBlock from "@/components/elements/ServerContentBlock";
 import Spinner from "@/components/elements/Spinner";
+import Console from "@/components/server/console/Console";
 import McLogsButton from "@/components/server/console/McLogsButton";
 import PowerButtons from "@/components/server/console/PowerButtons";
 import ServerDetailsBlock from "@/components/server/console/ServerDetailsBlock";
 import { ServerContext } from "@/state/server";
 
-const Console = lazy(() => import("@/components/server/console/Console"));
 const StatGraphs = lazy(() => import("@/components/server/console/StatGraphs"));
 
-export type PowerAction = "start" | "stop" | "restart" | "kill";
-
 const ServerConsoleContainer = () => {
+	const [showExtras, setShowExtras] = useState(false);
 	const name = ServerContext.useStoreState((state) => state.server.data?.name);
 	const description = ServerContext.useStoreState(
 		(state) => state.server.data?.description,
@@ -34,6 +33,13 @@ const ServerConsoleContainer = () => {
 	const isNodeUnderMaintenance = ServerContext.useStoreState(
 		(state) => state.server.data?.isNodeUnderMaintenance,
 	);
+
+	useEffect(() => {
+		// Berikan prioritas pada Console untuk render pertama kali,
+		// lalu tampilkan komponen lainnya setelah jeda singkat.
+		const timeout = setTimeout(() => setShowExtras(true), 100);
+		return () => clearTimeout(timeout);
+	}, []);
 
 	return (
 		<ServerContentBlock title={"Console"}>
@@ -80,21 +86,45 @@ const ServerConsoleContainer = () => {
 				</div>
 			</div>
 			<div className={"grid grid-cols-4 gap-2 sm:gap-4 mb-4"}>
-				<div className={"flex col-span-4 lg:col-span-3"}>
-					<Spinner.Suspense>
-						<Console />
-					</Spinner.Suspense>
+				<div className={"flex col-span-4 lg:col-span-3 min-w-0"}>
+					<Console />
 				</div>
-				<ServerDetailsBlock
-					className={"col-span-4 lg:col-span-1 order-last lg:order-none"}
-				/>
+				<div
+					className={
+						"col-span-4 lg:col-span-1 order-last lg:order-none min-w-0"
+					}
+				>
+					{showExtras ? (
+						<ServerDetailsBlock />
+					) : (
+						<div className={"grid grid-cols-12 gap-2 md:gap-4"}>
+							{[...Array(6)].map((_, i) => (
+								<div
+									key={i}
+									className={
+										"col-span-6 md:col-span-4 lg:col-span-12 h-20 bg-gray-800/20 rounded-lg animate-pulse"
+									}
+								/>
+							))}
+						</div>
+					)}
+				</div>
 			</div>
 			<div className={"grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4"}>
-				<Spinner.Suspense>
-					<StatGraphs />
-				</Spinner.Suspense>
+				{showExtras ? (
+					<Spinner.Suspense>
+						<StatGraphs />
+					</Spinner.Suspense>
+				) : (
+					[...Array(3)].map((_, i) => (
+						<div
+							key={i}
+							className={"h-[160px] bg-gray-800/20 rounded-lg animate-pulse"}
+						/>
+					))
+				)}
 			</div>
-			<Features enabled={eggFeatures} />
+			{showExtras && <Features enabled={eggFeatures} />}
 		</ServerContentBlock>
 	);
 };

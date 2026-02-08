@@ -71,7 +71,7 @@ export default () => {
 				<div css={tw`flex flex-col md:flex-row w-full`}>
 					<ServerSidebar />
 					<div css={tw`flex-1 flex justify-center`}>
-						<div css={tw`w-full max-w-[1200px] p-4 md:p-8 md:pt-4`}>
+						<div css={tw`w-full max-w-[1600px] p-4 md:p-8 md:pt-4`}>
 							<InstallListener />
 							<TransferListener />
 							<WebsocketHandler />
@@ -81,12 +81,12 @@ export default () => {
 								<ConflictStateRenderer />
 							) : (
 								<ErrorBoundary>
-									<Routes location={location}>
+									<Routes>
 										{routes.server.map(
 											({ path, permission, component: Component }) => (
 												<Route
 													key={path}
-													path={path}
+													path={path.replace(/^\//, "")}
 													element={
 														<PermissionRoute permission={permission}>
 															<Spinner.Suspense>
