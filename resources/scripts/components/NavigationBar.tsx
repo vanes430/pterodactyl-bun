@@ -2,7 +2,7 @@ import { useStoreState } from "easy-peasy";
 import { LayoutDashboard, LogOut, Settings } from "lucide-react";
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import styled from "styled-components/macro";
+import styled from "styled-components";
 import tw, { theme } from "twin.macro";
 import http from "@/api/http";
 import Avatar from "@/components/Avatar";

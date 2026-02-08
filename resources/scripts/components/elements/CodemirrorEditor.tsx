@@ -1,7 +1,7 @@
 import CodeMirror from "codemirror";
 import type React from "react";
 import { useCallback, useEffect, useState } from "react";
-import styled from "styled-components/macro";
+import styled from "styled-components";
 import tw from "twin.macro";
 import modes from "@/modes";
 

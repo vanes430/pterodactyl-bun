@@ -1,5 +1,5 @@
 import type React from "react";
-import styled, { css } from "styled-components/macro";
+import styled, { css } from "styled-components";
 import tw from "twin.macro";
 import Fade from "@/components/elements/Fade";
 import Select from "@/components/elements/Select";

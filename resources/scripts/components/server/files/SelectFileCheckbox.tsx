@@ -1,5 +1,5 @@
 import type React from "react";
-import styled from "styled-components/macro";
+import styled from "styled-components";
 import tw from "twin.macro";
 import Input from "@/components/elements/Input";
 import { ServerContext } from "@/state/server";

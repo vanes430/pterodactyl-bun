@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { NavLink, useRouteMatch } from "react-router-dom";
-import styled from "styled-components/macro";
+import styled from "styled-components";
 import tw from "twin.macro";
 import Can from "@/components/elements/Can";
 import routes from "@/routers/routes";

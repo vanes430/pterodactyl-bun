@@ -7,7 +7,7 @@ import {
 	useState,
 } from "react";
 import { createPortal } from "react-dom";
-import styled, { css } from "styled-components/macro";
+import styled, { css } from "styled-components";
 import tw from "twin.macro";
 import Fade from "@/components/elements/Fade";
 import Spinner from "@/components/elements/Spinner";

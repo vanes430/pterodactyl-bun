@@ -2,7 +2,7 @@ import { debounce } from "debounce";
 import { Network } from "lucide-react";
 import { memo, useCallback, useState } from "react";
 import isEqual from "react-fast-compare";
-import styled from "styled-components/macro";
+import styled from "styled-components";
 import tw from "twin.macro";
 import type { Allocation } from "@/api/server/getServer";
 import setPrimaryServerAllocation from "@/api/server/network/setPrimaryServerAllocation";

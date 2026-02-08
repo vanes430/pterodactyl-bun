@@ -1,5 +1,5 @@
 import { Field, Form, Formik, type FormikHelpers } from "formik";
-import styled from "styled-components/macro";
+import styled from "styled-components";
 import tw from "twin.macro";
 import { z } from "zod";
 import { createSSHKey, useSSHKeys } from "@/api/account/ssh-keys";

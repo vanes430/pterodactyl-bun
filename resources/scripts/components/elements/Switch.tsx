@@ -1,6 +1,6 @@
 import type React from "react";
 import { useMemo } from "react";
-import styled from "styled-components/macro";
+import styled from "styled-components";
 import tw from "twin.macro";
 import { v4 } from "uuid";
 import Input from "@/components/elements/Input";

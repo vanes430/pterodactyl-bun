@@ -2,7 +2,7 @@ import { useStoreActions, useStoreState } from "easy-peasy";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { CSSTransition } from "react-transition-group";
-import styled from "styled-components/macro";
+import styled from "styled-components";
 import tw from "twin.macro";
 import { randomInt } from "@/helpers";
 

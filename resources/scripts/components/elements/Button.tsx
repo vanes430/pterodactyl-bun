@@ -1,5 +1,6 @@
 import type React from "react";
-import styled, { css } from "styled-components/macro";
+import { type PropsWithChildren } from "react";
+import styled, { css } from "styled-components";
 import tw from "twin.macro";
 import Spinner from "@/components/elements/Spinner";
 
@@ -99,7 +100,7 @@ type ComponentProps = Omit<
 > &
 	Props;
 
-const Button: React.FC<ComponentProps> = ({
+const Button: React.FC<PropsWithChildren<ComponentProps>> = ({
 	children,
 	isLoading,
 	...props
@@ -118,8 +119,8 @@ const Button: React.FC<ComponentProps> = ({
 
 type LinkProps = Omit<JSX.IntrinsicElements["a"], "ref" | keyof Props> & Props;
 
-const LinkButton: React.FC<LinkProps> = (props) => (
-	<ButtonStyle as={"a"} {...props} />
+const LinkButton: React.FC<PropsWithChildren<LinkProps>> = (props) => (
+	<ButtonStyle as={"a"} {...(props as any)} />
 );
 
 export { LinkButton, ButtonStyle };

@@ -1,7 +1,7 @@
 import { RectangleEllipsis } from "lucide-react";
 import type React from "react";
 import { type PropsWithChildren, Suspense } from "react";
-import styled, { keyframes } from "styled-components/macro";
+import styled, { keyframes } from "styled-components";
 import tw from "twin.macro";
 import ErrorBoundary from "@/components/elements/ErrorBoundary";
 

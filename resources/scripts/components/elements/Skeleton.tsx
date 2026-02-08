@@ -1,4 +1,4 @@
-import styled, { keyframes } from "styled-components/macro";
+import styled, { keyframes } from "styled-components";
 import tw from "twin.macro";
 
 const pulse = keyframes`

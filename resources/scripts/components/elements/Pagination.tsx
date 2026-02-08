@@ -1,6 +1,6 @@
 import { ChevronsLeft, ChevronsRight } from "lucide-react";
 import type React from "react";
-import styled from "styled-components/macro";
+import styled from "styled-components";
 import tw from "twin.macro";
 import type { PaginatedResult } from "@/api/http";
 import Button from "@/components/elements/Button";

@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import styled, { css } from "styled-components/macro";
+import styled, { css } from "styled-components";
 import tw from "twin.macro";
 import ConfigureTwoFactorForm from "@/components/dashboard/forms/ConfigureTwoFactorForm";
 import UpdateEmailAddressForm from "@/components/dashboard/forms/UpdateEmailAddressForm";

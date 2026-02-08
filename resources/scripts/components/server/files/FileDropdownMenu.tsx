@@ -14,7 +14,7 @@ import { join } from "pathe";
 import type React from "react";
 import { memo, useMemo, useRef, useState } from "react";
 import isEqual from "react-fast-compare";
-import styled from "styled-components/macro";
+import styled from "styled-components";
 import tw from "twin.macro";
 import compressFiles from "@/api/server/files/compressFiles";
 import copyFile from "@/api/server/files/copyFile";

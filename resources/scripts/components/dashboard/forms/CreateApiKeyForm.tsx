@@ -1,7 +1,7 @@
 import { type Actions, useStoreActions } from "easy-peasy";
 import { Field, Form, Formik, type FormikHelpers } from "formik";
 import { useState } from "react";
-import styled from "styled-components/macro";
+import styled from "styled-components";
 import tw from "twin.macro";
 import { z } from "zod";
 import createApiKey from "@/api/account/createApiKey";

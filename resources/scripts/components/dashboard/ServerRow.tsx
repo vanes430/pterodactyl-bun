@@ -12,7 +12,7 @@ import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import isEqual from "react-fast-compare";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
-import styled from "styled-components/macro";
+import styled from "styled-components";
 import tw from "twin.macro";
 import type { Server } from "@/api/server/getServer";
 import getServerResourceUsage, {

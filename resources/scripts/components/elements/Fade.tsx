@@ -1,7 +1,7 @@
 import type React from "react";
 import { CSSTransition } from "react-transition-group";
 import type { CSSTransitionProps } from "react-transition-group/CSSTransition";
-import styled from "styled-components/macro";
+import styled from "styled-components";
 import tw from "twin.macro";
 
 interface Props extends Omit<CSSTransitionProps, "timeout" | "classNames"> {

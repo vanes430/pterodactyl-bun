@@ -1,5 +1,5 @@
 import { ArrowLeft, RefreshCw } from "lucide-react";
-import styled, { keyframes } from "styled-components/macro";
+import styled, { keyframes } from "styled-components";
 import tw from "twin.macro";
 import NotFoundSvg from "@/assets/images/not_found.svg";
 import ServerErrorSvg from "@/assets/images/server_error.svg";
