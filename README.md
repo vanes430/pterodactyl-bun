@@ -6,12 +6,23 @@
 
 ## ⚠️ About This Fork
 
-This is a **Hard Fork** of the [Pterodactyl Panel](https://github.com/pterodactyl/panel). 
+This is a **Hard Fork** of the [Pterodactyl Panel](https://github.com/pterodactyl/panel) focused on performance, modern developer experience, and a polished user interface.
 
-**What makes this fork different?**
-- **Modern UI**: Full Glassmorphism theme, Inter font, and [Lucide React](https://lucide.dev/) icons.
-- **Enhanced UX**: Skeleton loading, modern Toast notifications, and Fullscreen Terminal.
-- **Bun Optimized**: The entire frontend build system has been migrated to [Bun](https://bun.sh/) for near-instant compilation and improved developer experience.
+### ✨ Key Features & Improvements
+- **Modern UI/UX**: 
+  - Full Glassmorphism theme with [Inter](https://rsms.me/inter/) font.
+  - Migrated to **CodeMirror 6** for a superior editing experience with `githubDark` theme and expanded language support (TOML, Nginx, Shell, etc.).
+  - **Responsive Sidebar File Explorer** with Material Design icons for faster navigation.
+  - **Persistent Drag-and-Drop** server sorting on the dashboard.
+- **Enhanced Performance**:
+  - Optimized status polling and reduced UI noise (silenced repetitive error toasts).
+  - Skeleton loading and modern toast notifications for smooth transitions.
+  - Optimized bundle performance with Bun-native build system.
+- **Modern Tech Stack**:
+  - **React 18** & **React Router v6** for better concurrency and routing.
+  - **React Hook Form** for efficient, type-safe form handling.
+  - Replaced Axios with native **Fetch API** for a lighter footprint.
+  - **Bun Optimized**: Near-instant compilation and improved developer experience.
 
 ---
 
@@ -53,13 +64,13 @@ bun run watch
 ```
 
 ### 🏗️ Flexible Build Modes
-We provide three specialized build modes:
+We provide specialized build modes via `build.ts`:
 
 | Command | Target | Features |
 | :--- | :--- | :--- |
-| `bun run package:dev` | Debugging | No Minify, No Hashing, Source Maps enabled. |
-| `bun run package:dev-hash` | Staging | No Minify, Filename Hashing enabled. |
-| `bun run package:prod` | Production | Full Minification, Hashing, and Optimization. |
+| `bun run build:dev` | Development | No Minify, No Hashing. |
+| `bun run build:prod` | Production | Full Minification, Hashing, and Optimization. |
+| `bun run package:prod` | Release | Production build bundled into a deployment archive. |
 
 ---
 
