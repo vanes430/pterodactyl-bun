@@ -1,12 +1,30 @@
+import {
+	closestCenter,
+	DndContext,
+	type DragEndEvent,
+	DragOverlay,
+	type DragStartEvent,
+	defaultDropAnimationSideEffects,
+	KeyboardSensor,
+	PointerSensor,
+	useSensor,
+	useSensors,
+} from "@dnd-kit/core";
+import {
+	arrayMove,
+	SortableContext,
+	sortableKeyboardCoordinates,
+	verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { useStoreState } from "easy-peasy";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import useSWR from "swr";
 import tw from "twin.macro";
 import getServers from "@/api/getServers";
 import type { PaginatedResult } from "@/api/http";
 import type { Server } from "@/api/server/getServer";
-import ServerRow from "@/components/dashboard/ServerRow";
+import ServerRow, { ServerRowContent } from "@/components/dashboard/ServerRow";
 import PageContentBlock from "@/components/elements/PageContentBlock";
 import Pagination from "@/components/elements/Pagination";
 import Skeleton from "@/components/elements/Skeleton";
@@ -29,6 +47,21 @@ export default () => {
 		false,
 	);
 
+	const storageKey = useMemo(
+		() =>
+			showOnlyAdmin
+				? `pterodactyl:admin_server_order:${uuid}`
+				: `pterodactyl:server_order:${uuid}`,
+		[showOnlyAdmin, uuid],
+	);
+
+	const [serverOrder, setServerOrder] = useState<string[]>(() => {
+		const stored = localStorage.getItem(storageKey);
+		return stored ? stored.split("|") : [];
+	});
+
+	const [activeId, setActiveId] = useState<string | null>(null);
+
 	const { data: servers, error } = useSWR<PaginatedResult<Server>>(
 		["/api/client/servers", showOnlyAdmin && rootAdmin, page],
 		() =>
@@ -38,6 +71,53 @@ export default () => {
 			}),
 	);
 
+	const sortedItems = useMemo(() => {
+		if (!servers?.items) return [];
+		const items = [...servers.items];
+		if (!serverOrder.length) return items;
+
+		return items.sort((a, b) => {
+			const aIndex = serverOrder.indexOf(a.uuid);
+			const bIndex = serverOrder.indexOf(b.uuid);
+			if (aIndex === -1 && bIndex === -1) return 0;
+			if (aIndex === -1) return 1;
+			if (bIndex === -1) return -1;
+			return aIndex - bIndex;
+		});
+	}, [servers?.items, serverOrder]);
+
+	const activeServer = useMemo(
+		() => sortedItems.find((s) => s.uuid === activeId),
+		[sortedItems, activeId],
+	);
+
+	const sensors = useSensors(
+		useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+		useSensor(KeyboardSensor, {
+			coordinateGetter: sortableKeyboardCoordinates,
+		}),
+	);
+
+	const handleDragStart = (event: DragStartEvent) => {
+		setActiveId(event.active.id as string);
+	};
+
+	const handleDragEnd = (event: DragEndEvent) => {
+		const { active, over } = event;
+		setActiveId(null);
+
+		if (over && active.id !== over.id) {
+			const oldIndex = sortedItems.findIndex((i) => i.uuid === active.id);
+			const newIndex = sortedItems.findIndex((i) => i.uuid === over.id);
+
+			const newItems = arrayMove(sortedItems, oldIndex, newIndex);
+			const newOrder = newItems.map((i) => i.uuid);
+
+			setServerOrder(newOrder);
+			localStorage.setItem(storageKey, newOrder.join("|"));
+		}
+	};
+
 	useEffect(() => {
 		if (!servers) return;
 		if (servers.pagination.currentPage > 1 && !servers.items.length) {
@@ -46,9 +126,6 @@ export default () => {
 	}, [servers?.pagination.currentPage, servers]);
 
 	useEffect(() => {
-		// Don't use react-router to handle changing this part of the URL, otherwise it
-		// triggers a needless re-render. We just want to track this in the URL incase the
-		// user refreshes the page.
 		window.history.replaceState(
 			null,
 			document.title,
@@ -92,37 +169,46 @@ export default () => {
 								<Skeleton width={"30%"} height={"1.25rem"} className={"mb-2"} />
 								<Skeleton width={"20%"} height={"0.75rem"} />
 							</div>
-							<div css={tw`hidden md:flex flex-col items-end mr-8`}>
-								<Skeleton
-									width={"60px"}
-									height={"0.75rem"}
-									className={"mb-2"}
-								/>
-								<Skeleton width={"40px"} height={"0.75rem"} />
-							</div>
 							<Skeleton width={"100px"} height={"2rem"} />
 						</div>
 					))}
 				</div>
 			) : (
 				<Pagination data={servers} onPageSelect={setPage}>
-					{({ items }) =>
-						items.length > 0 ? (
-							items.map((server, index) => (
-								<ServerRow
-									key={server.uuid}
-									server={server}
-									css={index > 0 ? tw`mt-2` : undefined}
-								/>
-							))
-						) : (
-							<p css={tw`text-center text-sm text-neutral-400`}>
-								{showOnlyAdmin
-									? "There are no other servers to display."
-									: "There are no servers associated with your account."}
-							</p>
-						)
-					}
+					{() => (
+						<DndContext
+							sensors={sensors}
+							collisionDetection={closestCenter}
+							onDragStart={handleDragStart}
+							onDragEnd={handleDragEnd}
+							onDragCancel={() => setActiveId(null)}
+						>
+							<SortableContext
+								items={sortedItems.map((i) => i.uuid)}
+								strategy={verticalListSortingStrategy}
+							>
+								{sortedItems.map((server, index) => (
+									<ServerRow
+										key={server.uuid}
+										server={server}
+										css={index > 0 ? tw`mt-2` : undefined}
+									/>
+								))}
+							</SortableContext>
+
+							<DragOverlay
+								dropAnimation={{
+									sideEffects: defaultDropAnimationSideEffects({
+										styles: { active: { opacity: "0.5" } },
+									}),
+								}}
+							>
+								{activeId && activeServer ? (
+									<ServerRowContent server={activeServer} />
+								) : null}
+							</DragOverlay>
+						</DndContext>
+					)}
 				</Pagination>
 			)}
 		</PageContentBlock>

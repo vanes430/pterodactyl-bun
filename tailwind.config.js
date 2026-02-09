@@ -36,6 +36,9 @@ module.exports = {
 			transitionDuration: {
 				250: "250ms",
 			},
+			animation: {
+				"spin-slow": "spin 3s linear infinite",
+			},
 			borderColor: (theme) => ({
 				default: theme("colors.neutral.400", "currentColor"),
 			}),

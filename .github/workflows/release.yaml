@@ -21,19 +21,30 @@ jobs:
 
       - name: Build & Package DEVELOPMENT
         run: |
+          mkdir -p target
           bun run package:dev
-          mv panel.tar.gz panel-dev.tar.gz
+          mv panel.tar.gz target/panel-dev.tar.gz
 
       - name: Build & Package DEVELOPMENT-HASHED
         run: |
           bun run package:dev-hash
-          mv panel.tar.gz panel-dev-hash.tar.gz
+          mv panel.tar.gz target/panel-dev-hash.tar.gz
+
+      - name: Build & Package DEVELOPMENT-HASHED-SPLIT
+        run: |
+          bun run package:dev-hash-split
+          mv panel.tar.gz target/panel-dev-hash-split.tar.gz
 
       - name: Build & Package PRODUCTION
         run: |
           bun run package:prod
-          mv panel.tar.gz panel-prod.tar.gz
-          cp panel-prod.tar.gz panel.tar.gz
+          mv panel.tar.gz target/panel-prod.tar.gz
+
+      - name: Build & Package PRODUCTION-SPLIT
+        run: |
+          bun run package:prod-split
+          mv panel.tar.gz target/panel-prod-split.tar.gz
+          cp target/panel-prod-split.tar.gz target/panel.tar.gz
 
       - name: Automatic Releases
         uses: marvinpinto/action-automatic-releases@latest
@@ -43,7 +54,8 @@ jobs:
           prerelease: false
           title: "Latest Automated Build"
           files: |
-            panel-dev.tar.gz
-            panel-dev-hash.tar.gz
-            panel-prod.tar.gz
-            panel.tar.gz
+            target/panel-dev.tar.gz
+            target/panel-dev-hash.tar.gz
+            target/panel-dev-hash-split.tar.gz
+            target/panel-prod.tar.gz
+            target/panel-prod-split.tar.gz

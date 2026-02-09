@@ -14,10 +14,12 @@ import { ServerError } from "@/components/elements/ScreenBlock";
 import Select from "@/components/elements/Select";
 import SpinnerOverlay from "@/components/elements/SpinnerOverlay";
 import FlashMessageRender from "@/components/FlashMessageRender";
+import FileExplorerSidebar from "@/components/server/files/FileExplorerSidebar";
 import FileManagerBreadcrumbs from "@/components/server/files/FileManagerBreadcrumbs";
 import FileNameModal from "@/components/server/files/FileNameModal";
 import { encodePathSegments, hashToPath } from "@/helpers";
 import modes from "@/modes";
+import useFileManagerSwr from "@/plugins/useFileManagerSwr";
 import useFlash from "@/plugins/useFlash";
 import { ServerContext } from "@/state/server";
 
@@ -37,17 +39,35 @@ export default () => {
 	const setDirectory = ServerContext.useStoreActions(
 		(actions) => actions.files.setDirectory,
 	);
+	const { data: files } = useFileManagerSwr();
 	const { addError, clearFlashes } = useFlash();
 
 	let fetchFileContent: null | (() => Promise<string>) = null;
 
 	useEffect(() => {
 		if (action === "new") return;
-
-		setError("");
-		setLoading(true);
 		const path = hashToPath(hash);
 		setDirectory(dirname(path));
+	}, [hash, action, setDirectory]);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: files is excluded to prevent re-fetching content when navigating folders in sidebar
+	useEffect(() => {
+		if (action === "new") return;
+
+		setError("");
+		const path = hashToPath(hash);
+		const fileName = path.split("/").pop();
+
+		// Jika daftar file sudah dimuat, cek apakah file ini bisa diedit
+		if (files) {
+			const file = files.find((f) => f.name === fileName);
+			if (file && !file.isEditable()) {
+				setError("This file type cannot be opened in the editor.");
+				return;
+			}
+		}
+
+		setLoading(true);
 		getFileContents(uuid, path)
 			.then(setContent)
 			.catch((error) => {
@@ -55,7 +75,7 @@ export default () => {
 				setError(httpErrorToHuman(error));
 			})
 			.then(() => setLoading(false));
-	}, [action, uuid, hash, setDirectory]);
+	}, [action, uuid, hash]);
 
 	const save = (name?: string) => {
 		if (!fetchFileContent) {
@@ -84,7 +104,12 @@ export default () => {
 	};
 
 	if (error) {
-		return <ServerError message={error} onBack={() => navigate(-1)} />;
+		return (
+			<ServerError
+				message={error}
+				onBack={() => navigate(`/server/${id}/files`)}
+			/>
+		);
 	}
 
 	return (
@@ -123,24 +148,30 @@ export default () => {
 					save(name);
 				}}
 			/>
-			<div css={tw`relative`}>
-				<SpinnerOverlay visible={loading} />
-				<CodemirrorEditor
-					mode={mode}
-					filename={hash.replace(/^#/, "")}
-					onModeChanged={setMode}
-					initialContent={content}
-					fetchContent={(value) => {
-						fetchFileContent = value;
-					}}
-					onContentSaved={() => {
-						if (action !== "edit") {
-							setModalVisible(true);
-						} else {
-							save();
-						}
-					}}
-				/>
+			<div
+				css={tw`flex overflow-hidden rounded border border-neutral-800`}
+				style={{ height: "calc(100vh - 16rem)", minHeight: "32rem" }}
+			>
+				<FileExplorerSidebar currentPath={hashToPath(hash)} />
+				<div css={tw`relative flex-1 min-w-0`}>
+					<SpinnerOverlay visible={loading} />
+					<CodemirrorEditor
+						mode={mode}
+						filename={hash.replace(/^#/, "")}
+						onModeChanged={setMode}
+						initialContent={content}
+						fetchContent={(value) => {
+							fetchFileContent = value;
+						}}
+						onContentSaved={() => {
+							if (action !== "edit") {
+								setModalVisible(true);
+							} else {
+								save();
+							}
+						}}
+					/>
+				</div>
 			</div>
 			<div css={tw`flex justify-end mt-4`}>
 				<div css={tw`flex-1 sm:flex-none rounded bg-neutral-900 mr-4`}>

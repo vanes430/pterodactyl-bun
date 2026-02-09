@@ -175,16 +175,15 @@ class HttpClient {
 		},
 	) {
 		const isFormData = data instanceof FormData;
+		const isString = typeof data === "string";
 		let body: any;
-		if (isFormData) {
+		if (isFormData || isString) {
 			body = data;
 		} else {
 			try {
 				body = JSON.stringify(data);
 			} catch (e) {
 				console.error("Failed to stringify request data:", e, data);
-				// Fallback to a safe stringify if possible, or just send an empty object string
-				// to avoid crashing the entire application.
 				const cache = new Set();
 				body = JSON.stringify(data, (_key, value) => {
 					if (typeof value === "object" && value !== null) {
@@ -205,7 +204,9 @@ class HttpClient {
 			method: "POST",
 			body,
 			headers: {
-				...(isFormData ? {} : { "Content-Type": "application/json" }),
+				...(isFormData || isString
+					? {}
+					: { "Content-Type": "application/json" }),
 				...config?.headers,
 			},
 		});
@@ -219,19 +220,24 @@ class HttpClient {
 			timeout?: number;
 		},
 	) {
+		const isString = typeof data === "string";
 		let body: any;
-		try {
-			body = JSON.stringify(data);
-		} catch (e) {
-			console.error("Failed to stringify request data:", e, data);
-			const cache = new Set();
-			body = JSON.stringify(data, (_key, value) => {
-				if (typeof value === "object" && value !== null) {
-					if (cache.has(value)) return "[Circular]";
-					cache.add(value);
-				}
-				return value;
-			});
+		if (isString) {
+			body = data;
+		} else {
+			try {
+				body = JSON.stringify(data);
+			} catch (e) {
+				console.error("Failed to stringify request data:", e, data);
+				const cache = new Set();
+				body = JSON.stringify(data, (_key, value) => {
+					if (typeof value === "object" && value !== null) {
+						if (cache.has(value)) return "[Circular]";
+						cache.add(value);
+					}
+					return value;
+				});
+			}
 		}
 
 		return this.request<T>(url, {
@@ -239,7 +245,7 @@ class HttpClient {
 			method: "PUT",
 			body,
 			headers: {
-				"Content-Type": "application/json",
+				...(isString ? {} : { "Content-Type": "application/json" }),
 				...config?.headers,
 			},
 		});
@@ -253,19 +259,24 @@ class HttpClient {
 			timeout?: number;
 		},
 	) {
+		const isString = typeof data === "string";
 		let body: any;
-		try {
-			body = JSON.stringify(data);
-		} catch (e) {
-			console.error("Failed to stringify request data:", e, data);
-			const cache = new Set();
-			body = JSON.stringify(data, (_key, value) => {
-				if (typeof value === "object" && value !== null) {
-					if (cache.has(value)) return "[Circular]";
-					cache.add(value);
-				}
-				return value;
-			});
+		if (isString) {
+			body = data;
+		} else {
+			try {
+				body = JSON.stringify(data);
+			} catch (e) {
+				console.error("Failed to stringify request data:", e, data);
+				const cache = new Set();
+				body = JSON.stringify(data, (_key, value) => {
+					if (typeof value === "object" && value !== null) {
+						if (cache.has(value)) return "[Circular]";
+						cache.add(value);
+					}
+					return value;
+				});
+			}
 		}
 
 		return this.request<T>(url, {
@@ -273,7 +284,7 @@ class HttpClient {
 			method: "PATCH",
 			body,
 			headers: {
-				"Content-Type": "application/json",
+				...(isString ? {} : { "Content-Type": "application/json" }),
 				...config?.headers,
 			},
 		});

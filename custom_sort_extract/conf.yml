@@ -1,0 +1,28 @@
+info:
+  name: "Custom Server Sort"
+  identifier: "customserversort"
+  description: "Pterodactyl server sorting that just works."
+  flags: ""
+  version: "1.0.3"
+  target: "alpha-NLM"
+  author: "kiip"
+  icon: "icon.png"
+  website: "https://discord.gg/3Gu2FThNcS"
+
+admin:
+  view: "admin.blade.php"
+  controller: ""
+  css: ""
+  wrapper: ""
+
+dashboard:
+  css: ""
+  wrapper: "wrapper.blade.php"
+  components: ""
+
+data:
+  directory: ""
+  public: "public"
+
+database:
+  migrations: ""

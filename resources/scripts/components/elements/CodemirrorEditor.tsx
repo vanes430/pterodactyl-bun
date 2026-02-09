@@ -8,6 +8,11 @@ import { python } from "@codemirror/lang-python";
 import { sql } from "@codemirror/lang-sql";
 import { xml } from "@codemirror/lang-xml";
 import { yaml } from "@codemirror/lang-yaml";
+import { StreamLanguage } from "@codemirror/language";
+import { nginx } from "@codemirror/legacy-modes/mode/nginx";
+import { properties } from "@codemirror/legacy-modes/mode/properties";
+import { shell } from "@codemirror/legacy-modes/mode/shell";
+import { toml } from "@codemirror/legacy-modes/mode/toml";
 import { keymap } from "@codemirror/view";
 import { githubDark } from "@uiw/codemirror-theme-github";
 import CodeMirror, { type ReactCodeMirrorRef } from "@uiw/react-codemirror";
@@ -18,9 +23,7 @@ import tw from "twin.macro";
 import modes from "@/modes";
 
 const EditorContainer = styled.div`
-    min-height: 32rem;
-    height: calc(100vh - 16rem);
-    ${tw`relative w-full`};
+    ${tw`relative w-full h-full`};
 
     > div {
         ${tw`rounded h-full w-full`};
@@ -82,6 +85,14 @@ const getLanguageExtension = (mode: string): Extension => {
 			return php();
 		case "text/x-python":
 			return python();
+		case "text/x-sh":
+			return StreamLanguage.define(shell);
+		case "text/x-nginx-conf":
+			return StreamLanguage.define(nginx);
+		case "text/x-toml":
+			return StreamLanguage.define(toml);
+		case "text/x-properties":
+			return StreamLanguage.define(properties);
 		case "text/x-sql":
 		case "text/x-mysql":
 		case "text/x-mariadb":

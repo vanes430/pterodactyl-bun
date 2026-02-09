@@ -54,3 +54,4 @@ resources/lang/locales.js
 result
 *.tar.gz
 *.zip
+target/
