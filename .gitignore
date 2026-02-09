@@ -6,6 +6,9 @@
 .vagrant/*
 .vscode/*
 storage/framework/*
+bootstrap/cache/*
+storage/logs/*.log
+/public/storage
 /.idea
 /nbproject
 /.direnv
@@ -19,6 +22,18 @@ _ide_helper_models.php
 !public/assets/.gitignore
 log.txt
 bun.lockb
+
+# Storage
+/storage/*.key
+/storage/app/backups/*
+/storage/app/public/*
+/storage/app/tars/*
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+bun-debug.log*
 
 # For local development with docker
 # Remove if we ever put the Dockerfile in the repo

@@ -4,6 +4,7 @@ import tw from "twin.macro";
 import getWebsocketToken from "@/api/server/getWebsocketToken";
 import ContentContainer from "@/components/elements/ContentContainer";
 import Spinner from "@/components/elements/Spinner";
+import useFlash from "@/plugins/useFlash";
 import { usePermissions } from "@/plugins/usePermissions";
 import { Websocket } from "@/plugins/Websocket";
 import { ServerContext } from "@/state/server";
@@ -20,25 +21,34 @@ export default () => {
 		(state) => state.socket,
 	);
 	const uuid = ServerContext.useStoreState((state) => state.server.data?.uuid);
+	const status = ServerContext.useStoreState(
+		(state) => state.server.data?.status,
+	);
 	const [canConnect] = usePermissions("websocket.connect");
 	const setServerStatus = ServerContext.useStoreActions(
 		(actions) => actions.status.setServerStatus,
 	);
+	const { clearAndAddHttpError } = useFlash();
 	const { setInstance, setConnectionState } = ServerContext.useStoreActions(
 		(actions) => actions.socket,
 	);
 
-	const updateToken = useCallback((uuid: string, socket: Websocket) => {
-		if (updatingToken.current) return;
+	const updateToken = useCallback(
+		(uuid: string, socket: Websocket) => {
+			if (updatingToken.current) return;
 
-		updatingToken.current = true;
-		getWebsocketToken(uuid)
-			.then((data) => socket.setToken(data.token, true))
-			.catch((error) => console.error(error))
-			.then(() => {
-				updatingToken.current = false;
-			});
-	}, []);
+			updatingToken.current = true;
+			getWebsocketToken(uuid)
+				.then((data) => socket.setToken(data.token, true))
+				.catch((error) => {
+					clearAndAddHttpError({ key: "server:websocket", error });
+				})
+				.then(() => {
+					updatingToken.current = false;
+				});
+		},
+		[clearAndAddHttpError],
+	);
 	const connect = useCallback(
 		(uuid: string) => {
 			const socket = new Websocket();
@@ -107,8 +117,7 @@ export default () => {
 					// Once that is done, set the instance.
 					setInstance(socket);
 				})
-				.catch((error) => {
-					console.error(error);
+				.catch((_error) => {
 					setError(
 						"You do not have permission to connect to this server's websocket.",
 					);
@@ -130,12 +139,12 @@ export default () => {
 	useEffect(() => {
 		// If there is already an instance or there is no server, just exit out of this process
 		// since we don't need to make a new connection.
-		if (instance || !uuid || !canConnect) {
+		if (instance || !uuid || !canConnect || status === "suspended") {
 			return;
 		}
 
 		connect(uuid);
-	}, [uuid, connect, instance, canConnect]);
+	}, [uuid, connect, instance, canConnect, status]);
 
 	return (
 		<AnimatePresence>

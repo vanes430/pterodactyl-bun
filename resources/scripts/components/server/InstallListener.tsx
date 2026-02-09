@@ -1,11 +1,13 @@
 import { mutate } from "swr";
 import { SocketEvent } from "@/components/server/events";
 import { getDirectorySwrKey } from "@/plugins/useFileManagerSwr";
+import useFlash from "@/plugins/useFlash";
 import useWebsocketEvent from "@/plugins/useWebsocketEvent";
 import { ServerContext } from "@/state/server";
 
 const InstallListener = (): null => {
 	const uuid = ServerContext.useStoreState((state) => state.server.data?.uuid);
+	const { clearAndAddHttpError } = useFlash();
 	const getServer = ServerContext.useStoreActions(
 		(actions) => actions.server.getServer,
 	);
@@ -22,7 +24,9 @@ const InstallListener = (): null => {
 	// server information. This allows the server to automatically become available to the user if they
 	// just sit on the page.
 	useWebsocketEvent(SocketEvent.INSTALL_COMPLETED, () => {
-		getServer(uuid).catch((error) => console.error(error));
+		getServer(uuid).catch((error) => {
+			clearAndAddHttpError({ key: "server:install", error });
+		});
 	});
 
 	// When we see the install started event immediately update the state to indicate such so that the

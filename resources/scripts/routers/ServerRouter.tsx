@@ -14,6 +14,7 @@ import InstallListener from "@/components/server/InstallListener";
 import ServerSidebar from "@/components/server/ServerSidebar";
 import TransferListener from "@/components/server/TransferListener";
 import WebsocketHandler from "@/components/server/WebsocketHandler";
+import useFlash from "@/plugins/useFlash";
 import routes from "@/routers/routes";
 import { ServerContext } from "@/state/server";
 
@@ -21,6 +22,7 @@ export default () => {
 	const params = useParams<{ id: string }>();
 	const location = useLocation();
 
+	const { clearAndAddHttpError } = useFlash();
 	const rootAdmin = useStoreState((state) => state.user.data?.rootAdmin);
 	const [error, setError] = useState("");
 
@@ -48,15 +50,15 @@ export default () => {
 
 		if (params.id) {
 			getServer(params.id).catch((error) => {
-				console.error(error);
 				setError(httpErrorToHuman(error));
+				clearAndAddHttpError({ key: "server", error });
 			});
 		}
 
 		return () => {
 			clearServerState();
 		};
-	}, [params.id, clearServerState, getServer]);
+	}, [params.id, clearServerState, getServer, clearAndAddHttpError]);
 
 	return (
 		<React.Fragment key={"server-router"}>

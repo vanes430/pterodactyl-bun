@@ -1,47 +1,21 @@
-import CodeMirror from "codemirror";
+import { css } from "@codemirror/lang-css";
+import { html } from "@codemirror/lang-html";
+import { javascript } from "@codemirror/lang-javascript";
+import { json } from "@codemirror/lang-json";
+import { markdown } from "@codemirror/lang-markdown";
+import { php } from "@codemirror/lang-php";
+import { python } from "@codemirror/lang-python";
+import { sql } from "@codemirror/lang-sql";
+import { xml } from "@codemirror/lang-xml";
+import { yaml } from "@codemirror/lang-yaml";
+import { keymap } from "@codemirror/view";
+import { githubDark } from "@uiw/codemirror-theme-github";
+import CodeMirror, { type ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import type React from "react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import styled from "styled-components";
 import tw from "twin.macro";
 import modes from "@/modes";
-
-require("codemirror/lib/codemirror.css");
-require("codemirror/theme/dracula.css");
-require("codemirror/addon/edit/closebrackets");
-require("codemirror/addon/edit/closetag");
-require("codemirror/addon/edit/matchbrackets");
-require("codemirror/addon/edit/matchtags");
-require("codemirror/addon/edit/trailingspace");
-require("codemirror/addon/fold/foldcode");
-require("codemirror/addon/fold/foldgutter.css");
-require("codemirror/addon/fold/foldgutter");
-require("codemirror/addon/fold/brace-fold");
-require("codemirror/addon/fold/comment-fold");
-require("codemirror/addon/fold/indent-fold");
-require("codemirror/addon/fold/markdown-fold");
-require("codemirror/addon/fold/xml-fold");
-require("codemirror/addon/hint/show-hint.css");
-require("codemirror/addon/hint/show-hint");
-require("codemirror/addon/mode/simple");
-require("codemirror/addon/dialog/dialog.css");
-require("codemirror/addon/dialog/dialog");
-require("codemirror/addon/scroll/annotatescrollbar");
-require("codemirror/addon/scroll/scrollpastend");
-require("codemirror/addon/scroll/simplescrollbars.css");
-require("codemirror/addon/scroll/simplescrollbars");
-require("codemirror/addon/search/jump-to-line");
-require("codemirror/addon/search/match-highlighter");
-require("codemirror/addon/search/matchesonscrollbar.css");
-require("codemirror/addon/search/matchesonscrollbar");
-require("codemirror/addon/search/search");
-require("codemirror/addon/search/searchcursor");
-
-// Priority Languages (Commonly used in Pterodactyl)
-require("codemirror/mode/yaml/yaml");
-require("codemirror/mode/shell/shell");
-require("codemirror/mode/php/php");
-require("codemirror/mode/javascript/javascript");
-require("codemirror/mode/properties/properties");
 
 const EditorContainer = styled.div`
     min-height: 32rem;
@@ -52,22 +26,15 @@ const EditorContainer = styled.div`
         ${tw`rounded h-full w-full`};
     }
 
-    .CodeMirror {
+    .cm-editor {
         font-family: "JetBrains Mono", "Fira Code", "Source Code Pro", monospace;
         font-size: 13px;
         line-height: 1.5rem;
         ${tw`rounded h-full`};
     }
 
-    .CodeMirror-linenumber {
-        padding: 1px 12px 0 12px !important;
-    }
-
-    .CodeMirror-foldmarker {
-        color: #cbccc6;
-        text-shadow: none;
-        margin-left: 0.25rem;
-        margin-right: 0.25rem;
+    .cm-scroller {
+        ${tw`rounded h-full`};
     }
 `;
 
@@ -81,10 +48,60 @@ export interface Props {
 	onContentSaved: () => void;
 }
 
+import type { Extension } from "@codemirror/state";
+
+const getLanguageExtension = (mode: string): Extension => {
+	switch (mode) {
+		case "text/x-csrc":
+		case "text/x-c++src":
+		case "text/x-csharp":
+		case "text/x-go":
+		case "text/x-rustsrc":
+			// For now, we'll map these to generic or closest equivalents available in the minimal set,
+			// or fallback to plain text if the specific language package isn't installed.
+			// Ideally, you'd install @codemirror/lang-cpp, @codemirror/lang-rust, etc.
+			// For this implementation, we will fallback or map to what we have.
+			// Using javascript for C-like syntax highlighting as a rough approximation if needed,
+			// but better to just return empty array (plain text) if exact match isn't there to avoid confusion.
+			return [];
+		case "text/css":
+		case "text/x-scss":
+		case "text/x-sass":
+			return css();
+		case "text/html":
+		case "script/x-vue":
+			return html();
+		case "text/javascript":
+		case "application/json":
+		case "application/typescript":
+			return mode === "application/json" ? json() : javascript();
+		case "text/x-markdown":
+		case "text/x-gfm":
+			return markdown();
+		case "text/x-php":
+			return php();
+		case "text/x-python":
+			return python();
+		case "text/x-sql":
+		case "text/x-mysql":
+		case "text/x-mariadb":
+		case "text/x-pgsql":
+		case "text/x-sqlite":
+		case "text/x-cassandra":
+		case "text/x-mssql":
+			return sql();
+		case "application/xml":
+			return xml();
+		case "text/x-yaml":
+			return yaml();
+		default:
+			return [];
+	}
+};
+
 const findModeByFilename = (filename: string) => {
 	for (let i = 0; i < modes.length; i++) {
 		const info = modes[i];
-
 		if (info.file?.test(filename)) {
 			return info;
 		}
@@ -118,92 +135,67 @@ export default ({
 	onContentSaved,
 	onModeChanged,
 }: Props) => {
-	const [editor, setEditor] = useState<CodeMirror.Editor>();
+	const editor = useRef<ReactCodeMirrorRef>(null);
 
-	const ref = useCallback((node: HTMLTextAreaElement | null) => {
-		if (!node) return;
-
-		const e = CodeMirror.fromTextArea(node, {
-			mode: "text/plain",
-			theme: "dracula",
-			indentUnit: 4,
-			smartIndent: true,
-			tabSize: 4,
-			indentWithTabs: false,
-			lineWrapping: true,
-			lineNumbers: true,
-			// @ts-ignore
-			foldGutter: true,
-			fixedGutter: true,
-			scrollbarStyle: "native",
-			coverGutterNextToScrollbar: false,
-			readOnly: false,
-			showCursorWhenSelecting: false,
-			autofocus: false,
-			spellcheck: true,
-			autocorrect: false,
-			autocapitalize: false,
-			lint: false,
-			autoCloseBrackets: true,
-			matchBrackets: true,
-			gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-		});
-
-		setEditor(e);
-	}, []);
+	const extensions = useMemo(() => {
+		return [
+			getLanguageExtension(mode),
+			keymap.of([
+				{
+					key: "Mod-s",
+					run: () => {
+						onContentSaved();
+						return true;
+					},
+				},
+			]),
+		];
+	}, [mode, onContentSaved]);
 
 	useEffect(() => {
 		if (filename === undefined) {
 			return;
 		}
 
-		onModeChanged(findModeByFilename(filename)?.mime || "text/plain");
+		const detectedMode = findModeByFilename(filename);
+		onModeChanged(detectedMode?.mime || "text/plain");
 	}, [filename, onModeChanged]);
 
 	useEffect(() => {
-		if (!editor) return;
-
-		const modeInfo = modes.find((m) => m.mime === mode);
-		if (modeInfo && modeInfo.mode !== "null") {
-			import(`codemirror/mode/${modeInfo.mode}/${modeInfo.mode}.js`)
-				.then(() => editor.setOption("mode", mode))
-				.catch((e) => {
-					console.warn(`Failed to load CodeMirror mode [${modeInfo.mode}]:`, e);
-					editor.setOption("mode", "text/plain");
-				});
-		} else {
-			editor.setOption("mode", "text/plain");
-		}
-	}, [editor, mode]);
-
-	useEffect(() => {
-		if (editor) {
-			editor.setValue(initialContent || "");
-			// Reset the history so that "Ctrl+Z" doesn't delete the intial content
-			// we just set above.
-			editor.setHistory({ done: [], undone: [] });
-		}
-	}, [editor, initialContent]);
-
-	useEffect(() => {
-		if (!editor) {
-			fetchContent(() =>
-				Promise.reject(new Error("no editor session has been configured")),
-			);
-			return;
-		}
-
-		editor.addKeyMap({
-			"Ctrl-S": () => onContentSaved(),
-			"Cmd-S": () => onContentSaved(),
+		fetchContent(() => {
+			if (!editor.current?.view) {
+				return Promise.reject(
+					new Error("no editor session has been configured"),
+				);
+			}
+			return Promise.resolve(editor.current.view.state.doc.toString());
 		});
-
-		fetchContent(() => Promise.resolve(editor.getValue()));
-	}, [editor, fetchContent, onContentSaved]);
+	}, [fetchContent]);
 
 	return (
 		<EditorContainer style={style}>
-			<textarea ref={ref} />
+			<CodeMirror
+				ref={editor}
+				value={initialContent}
+				theme={githubDark}
+				extensions={extensions}
+				basicSetup={{
+					lineNumbers: true,
+					foldGutter: true,
+					highlightActiveLineGutter: true,
+					autocompletion: true,
+					highlightActiveLine: true,
+					bracketMatching: true,
+					closeBrackets: true,
+					history: true,
+					drawSelection: true,
+					dropCursor: true,
+					allowMultipleSelections: true,
+					indentOnInput: true,
+					syntaxHighlighting: true,
+				}}
+				height="100%"
+			/>
 		</EditorContainer>
 	);
 };

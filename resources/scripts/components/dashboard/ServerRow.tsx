@@ -1,5 +1,6 @@
 import copy from "copy-to-clipboard";
 import {
+	Ban,
 	Cpu,
 	HardDrive,
 	MemoryStick,
@@ -86,8 +87,10 @@ export default ({
 		() =>
 			getServerResourceUsage(server.uuid)
 				.then((data) => setStats(data))
-				.catch((error) => console.error(error)),
-		[server.uuid],
+				.catch((_error) => {
+					toast.error(`Failed to load stats for ${server.name}.`);
+				}),
+		[server.uuid, server.name],
 	);
 
 	useEffect(() => {
@@ -96,8 +99,8 @@ export default ({
 
 	useEffect(() => {
 		// Don't waste a HTTP request if there is nothing important to show to the user because
-		// the server is suspended.
-		if (isSuspended) return;
+		// the server is suspended, installing, or transferring.
+		if (isSuspended || server.status !== null || server.isTransferring) return;
 
 		getStats().then(() => {
 			interval.current = setInterval(() => getStats(), 30000);
@@ -106,7 +109,7 @@ export default ({
 		return () => {
 			interval.current && clearInterval(interval.current);
 		};
-	}, [isSuspended, getStats]);
+	}, [isSuspended, server.status, server.isTransferring, getStats]);
 
 	const alarms = { cpu: false, memory: false, disk: false };
 	if (stats) {
@@ -167,7 +170,18 @@ export default ({
 		>
 			<div css={tw`flex items-center col-span-12 sm:col-span-5 lg:col-span-6`}>
 				<div className={"icon mr-4 text-neutral-500"}>
-					{!stats || stats.status === "offline" ? (
+					{isSuspended ? (
+						<div css={tw`relative flex items-center justify-center`}>
+							<ServerIcon size={24} />
+							<div
+								css={tw`absolute inset-0 flex items-center justify-center opacity-90`}
+							>
+								<Ban size={18} css={tw`text-red-500 stroke-[3px]`} />
+							</div>
+						</div>
+					) : server.status === "installing" || server.isTransferring ? (
+						<ServerCog size={24} css={tw`animate-spin-slow`} />
+					) : !stats || stats.status === "offline" ? (
 						<ServerOff size={24} />
 					) : stats.status === "starting" ? (
 						<ServerCog size={24} />
