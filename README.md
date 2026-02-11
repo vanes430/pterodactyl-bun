@@ -71,22 +71,28 @@ We provide specialized build modes via `build.ts`:
 | `bun run build:dev` | Development | No Minify, No Hashing. |
 | `bun run build:prod` | Production | Full Minification, Hashing, and Optimization. |
 | `bun run build:prod-compress` | Production | Full Optimization + Gzip Pre-compression. |
+| `bun run build:prod-full` | Production | Full Optimization + Gzip & Brotli Pre-compression. |
 | `bun run package:prod` | Release | Production build bundled into a deployment archive. |
 
 ---
 
-## ⚡ Performance Optimization (Gzip)
+## ⚡ Performance Optimization (Gzip & Brotli)
 
-This fork supports **Gzip Pre-compression** to significantly reduce asset sizes (up to 70% smaller) and improve page load speeds.
+This fork supports **Gzip and Brotli Pre-compression** to significantly reduce asset sizes (up to 70-80% smaller) and improve page load speeds. Brotli typically provides even better compression than Gzip for modern browsers.
 
 ### 1. Build with Compression
-To generate compressed assets (`.gz` files), use the following command:
+To generate compressed assets (`.gz` and `.br` files), use the following commands:
+
 ```bash
+# Build with Gzip only
 bun run build:prod-compress
+
+# Build with both Gzip and Brotli (Recommended for production)
+bun run build:prod-full
 ```
 
 ### 2. Configure Nginx
-To serve these pre-compressed assets without extra CPU overhead, you **must** enable `gzip_static` in your Nginx configuration.
+To serve these pre-compressed assets without extra CPU overhead, you should enable `gzip_static` and `brotli_static` (if available) in your Nginx configuration.
 
 Edit your site configuration (usually `/etc/nginx/sites-available/pterodactyl.conf`):
 
@@ -96,15 +102,23 @@ server {
 
     # Enable Gzip Compression
     gzip on;
-    gzip_static on; # Crucial: Tells Nginx to look for pre-compressed .gz files
+    gzip_static on; # Tells Nginx to look for pre-compressed .gz files
     gzip_vary on;
     gzip_proxied any;
     gzip_comp_level 6;
     gzip_types text/plain text/css text/xml application/javascript image/svg+xml;
 
+    # Enable Brotli Compression (Requires ngx_brotli module)
+    # brotli on;
+    # brotli_static on; # Tells Nginx to look for pre-compressed .br files
+    # brotli_comp_level 6;
+    # brotli_types text/plain text/css text/xml application/javascript image/svg+xml;
+
     # ... other config ...
 }
 ```
+
+> **Note:** `brotli_static` requires the `ngx_brotli` module to be installed in Nginx. If it's not available, Nginx will fallback to Gzip or the original files.
 
 After updating the config, test and reload Nginx:
 ```bash
