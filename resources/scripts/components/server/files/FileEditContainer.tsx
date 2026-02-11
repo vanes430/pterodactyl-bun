@@ -68,6 +68,7 @@ export default () => {
 		}
 
 		setLoading(true);
+		setContent("");
 		getFileContents(uuid, path)
 			.then(setContent)
 			.catch((error) => {
@@ -156,6 +157,7 @@ export default () => {
 				<div css={tw`relative flex-1 min-w-0`}>
 					<SpinnerOverlay visible={loading} />
 					<CodemirrorEditor
+						key={hash}
 						mode={mode}
 						filename={hash.replace(/^#/, "")}
 						onModeChanged={setMode}

@@ -15,7 +15,7 @@ import {
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import isEqual from "react-fast-compare";
 import { toast } from "react-hot-toast";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import tw from "twin.macro";
 import type { Server } from "@/api/server/getServer";
@@ -24,7 +24,6 @@ import getServerResourceUsage, {
 	type ServerStats,
 } from "@/api/server/getServerResourceUsage";
 import GreyRowBox from "@/components/elements/GreyRowBox";
-import Spinner from "@/components/elements/Spinner";
 import { bytesToString, ip, mbToBytes } from "@/lib/formatters";
 
 const isAlarmState = (current: number, limit: number): boolean =>

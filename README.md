@@ -70,7 +70,46 @@ We provide specialized build modes via `build.ts`:
 | :--- | :--- | :--- |
 | `bun run build:dev` | Development | No Minify, No Hashing. |
 | `bun run build:prod` | Production | Full Minification, Hashing, and Optimization. |
+| `bun run build:prod-compress` | Production | Full Optimization + Gzip Pre-compression. |
 | `bun run package:prod` | Release | Production build bundled into a deployment archive. |
+
+---
+
+## ⚡ Performance Optimization (Gzip)
+
+This fork supports **Gzip Pre-compression** to significantly reduce asset sizes (up to 70% smaller) and improve page load speeds.
+
+### 1. Build with Compression
+To generate compressed assets (`.gz` files), use the following command:
+```bash
+bun run build:prod-compress
+```
+
+### 2. Configure Nginx
+To serve these pre-compressed assets without extra CPU overhead, you **must** enable `gzip_static` in your Nginx configuration.
+
+Edit your site configuration (usually `/etc/nginx/sites-available/pterodactyl.conf`):
+
+```nginx
+server {
+    # ... other config ...
+
+    # Enable Gzip Compression
+    gzip on;
+    gzip_static on; # Crucial: Tells Nginx to look for pre-compressed .gz files
+    gzip_vary on;
+    gzip_proxied any;
+    gzip_comp_level 6;
+    gzip_types text/plain text/css text/xml application/javascript image/svg+xml;
+
+    # ... other config ...
+}
+```
+
+After updating the config, test and reload Nginx:
+```bash
+sudo nginx -t && sudo systemctl reload nginx
+```
 
 ---
 

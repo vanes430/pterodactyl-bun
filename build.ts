@@ -17,6 +17,7 @@ Options:
   --production  Set NODE_ENV=production
   --hash        Enable file hashing (default: true in production)
   --split       Enable code splitting (default: true in production)
+  --compress    Enable Gzip compression for assets
   --archive     Create a panel.tar.gz archive after build
   --outdir      Output directory (default: public/assets)
 `);
@@ -111,16 +112,18 @@ console.log("\n🚀 Starting Pterodactyl build process...\n");
 const cliConfig = parseArgs();
 const isProduction = cliConfig.production || process.env.NODE_ENV === "production";
 const useMinify = cliConfig.minify !== undefined ? cliConfig.minify : isProduction;
-// Auto-enable splitting if minify is on, unless explicitly disabled
-const useSplit = cliConfig.split !== undefined ? cliConfig.split : (useMinify || isProduction);
+// Disable splitting by default, even in production, unless explicitly enabled via --split
+const useSplit = cliConfig.split !== undefined ? cliConfig.split : false;
 // Auto-enable hashing if splitting is on, unless explicitly disabled
 const useHash = cliConfig.hash !== undefined ? cliConfig.hash : (useSplit || isProduction);
+const useCompress = cliConfig.compress !== undefined ? cliConfig.compress : false;
 const outdir = cliConfig.outdir || path.join(process.cwd(), "public/assets");
 
 console.log(`🔧 Mode: ${isProduction ? "Production" : "Development"}`);
 console.log(`✨ Minify: ${useMinify ? "Enabled" : "Disabled"}`);
 console.log(`🔑 Hashing: ${useHash ? "Enabled" : "Disabled"}`);
 console.log(`✂️  Splitting: ${useSplit ? "Enabled" : "Disabled"}`);
+console.log(`🗜️  Compression: ${useCompress ? "Enabled" : "Disabled"}`);
 console.log(`📦 Archive: ${cliConfig.archive ? "Enabled" : "Disabled"}`);
 
 // --- Bun Native: Cleaning Directory using Bun Shell ---
@@ -161,28 +164,74 @@ for (const output of result.outputs) {
 	if (output.path.endsWith(".map")) continue;
 	const fileName = path.basename(output.path);
 	const publicPath = `/assets/${path.relative(outdir, output.path)}`;
+	
+	// Calculate SRI (Subresource Integrity) hash
+	const contents = await output.arrayBuffer();
+	const integrity = `sha384-${new Bun.CryptoHasher("sha384").update(contents).digest("base64")}`;
 
 	if (output.kind === "entry-point") {
-		if (fileName.endsWith(".js")) manifest["main.js"] = { src: publicPath, integrity: "" };
-		else if (fileName.endsWith(".css")) manifest["main.css"] = { src: publicPath, integrity: "" };
+		if (fileName.endsWith(".js")) manifest["main.js"] = { src: publicPath, integrity };
+		else if (fileName.endsWith(".css")) manifest["main.css"] = { src: publicPath, integrity };
 	}
 	if (!manifest["main.css"] && fileName.startsWith("index") && fileName.endsWith(".css")) {
-		manifest["main.css"] = { src: publicPath, integrity: "" };
+		manifest["main.css"] = { src: publicPath, integrity };
 	}
-	manifest[fileName] = { src: publicPath, integrity: "" };
+	manifest[fileName] = { src: publicPath, integrity };
 }
 
 await Bun.write(path.join(outdir, "manifest.json"), JSON.stringify(manifest, null, 2));
 
+// --- Gzip Compression ---
+if (useCompress) {
+	console.log("🗜️  Compressing assets with Gzip...");
+	for (const output of result.outputs) {
+		if (output.path.endsWith(".map")) continue;
+		const contents = await output.arrayBuffer();
+		const compressed = Bun.gzipSync(new Uint8Array(contents));
+		await Bun.write(`${output.path}.gz`, compressed);
+	}
+}
+
 const end = Bun.nanoseconds();
 const durationMs = (Number(end - start) / 1e6).toFixed(2);
 
-console.table(
-	result.outputs.filter((o) => o.size > 0).map((o) => ({
-		File: path.basename(o.path),
-		Size: `${(o.size / 1024).toFixed(2)} KB`,
-	})),
+const outputSummary = await Promise.all(
+	result.outputs
+		.filter((o) => o.size > 0 && !o.path.endsWith(".map"))
+		.map(async (o) => {
+			const fileName = path.basename(o.path);
+			const size = `${(o.size / 1024).toFixed(2)} KB`;
+			let gzippedSize = "-";
+
+			if (useCompress) {
+				const gzFile = Bun.file(`${o.path}.gz`);
+				if (await gzFile.exists()) {
+					gzippedSize = `${(gzFile.size / 1024).toFixed(2)} KB`;
+				}
+			}
+
+			return {
+				File: fileName,
+				Size: size,
+				...(useCompress ? { "Gzip Size": gzippedSize } : {}),
+			};
+		}),
 );
+
+console.table(outputSummary);
+
+if (useCompress) {
+	const totalOriginal = result.outputs.reduce((acc, o) => acc + (o.path.endsWith(".map") ? 0 : o.size), 0);
+	let totalGzipped = 0;
+	for (const o of result.outputs) {
+		if (o.path.endsWith(".map")) continue;
+		const gzFile = Bun.file(`${o.path}.gz`);
+		totalGzipped += gzFile.size;
+	}
+	const ratio = ((1 - totalGzipped / totalOriginal) * 100).toFixed(1);
+	console.log(`\n🗜️  Total Size: ${(totalOriginal / 1024 / 1024).toFixed(2)} MB -> ${(totalGzipped / 1024 / 1024).toFixed(2)} MB (${ratio}% reduction)`);
+}
+
 console.log(`\n✅ Build completed in ${durationMs}ms`);
 
 // --- Bun Native: Archiving using Bun Shell ---
