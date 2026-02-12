@@ -13,19 +13,21 @@ export default () => {
 	return (
 		<>
 			<NavigationBar />
-			<React.Suspense fallback={<Spinner centered />}>
-				<Routes>
-					<Route path="/" element={<DashboardContainer />} />
-					{routes.account.map(({ path, component: Component }) => (
-						<Route
-							key={path}
-							path={`/account/${path}`.replace("//", "/")}
-							element={<Component />}
-						/>
-					))}
-					<Route path="*" element={<NotFound />} />
-				</Routes>
-			</React.Suspense>
+			<main>
+				<React.Suspense fallback={<Spinner centered />}>
+					<Routes>
+						<Route path="/" element={<DashboardContainer />} />
+						{routes.account.map(({ path, component: Component }) => (
+							<Route
+								key={path}
+								path={`/account/${path}`.replace("//", "/")}
+								element={<Component />}
+							/>
+						))}
+						<Route path="*" element={<NotFound />} />
+					</Routes>
+				</React.Suspense>
+			</main>
 		</>
 	);
 };

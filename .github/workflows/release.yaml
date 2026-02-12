@@ -55,6 +55,11 @@ jobs:
           bun run package:prod-compress
           mv panel.tar.gz target/panel-prod-compress.tar.gz
 
+      - name: Build & Package PRODUCTION-COMPRESS-BROTLI
+        run: |
+          bun run package:prod-compress-brotli
+          mv panel.tar.gz target/panel-prod-compress-brotli.tar.gz
+
       - name: Build & Package PRODUCTION-SPLIT
         run: |
           bun run package:prod-split
@@ -64,7 +69,12 @@ jobs:
         run: |
           bun run package:prod-compress-split
           mv panel.tar.gz target/panel-prod-compress-split.tar.gz
-          cp target/panel-prod-compress-split.tar.gz target/panel.tar.gz
+
+      - name: Build & Package PRODUCTION-COMPRESS-BROTLI-SPLIT
+        run: |
+          bun run package:prod-compress-brotli-split
+          mv panel.tar.gz target/panel-prod-compress-brotli-split.tar.gz
+          cp target/panel-prod-compress-brotli-split.tar.gz target/panel.tar.gz
 
       - name: Automatic Releases
         uses: marvinpinto/action-automatic-releases@latest
@@ -81,5 +91,7 @@ jobs:
             target/panel-dev-hash-split-compress.tar.gz
             target/panel-prod.tar.gz
             target/panel-prod-compress.tar.gz
+            target/panel-prod-compress-brotli.tar.gz
             target/panel-prod-split.tar.gz
             target/panel-prod-compress-split.tar.gz
+            target/panel-prod-compress-brotli-split.tar.gz

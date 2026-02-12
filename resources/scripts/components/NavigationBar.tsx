@@ -47,11 +47,7 @@ export default () => {
 	};
 
 	return (
-		<div
-			className={
-				"w-full bg-neutral-900/90 backdrop-blur-md shadow-md sticky top-0 z-50"
-			}
-		>
+		<nav className={"w-full bg-neutral-900 shadow-md sticky top-0 z-50"}>
 			<SpinnerOverlay visible={isLoggingOut} />
 			<div
 				className={
@@ -75,31 +71,35 @@ export default () => {
 				>
 					<SearchContainer />
 					<Tooltip placement={"bottom"} content={"Dashboard"}>
-						<NavLink to={"/"} end>
+						<NavLink to={"/"} aria-label={"Dashboard"} end>
 							<LayoutDashboard size={20} strokeWidth={2} />
 						</NavLink>
 					</Tooltip>
 					{rootAdmin && (
 						<Tooltip placement={"bottom"} content={"Admin"}>
-							<a href={"/admin"} rel={"noreferrer"}>
+							<a href={"/admin"} aria-label={"Admin Panel"} rel={"noreferrer"}>
 								<Settings size={20} strokeWidth={2} />
 							</a>
 						</Tooltip>
 					)}
 					<Tooltip placement={"bottom"} content={"Account Settings"}>
-						<NavLink to={"/account"}>
+						<NavLink to={"/account"} aria-label={"Account Settings"}>
 							<span className={"flex items-center w-5 h-5"}>
 								<Avatar.User />
 							</span>
 						</NavLink>
 					</Tooltip>
 					<Tooltip placement={"bottom"} content={"Sign Out"}>
-						<button type={"button"} onClick={onTriggerLogout}>
+						<button
+							type={"button"}
+							aria-label={"Sign Out"}
+							onClick={onTriggerLogout}
+						>
 							<LogOut size={20} strokeWidth={2} />
 						</button>
 					</Tooltip>
 				</RightNavigation>
 			</div>
-		</div>
+		</nav>
 	);
 };

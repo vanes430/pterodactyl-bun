@@ -48,7 +48,7 @@ const ScreenBlock = ({
 	<PageContentBlock>
 		<div css={tw`flex justify-center`}>
 			<div
-				css={tw`w-full sm:w-3/4 md:w-1/2 p-12 md:p-20 bg-neutral-800/40 backdrop-blur-md border border-neutral-700/50 rounded-2xl shadow-2xl text-center relative overflow-hidden`}
+				css={tw`w-full sm:w-3/4 md:w-1/2 p-12 md:p-20 bg-neutral-800/60 backdrop-blur-sm border border-neutral-700/50 rounded-2xl shadow-2xl text-center relative overflow-hidden`}
 			>
 				<div
 					css={tw`absolute -top-24 -right-24 w-48 h-48 bg-cyan-500/10 blur-3xl rounded-full`}

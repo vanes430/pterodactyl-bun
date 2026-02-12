@@ -46,6 +46,24 @@ interface ExtendedWindow extends Window {
 
 setupInterceptors(browserHistory);
 
+const { PterodactylUser, SiteConfiguration } = window as ExtendedWindow;
+if (PterodactylUser && !store.getState().user.data) {
+	store.getActions().user.setUserData({
+		uuid: PterodactylUser.uuid,
+		username: PterodactylUser.username,
+		email: PterodactylUser.email,
+		language: PterodactylUser.language,
+		rootAdmin: PterodactylUser.root_admin,
+		useTotp: PterodactylUser.use_totp,
+		createdAt: new Date(PterodactylUser.created_at),
+		updatedAt: new Date(PterodactylUser.updated_at),
+	});
+}
+
+if (!store.getState().settings.data) {
+	store.getActions().settings.setSettings(SiteConfiguration!);
+}
+
 const App = () => {
 	const { toasts } = useToasterStore();
 
@@ -57,24 +75,6 @@ const App = () => {
 				toast.dismiss(t.id);
 			});
 	}, [toasts]);
-
-	const { PterodactylUser, SiteConfiguration } = window as ExtendedWindow;
-	if (PterodactylUser && !store.getState().user.data) {
-		store.getActions().user.setUserData({
-			uuid: PterodactylUser.uuid,
-			username: PterodactylUser.username,
-			email: PterodactylUser.email,
-			language: PterodactylUser.language,
-			rootAdmin: PterodactylUser.root_admin,
-			useTotp: PterodactylUser.use_totp,
-			createdAt: new Date(PterodactylUser.created_at),
-			updatedAt: new Date(PterodactylUser.updated_at),
-		});
-	}
-
-	if (!store.getState().settings.data) {
-		store.getActions().settings.setSettings(SiteConfiguration!);
-	}
 
 	const Provider = StoreProvider as React.ComponentType<any>;
 	const ServerProvider = ServerContext.Provider as React.ComponentType<any>;

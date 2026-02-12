@@ -70,7 +70,7 @@ export default () => {
 					<Spinner size={"large"} centered />
 				)
 			) : (
-				<div css={tw`flex flex-col md:flex-row w-full`}>
+				<main css={tw`flex flex-col md:flex-row w-full`}>
 					<ServerSidebar />
 					<div css={tw`flex-1 flex justify-center`}>
 						<div css={tw`w-full max-w-[1600px] p-4 md:p-8 md:pt-4`}>
@@ -105,7 +105,7 @@ export default () => {
 							)}
 						</div>
 					</div>
-				</div>
+				</main>
 			)}
 		</React.Fragment>
 	);

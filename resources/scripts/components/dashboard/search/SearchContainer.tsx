@@ -1,8 +1,12 @@
 import { Search } from "lucide-react";
-import { useState } from "react";
-import SearchModal from "@/components/dashboard/search/SearchModal";
+import { lazy, useState } from "react";
+import Spinner from "@/components/elements/Spinner";
 import Tooltip from "@/components/elements/tooltip/Tooltip";
 import useEventListener from "@/plugins/useEventListener";
+
+const SearchModal = lazy(
+	() => import("@/components/dashboard/search/SearchModal"),
+);
 
 export default () => {
 	const [visible, setVisible] = useState(false);
@@ -22,11 +26,13 @@ export default () => {
 	return (
 		<>
 			{visible && (
-				<SearchModal
-					appear
-					visible={visible}
-					onDismissed={() => setVisible(false)}
-				/>
+				<Spinner.Suspense>
+					<SearchModal
+						appear
+						visible={visible}
+						onDismissed={() => setVisible(false)}
+					/>
+				</Spinner.Suspense>
 			)}
 			<Tooltip placement={"bottom"} content={"Search"}>
 				<div className={"navigation-link"} onClick={() => setVisible(true)}>

@@ -8,12 +8,14 @@ import { type ITerminalOptions, Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 import { SearchAddon } from "xterm-addon-search";
 import { SearchBarAddon } from "xterm-addon-search-bar";
+import { Unicode11Addon } from "xterm-addon-unicode11";
 import { WebLinksAddon } from "xterm-addon-web-links";
 import SpinnerOverlay from "@/components/elements/SpinnerOverlay";
 import { SocketEvent, SocketRequest } from "@/components/server/events";
 import useEventListener from "@/plugins/useEventListener";
 import { usePermissions } from "@/plugins/usePermissions";
 import { usePersistedState } from "@/plugins/usePersistedState";
+import { ScrollDownHelperAddon } from "@/plugins/XtermScrollDownHelperAddon";
 import { ServerContext } from "@/state/server";
 
 import "xterm/css/xterm.css";
@@ -53,7 +55,8 @@ const terminalProps: ITerminalOptions = {
 };
 
 export default () => {
-	const TERMINAL_PRELUDE = "\u001b[1m\u001b[32m>\u001b[0m ";
+	const TERMINAL_PRELUDE =
+		"\u001b[1m\u001b[33mcontainer@pterodactyl~ \u001b[0m";
 	const ref = useRef<HTMLDivElement>(null);
 	const terminal = useMemo(() => new Terminal({ ...terminalProps }), []);
 	const fitAddon = useMemo(() => new FitAddon(), []);
@@ -63,6 +66,9 @@ export default () => {
 		[searchAddon],
 	);
 	const webLinksAddon = useMemo(() => new WebLinksAddon(), []);
+	const unicode11Addon = useMemo(() => new Unicode11Addon(), []);
+	const scrollDownHelperAddon = useMemo(() => new ScrollDownHelperAddon(), []);
+
 	const { connected, instance } = ServerContext.useStoreState(
 		(state) => state.socket,
 	);
@@ -80,6 +86,8 @@ export default () => {
 	const [historyIndex, setHistoryIndex] = useState(-1);
 	const [loading, setLoading] = useState(true);
 	const [isScrolledUp, setIsScrolledUp] = useState(false);
+	const status = ServerContext.useStoreState((state) => state.status.value);
+
 	// SearchBarAddon has hardcoded z-index: 999 :(
 	const zIndex = `
     .xterm-search-bar__addon {
@@ -125,6 +133,7 @@ export default () => {
 
 	const handlePowerChangeEvent = useCallback(
 		(state: string) => {
+			setLoading(false);
 			terminal.writeln(
 				`${TERMINAL_PRELUDE}Server marked as ${state}...\u001b[0m`,
 			);
@@ -170,12 +179,23 @@ export default () => {
 	};
 
 	useEffect(() => {
+		if (status === "offline") {
+			setLoading(false);
+			return;
+		}
+
 		let timeout: NodeJS.Timeout;
 		if (connected && loading) {
-			timeout = setTimeout(() => setLoading(false), 3000);
+			timeout = setTimeout(() => setLoading(false), 1000);
 		}
 		return () => clearTimeout(timeout);
-	}, [connected, loading]);
+	}, [connected, loading, status]);
+
+	useEffect(() => {
+		if (status === "offline") {
+			setLoading(false);
+		}
+	}, [status]);
 
 	useEffect(() => {
 		if (connected && ref.current && !terminal.element) {
@@ -183,8 +203,14 @@ export default () => {
 			terminal.loadAddon(searchAddon);
 			terminal.loadAddon(searchBar);
 			terminal.loadAddon(webLinksAddon);
+			terminal.loadAddon(unicode11Addon);
+			terminal.loadAddon(scrollDownHelperAddon);
 
 			terminal.open(ref.current);
+
+			// Activate Unicode 11 for proper emoji and special character width handling
+			terminal.unicode.activeVersion = "11";
+
 			fitAddon.fit();
 			searchBar.addNewStyle(zIndex);
 
@@ -211,7 +237,16 @@ export default () => {
 				return true;
 			});
 		}
-	}, [terminal, connected, fitAddon, searchAddon, searchBar, webLinksAddon]);
+	}, [
+		terminal,
+		connected,
+		fitAddon,
+		searchAddon,
+		searchBar,
+		webLinksAddon,
+		unicode11Addon,
+		scrollDownHelperAddon,
+	]);
 
 	useEventListener(
 		"resize",
@@ -276,7 +311,10 @@ export default () => {
 
 	return (
 		<div className={classNames(styles.terminal, "relative")}>
-			<SpinnerOverlay visible={!connected || loading} size={"large"} />
+			<SpinnerOverlay
+				visible={status !== "offline" && (!connected || loading)}
+				size={"large"}
+			/>
 
 			<div
 				className={classNames(styles.container, styles.overflows_container, {

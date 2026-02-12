@@ -1,5 +1,6 @@
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
+import type { Allocation } from "@/api/server/getServer";
 import deleteServerAllocation from "@/api/server/network/deleteServerAllocation";
 import getServerAllocations from "@/api/swr/getServerAllocations";
 import { Button } from "@/components/elements/button/index";
@@ -8,7 +9,7 @@ import { useFlashKey } from "@/plugins/useFlash";
 import { ServerContext } from "@/state/server";
 
 interface Props {
-	allocation: number;
+	allocation: Allocation;
 }
 
 const DeleteAllocationButton = ({ allocation }: Props) => {
@@ -25,9 +26,9 @@ const DeleteAllocationButton = ({ allocation }: Props) => {
 	const deleteAllocation = () => {
 		clearFlashes();
 
-		mutate((data) => data?.filter((a) => a.id !== allocation), false);
+		mutate((data) => data?.filter((a) => a.id !== allocation.id), false);
 
-		deleteServerAllocation(uuid, allocation)
+		deleteServerAllocation(uuid, allocation.id)
 			.then(() => mutate())
 			.catch((error) => {
 				clearAndAddHttpError(error);
@@ -44,7 +45,33 @@ const DeleteAllocationButton = ({ allocation }: Props) => {
 				confirm={"Delete"}
 				onConfirmed={deleteAllocation}
 			>
-				This allocation will be immediately removed from your server.
+				<p>This allocation will be immediately removed from your server.</p>
+				<div
+					className={
+						"mt-4 bg-neutral-900 p-3 rounded-lg border border-white/5 space-y-1"
+					}
+				>
+					<p className={"text-sm text-neutral-400"}>
+						IP Address:{" "}
+						<span className={"text-neutral-200 font-mono"}>
+							{allocation.alias || allocation.ip}
+						</span>
+					</p>
+					<p className={"text-sm text-neutral-400"}>
+						Port:{" "}
+						<span className={"text-cyan-400 font-mono font-bold"}>
+							{allocation.port}
+						</span>
+					</p>
+					{allocation.notes && (
+						<p className={"text-sm text-neutral-400"}>
+							Notes:{" "}
+							<span className={"text-neutral-200 italic"}>
+								{allocation.notes}
+							</span>
+						</p>
+					)}
+				</div>
 			</Dialog.Confirm>
 			<Button.Danger
 				variant={Button.Variants.Secondary}

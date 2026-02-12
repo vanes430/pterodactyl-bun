@@ -13,7 +13,7 @@ export function parseArgs(): Record<string, any> {
 	for (let i = 0; i < args.length; i++) {
 		const arg = args[i];
 		if (!arg.startsWith("--")) continue;
-		
+
 		let key: string;
 		let value: any = true;
 
@@ -27,7 +27,7 @@ export function parseArgs(): Record<string, any> {
 				value = parseValue(args[++i]);
 			}
 		}
-		
+
 		config[toCamelCase(key)] = value;
 	}
 	return config;
@@ -35,7 +35,7 @@ export function parseArgs(): Record<string, any> {
 
 export function showHelp() {
 	console.log(`
-🏗️  Pterodactyl Bun Build Script (Native API)
+Pterodactyl Bun Build Script (Native API)
 
 Usage: bun run build.ts [options]
 
@@ -45,6 +45,7 @@ Options:
   --hash        Enable file hashing (default: true in production)
   --split       Enable code splitting (default: true in production)
   --compress    Enable Gzip compression for assets
+  --brotli      Enable Brotli compression for assets
   --archive     Create a panel.tar.gz archive after build
   --outdir      Output directory (default: public/assets)
 `);

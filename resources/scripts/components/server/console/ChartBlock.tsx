@@ -21,13 +21,13 @@ export default ({ title, legend, children }: ChartBlockProps) => (
 		<div
 			className={"flex items-center justify-between px-4 py-2 relative z-10"}
 		>
-			<h3
+			<h2
 				className={
 					"font-header font-medium transition-colors duration-100 group-hover:text-gray-50 text-sm uppercase tracking-wider text-gray-400"
 				}
 			>
 				{title}
-			</h3>
+			</h2>
 			{legend && <p className={"text-sm flex items-center"}>{legend}</p>}
 		</div>
 		<div className={"z-10 ml-2 relative"}>{children}</div>

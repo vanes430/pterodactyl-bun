@@ -44,7 +44,7 @@ export default forwardRef<HTMLFormElement, Props>(
 			<FlashMessageRender css={tw`mb-2 px-1`} />
 			<form {...props} ref={ref}>
 				<div
-					css={tw`md:flex w-full bg-neutral-800/50 backdrop-blur-md shadow-lg rounded-lg p-6 md:pl-0 mx-1 border border-white/5`}
+					css={tw`md:flex w-full bg-neutral-800/60 backdrop-blur-sm shadow-lg rounded-lg p-6 md:pl-0 mx-1 border border-white/5`}
 				>
 					<div css={tw`flex-none select-none mb-6 md:mb-0 self-center`}>
 						<svg

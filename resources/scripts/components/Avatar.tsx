@@ -51,6 +51,8 @@ const AvatarComponent = ({ name, style, className }: AvatarProps) => {
 		<img
 			src={`https://api.dicebear.com/9.x/identicon/svg?seed=${encodeURIComponent(name)}&backgroundColor=b6e3f4,c0aede,d1d4f9`}
 			alt={"avatar"}
+			width={32}
+			height={32}
 			style={style}
 			className={className}
 			onError={() => setIsError(true)}

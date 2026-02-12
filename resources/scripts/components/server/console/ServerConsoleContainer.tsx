@@ -36,8 +36,8 @@ const ServerConsoleContainer = () => {
 
 	useEffect(() => {
 		// Berikan prioritas pada Console untuk render pertama kali,
-		// lalu tampilkan komponen lainnya setelah jeda singkat.
-		const timeout = setTimeout(() => setShowExtras(true), 100);
+		// lalu tampilkan komponen lainnya setelah jeda singkat yang lebih lama untuk TBT.
+		const timeout = setTimeout(() => setShowExtras(true), 500);
 		return () => clearTimeout(timeout);
 	}, []);
 
@@ -97,8 +97,12 @@ const ServerConsoleContainer = () => {
 					{showExtras ? (
 						<ServerDetailsBlock />
 					) : (
-						<div className={"grid grid-cols-12 gap-2 md:gap-4"}>
-							{[...Array(6)].map((_, i) => (
+						<div
+							className={
+								"grid grid-cols-12 gap-2 md:gap-4 min-h-[480px] lg:min-h-0"
+							}
+						>
+							{[...Array(7)].map((_, i) => (
 								<div
 									key={i}
 									className={
@@ -119,7 +123,7 @@ const ServerConsoleContainer = () => {
 					[...Array(3)].map((_, i) => (
 						<div
 							key={i}
-							className={"h-[160px] bg-gray-800/20 rounded-lg animate-pulse"}
+							className={"h-[210px] bg-gray-800/20 rounded-lg animate-pulse"}
 						/>
 					))
 				)}

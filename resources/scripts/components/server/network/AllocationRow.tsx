@@ -148,7 +148,7 @@ const AllocationRow = ({ allocation }: Props) => {
 							</Button.Text>
 						</Can>
 						<Can action={"allocation.delete"}>
-							<DeleteAllocationButton allocation={allocation.id} />
+							<DeleteAllocationButton allocation={allocation} />
 						</Can>
 					</>
 				)}

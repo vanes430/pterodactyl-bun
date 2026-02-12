@@ -45,7 +45,6 @@
         "react-hook-form": "^7.71.1",
         "react-hot-toast": "^2.6.0",
         "react-i18next": "^16.5.4",
-        "react-icons": "^5.5.0",
         "react-router": "6",
         "react-router-dom": "6",
         "reaptcha": "^1.7.2",
@@ -58,6 +57,7 @@
         "xterm-addon-fit": "0.8.0",
         "xterm-addon-search": "0.13.0",
         "xterm-addon-search-bar": "^0.2.0",
+        "xterm-addon-unicode11": "^0.6.0",
         "xterm-addon-web-links": "0.9.0",
         "zod": "^4.3.6",
       },
@@ -1046,8 +1046,6 @@
 
     "react-i18next": ["react-i18next@16.5.4", "", { "dependencies": { "@babel/runtime": "^7.28.4", "html-parse-stringify": "^3.0.1", "use-sync-external-store": "^1.6.0" }, "peerDependencies": { "i18next": ">= 25.6.2", "react": ">= 16.8.0", "typescript": "^5" }, "optionalPeers": ["typescript"] }, "sha512-6yj+dcfMncEC21QPhOTsW8mOSO+pzFmT6uvU7XXdvM/Cp38zJkmTeMeKmTrmCMD5ToT79FmiE/mRWiYWcJYW4g=="],
 
-    "react-icons": ["react-icons@5.5.0", "", { "peerDependencies": { "react": "*" } }, "sha512-MEFcXdkP3dLo8uumGI5xN3lDFNsRtrjbOEKDLD7yv76v4wpnEq2Lt2qeHaQOr34I/wPN3s3+N08WkQ+CW37Xiw=="],
-
     "react-is": ["react-is@16.13.1", "", {}, "sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ=="],
 
     "react-router": ["react-router@6.30.3", "", { "dependencies": { "@remix-run/router": "1.23.2" }, "peerDependencies": { "react": ">=16.8" } }, "sha512-XRnlbKMTmktBkjCLE8/XcZFlnHvr2Ltdr1eJX4idL55/9BbORzyZEaIkBFDhFGCEWBBItsVrDxwx3gnisMitdw=="],
@@ -1183,6 +1181,8 @@
     "xterm-addon-search": ["xterm-addon-search@0.13.0", "", { "peerDependencies": { "xterm": "^5.0.0" } }, "sha512-sDUwG4CnqxUjSEFh676DlS3gsh3XYCzAvBPSvJ5OPgF3MRL3iHLPfsb06doRicLC2xXNpeG2cWk8x1qpESWJMA=="],
 
     "xterm-addon-search-bar": ["xterm-addon-search-bar@0.2.0", "", { "dependencies": { "babel-runtime": "^6.26.0", "rxjs-compat": "^6.5.4" }, "peerDependencies": { "xterm": "^4.4.0", "xterm-addon-search": "^0.5.0" } }, "sha512-xvXmBA/ShbnzGe5CCy0kqPNNGqjkpuaRgH3Z1iW0V71vCAPRrtJ/v/hMnysZBH7WGUYhlCQr1cJZagW2fBVvSg=="],
+
+    "xterm-addon-unicode11": ["xterm-addon-unicode11@0.6.0", "", { "peerDependencies": { "xterm": "^5.0.0" } }, "sha512-5pkb8YoS/deRtNqQRw8t640mu+Ga8B2MG3RXGQu0bwgcfr8XiXIRI880TWM49ICAHhTmnOLPzIIBIjEnCq7k2A=="],
 
     "xterm-addon-web-links": ["xterm-addon-web-links@0.9.0", "", { "peerDependencies": { "xterm": "^5.0.0" } }, "sha512-LIzi4jBbPlrKMZF3ihoyqayWyTXAwGfu4yprz1aK2p71e9UKXN6RRzVONR0L+Zd+Ik5tPVI9bwp9e8fDTQh49Q=="],
 

@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
+import Skeleton from "@/components/elements/Skeleton";
 import StatBlock from "@/components/server/console/StatBlock";
 import { SocketEvent, SocketRequest } from "@/components/server/events";
 import UptimeDuration from "@/components/server/UptimeDuration";
@@ -118,7 +119,11 @@ const ServerDetailsBlock = ({ className }: { className?: string }) => {
 	return (
 		<div className={classNames("grid grid-cols-12 gap-2 md:gap-4", className)}>
 			<StatBlock icon={Wifi} title={"Address"} copyOnClick={allocation}>
-				{allocation}
+				{allocation === "" ? (
+					<Skeleton width={"10rem"} height={"1.25rem"} className={"mt-1"} />
+				) : (
+					allocation
+				)}
 			</StatBlock>
 			<StatBlock
 				icon={Clock}
@@ -142,7 +147,7 @@ const ServerDetailsBlock = ({ className }: { className?: string }) => {
 				color={getBackgroundColor(stats.cpu, limits.cpu)}
 			>
 				{status === "offline" ? (
-					<span className={"text-gray-400"}>Offline</span>
+					<Skeleton width={"4rem"} height={"1.25rem"} className={"mt-1"} />
 				) : (
 					<Limit limit={textLimits.cpu}>{stats.cpu.toFixed(2)}%</Limit>
 				)}
@@ -153,7 +158,7 @@ const ServerDetailsBlock = ({ className }: { className?: string }) => {
 				color={getBackgroundColor(stats.memory / 1024, limits.memory * 1024)}
 			>
 				{status === "offline" ? (
-					<span className={"text-gray-400"}>Offline</span>
+					<Skeleton width={"6rem"} height={"1.25rem"} className={"mt-1"} />
 				) : (
 					<Limit limit={textLimits.memory}>{bytesToString(stats.memory)}</Limit>
 				)}
@@ -167,14 +172,14 @@ const ServerDetailsBlock = ({ className }: { className?: string }) => {
 			</StatBlock>
 			<StatBlock icon={DownloadCloud} title={"Network (Inbound)"}>
 				{status === "offline" ? (
-					<span className={"text-gray-400"}>Offline</span>
+					<Skeleton width={"5rem"} height={"1.25rem"} className={"mt-1"} />
 				) : (
 					bytesToString(stats.rx)
 				)}
 			</StatBlock>
 			<StatBlock icon={UploadCloud} title={"Network (Outbound)"}>
 				{status === "offline" ? (
-					<span className={"text-gray-400"}>Offline</span>
+					<Skeleton width={"5rem"} height={"1.25rem"} className={"mt-1"} />
 				) : (
 					bytesToString(stats.tx)
 				)}

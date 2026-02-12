@@ -167,35 +167,32 @@ function useChart(label: string, opts?: UseChartOptions) {
 
 	const push = useCallback(
 		(items: number | null | (number | null)[]) =>
-			setData(
-				(state) =>
-					merge(state, {
-						datasets: (Array.isArray(items) ? items : [items]).map(
-							(item, index) => ({
-								...state.datasets[index],
-								data: state.datasets[index].data
-									.slice(1)
-									.concat(
-										typeof item === "number" ? Number(item.toFixed(2)) : item,
-									),
-							}),
-						),
-					}) as ChartData<"line">,
-			),
+			setData((state) => ({
+				...state,
+				datasets: state.datasets.map((dataset, index) => {
+					const item = Array.isArray(items) ? items[index] : items;
+					return {
+						...dataset,
+						data: dataset.data
+							.slice(1)
+							.concat(
+								typeof item === "number" ? Number(item.toFixed(2)) : item,
+							),
+					};
+				}),
+			})),
 		[],
 	);
 
 	const clear = useCallback(
 		() =>
-			setData(
-				(state) =>
-					merge(state, {
-						datasets: state.datasets.map((value) => ({
-							...value,
-							data: Array(21).fill(-5),
-						})),
-					}) as ChartData<"line">,
-			),
+			setData((state) => ({
+				...state,
+				datasets: state.datasets.map((dataset) => ({
+					...dataset,
+					data: Array(21).fill(-5),
+				})),
+			})),
 		[],
 	);
 

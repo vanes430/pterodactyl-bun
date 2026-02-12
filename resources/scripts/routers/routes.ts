@@ -1,19 +1,48 @@
 import type React from "react";
 import { lazy } from "react";
-import AccountApiContainer from "@/components/dashboard/AccountApiContainer";
-import AccountOverviewContainer from "@/components/dashboard/AccountOverviewContainer";
-import ActivityLogContainer from "@/components/dashboard/activity/ActivityLogContainer";
-import AccountSSHContainer from "@/components/dashboard/ssh/AccountSSHContainer";
-import BackupContainer from "@/components/server/backups/BackupContainer";
-import ServerConsole from "@/components/server/console/ServerConsoleContainer";
-import DatabasesContainer from "@/components/server/databases/DatabasesContainer";
-import FileManagerContainer from "@/components/server/files/FileManagerContainer";
-import NetworkContainer from "@/components/server/network/NetworkContainer";
-import ServerActivityLogContainer from "@/components/server/ServerActivityLogContainer";
-import ScheduleContainer from "@/components/server/schedules/ScheduleContainer";
-import SettingsContainer from "@/components/server/settings/SettingsContainer";
-import StartupContainer from "@/components/server/startup/StartupContainer";
-import UsersContainer from "@/components/server/users/UsersContainer";
+
+const AccountApiContainer = lazy(
+	() => import("@/components/dashboard/AccountApiContainer"),
+);
+const AccountOverviewContainer = lazy(
+	() => import("@/components/dashboard/AccountOverviewContainer"),
+);
+const ActivityLogContainer = lazy(
+	() => import("@/components/dashboard/activity/ActivityLogContainer"),
+);
+const AccountSSHContainer = lazy(
+	() => import("@/components/dashboard/ssh/AccountSSHContainer"),
+);
+const BackupContainer = lazy(
+	() => import("@/components/server/backups/BackupContainer"),
+);
+const ServerConsole = lazy(
+	() => import("@/components/server/console/ServerConsoleContainer"),
+);
+const DatabasesContainer = lazy(
+	() => import("@/components/server/databases/DatabasesContainer"),
+);
+const FileManagerContainer = lazy(
+	() => import("@/components/server/files/FileManagerContainer"),
+);
+const NetworkContainer = lazy(
+	() => import("@/components/server/network/NetworkContainer"),
+);
+const ServerActivityLogContainer = lazy(
+	() => import("@/components/server/ServerActivityLogContainer"),
+);
+const ScheduleContainer = lazy(
+	() => import("@/components/server/schedules/ScheduleContainer"),
+);
+const SettingsContainer = lazy(
+	() => import("@/components/server/settings/SettingsContainer"),
+);
+const StartupContainer = lazy(
+	() => import("@/components/server/startup/StartupContainer"),
+);
+const UsersContainer = lazy(
+	() => import("@/components/server/users/UsersContainer"),
+);
 
 // Each of the router files is already code split out appropriately — so
 // all of the items above will only be loaded in when that router is loaded.
