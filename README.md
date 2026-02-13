@@ -47,6 +47,44 @@ bun install
 bun run build:prod
 ```
 
+### ⚡ Quick Update / Reinstall
+Use this script to quickly update or reinstall the panel using pre-compiled production assets. 
+
+> [!IMPORTANT]
+> **Run this script while you are in the `/var/www` directory.** 
+> Ensure your existing `.env` file is safely located in `/var/www/.env` before starting.
+
+```bash
+# Forcefully remove the old panel directory
+rm -rf pterodactyl
+# Create a fresh directory
+mkdir -p pterodactyl
+# Enter the new directory
+cd pterodactyl
+# Download the latest pre-compiled production assets
+curl -Lo panel.tar.gz https://github.com/vanes430/pterodactyl-bun/releases/download/latest/panel-prod-compress-split.tar.gz
+# Extract the archive silently
+tar -xzvf panel.tar.gz > /dev/null 2>&1
+# Set correct permissions for storage and cache
+chmod -R 755 storage/* bootstrap/cache/
+# Remove the default .env file
+rm .env
+# Copy your existing .env from the parent directory (/var/www/.env)
+cp ../.env .env
+# Install PHP dependencies (Production)
+composer install --no-dev --optimize-autoloader
+# Clear view cache
+php artisan view:clear
+# Clear configuration cache
+php artisan config:clear
+# Set webserver ownership for all files
+chown -R www-data:www-data /var/www/pterodactyl/*
+# Restart queue workers
+php artisan queue:restart
+# Disable maintenance mode and go live
+php artisan up
+```
+
 ---
 
 ## 🛠️ Local Development
