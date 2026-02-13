@@ -60,6 +60,12 @@ export default () => {
 		return stored ? stored.split("|") : [];
 	});
 
+	useEffect(() => {
+		if (showOnlyAdmin || !showOnlyAdmin) {
+			setPage(1);
+		}
+	}, [showOnlyAdmin]);
+
 	const [activeId, setActiveId] = useState<string | null>(null);
 
 	const { data: servers, error } = useSWR<PaginatedResult<Server>>(
