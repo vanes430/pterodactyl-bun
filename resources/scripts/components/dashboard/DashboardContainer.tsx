@@ -179,7 +179,7 @@ export default () => {
 						</div>
 					))}
 				</div>
-			) : servers.items.length > 0 ? (
+			) : sortedItems.length > 0 ? (
 				<Pagination data={servers} onPageSelect={setPage}>
 					{() => (
 						<DndContext
@@ -217,10 +217,8 @@ export default () => {
 					)}
 				</Pagination>
 			) : (
-				<div
-					css={tw`bg-neutral-800/40 border border-neutral-700/50 rounded-xl p-12 text-center shadow-inner`}
-				>
-					<p css={tw`text-neutral-400 text-lg`}>
+				<div css={tw`p-12 text-center`}>
+					<p css={tw`text-neutral-400 text-lg font-sans`}>
 						{showOnlyAdmin
 							? "There are no other servers to display."
 							: "It looks like you don't have any servers."}

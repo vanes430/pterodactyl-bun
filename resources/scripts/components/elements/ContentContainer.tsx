@@ -4,7 +4,7 @@ import { breakpoint } from "@/theme";
 
 const ContentContainer = styled.div`
     max-width: 1200px;
-    ${tw`mx-4`};
+    ${tw`mx-4 bg-transparent border-none shadow-none`};
 
     ${css`
 			${breakpoint("xl")`

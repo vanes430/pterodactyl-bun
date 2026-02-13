@@ -45,18 +45,17 @@ const StatusIndicatorBox = styled(GreyRowBox)<{
 	$status: ServerPowerState | undefined;
 }>`
     ${tw`grid grid-cols-12 gap-4 relative transition-all duration-300 ease-out`};
-    ${tw`bg-white/[0.03]  border border-white/[0.05] hover:border-white/10`};
-    ${tw`hover:shadow-2xl hover:bg-white/[0.06] hover:-translate-y-1 hover:scale-[1.01]`};
+    ${tw`bg-transparent border-none shadow-none hover:shadow-none hover:bg-white/[0.05]`};
 
     & .status-bar {
         ${tw`w-1 bg-red-500 absolute left-0 top-0 bottom-0 z-20 rounded-full my-2 ml-1 opacity-80 transition-all duration-150`};
 
         ${({ $status }) =>
 					!$status || $status === "offline"
-						? tw`bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.8)]`
+						? tw`bg-red-500`
 						: $status === "running"
-							? tw`bg-green-500 shadow-[0_0_12px_rgba(34,197,94,0.8)]`
-							: tw`bg-yellow-500 shadow-[0_0_12px_rgba(234,179,8,0.8)]`};
+							? tw`bg-green-500`
+							: tw`bg-yellow-500`};
     }
 `;
 
