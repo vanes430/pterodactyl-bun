@@ -57,12 +57,14 @@ const FileUploadList = () => {
 					className={"flex items-center space-x-3 bg-gray-700 p-3 rounded"}
 				>
 					<Tooltip
-						content={`${Math.floor((file.loaded / file.total) * 100)}%`}
+						content={`${file.total <= 0 ? 100 : Math.floor((file.loaded / file.total) * 100)}%`}
 						placement={"left"}
 					>
 						<div className={"flex-shrink-0"}>
 							<Spinner
-								progress={(file.loaded / file.total) * 100}
+								progress={
+									file.total <= 0 ? 100 : (file.loaded / file.total) * 100
+								}
 								className={"w-6 h-6"}
 							/>
 						</div>
@@ -130,7 +132,11 @@ export default () => {
 						}}
 					>
 						<Spinner
-							progress={(progress.uploaded / progress.total) * 100}
+							progress={
+								progress.total <= 0
+									? 100
+									: (progress.uploaded / progress.total) * 100
+							}
 							className={"w-8 h-8"}
 						/>
 						<CloudUploadIcon className={"h-3 absolute mx-auto animate-pulse"} />

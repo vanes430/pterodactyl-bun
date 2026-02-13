@@ -1,5 +1,6 @@
 import { CloudUploadIcon } from "@heroicons/react/outline";
-import { useEffect, useRef, useState } from "react";
+import debounce from "debounce";
+import { useEffect, useMemo, useRef, useState } from "react";
 import tw from "twin.macro";
 import http from "@/api/http";
 import getFileUploadUrl from "@/api/server/files/getFileUploadUrl";
@@ -30,6 +31,7 @@ export default ({ className }: WithClassname) => {
 	const timeouts = useRef<NodeJS.Timeout[]>([]);
 
 	const { mutate } = useFileManagerSwr();
+	const debouncedMutate = useMemo(() => debounce(mutate, 500), [mutate]);
 	const { addError, clearAndAddHttpError } = useFlashKey("files");
 
 	const uuid = ServerContext.useStoreState((state) => state.server.data?.uuid);
@@ -81,42 +83,54 @@ export default ({ className }: WithClassname) => {
 	};
 
 	const onFileSubmission = (files: FileList) => {
+		if (!uuid) return;
 		clearAndAddHttpError();
 		const list = Array.from(files);
-		if (list.some((file) => !file.type && (!file.size || file.size === 4096))) {
+
+		// Early detection for folders. If any item is a folder, cancel everything.
+		if (
+			list.some((file) => !file.type && (file.size === 0 || file.size === 4096))
+		) {
 			return addError("Folder uploads are not supported.", "Error");
 		}
 
-		const uploads = list.map((file) => {
-			const controller = new AbortController();
-			pushFileUpload({
-				name: file.name,
-				data: { abort: controller, loaded: 0, total: file.size },
-			});
+		Promise.all(
+			list.map((file) => {
+				return getFileUploadUrl(uuid)
+					.then((url) => {
+						const controller = new AbortController();
+						pushFileUpload({
+							name: file.name,
+							data: { abort: controller, loaded: 0, total: file.size },
+						});
 
-			return () =>
-				getFileUploadUrl(uuid).then((url) => {
-					const form = new FormData();
-					form.append("files", file);
+						const form = new FormData();
+						form.append("files", file);
 
-					return http
-						.upload(url, form, {
-							signal: controller.signal,
-							params: { directory },
-							onUploadProgress: (data) => onUploadProgress(data, file.name),
-						})
-						.then(() =>
-							timeouts.current.push(
-								setTimeout(() => removeFileUpload(file.name), 500),
-							),
-						);
-				});
-		});
-
-		Promise.all(uploads.map((fn) => fn()))
+						return http
+							.upload(url, form, {
+								signal: controller.signal,
+								params: { directory },
+								onUploadProgress: (data) => onUploadProgress(data, file.name),
+							})
+							.then(() => {
+								removeFileUpload(file.name);
+								debouncedMutate(); // Trigger a "small refresh" efficiently
+							})
+							.catch((error) => {
+								removeFileUpload(file.name);
+								throw error;
+							});
+					})
+					.catch((error) => {
+						// Ensure we cleanup state if URL fetch fails for a specific file
+						removeFileUpload(file.name);
+						throw error;
+					});
+			}),
+		)
 			.then(() => mutate())
 			.catch((error) => {
-				clearFileUploads();
 				clearAndAddHttpError(error);
 			});
 	};
@@ -142,6 +156,19 @@ export default ({ className }: WithClassname) => {
 
 							setVisible(false);
 							if (!e.dataTransfer?.files.length) return;
+
+							// Early detection for folders during drop event.
+							if (e.dataTransfer.items) {
+								for (let i = 0; i < e.dataTransfer.items.length; i++) {
+									const entry = e.dataTransfer.items[i].webkitGetAsEntry?.();
+									if (entry?.isDirectory) {
+										return addError(
+											"Folder uploads are not supported.",
+											"Error",
+										);
+									}
+								}
+							}
 
 							onFileSubmission(e.dataTransfer.files);
 						}}

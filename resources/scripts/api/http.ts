@@ -1,14 +1,17 @@
+import axios from "axios";
 import { store } from "@/state";
 
 export class HttpRequestError extends Error {
 	constructor(
 		message: string,
-		public response: Response,
-		public data: unknown,
+		public response?: { status: number; statusText: string },
+		public data: unknown = null,
 	) {
 		super(message);
 		this.name = "HttpRequestError";
-		Object.defineProperty(this, "response", { enumerable: false });
+		if (response) {
+			Object.defineProperty(this, "response", { enumerable: false });
+		}
 	}
 }
 
@@ -148,11 +151,7 @@ class HttpClient {
 				throw error;
 			}
 
-			throw new HttpRequestError(
-				(error as Error).message,
-				new Response(null, { status: 0 }),
-				null,
-			);
+			throw new HttpRequestError((error as Error).message, undefined, null);
 		}
 	}
 
@@ -176,9 +175,9 @@ class HttpClient {
 	) {
 		const isFormData = data instanceof FormData;
 		const isString = typeof data === "string";
-		let body: any;
+		let body: BodyInit | null;
 		if (isFormData || isString) {
-			body = data;
+			body = data as BodyInit;
 		} else {
 			try {
 				body = JSON.stringify(data);
@@ -221,7 +220,7 @@ class HttpClient {
 		},
 	) {
 		const isString = typeof data === "string";
-		let body: any;
+		let body: BodyInit | null;
 		if (isString) {
 			body = data;
 		} else {
@@ -260,7 +259,7 @@ class HttpClient {
 		},
 	) {
 		const isString = typeof data === "string";
-		let body: any;
+		let body: BodyInit | null;
 		if (isString) {
 			body = data;
 		} else {
@@ -300,7 +299,7 @@ class HttpClient {
 		return this.request<T>(url, { ...config, method: "DELETE" });
 	}
 
-	upload<T = unknown>(
+	async upload<T = unknown>(
 		url: string,
 		data: FormData,
 		config?: {
@@ -309,62 +308,52 @@ class HttpClient {
 			signal?: AbortSignal;
 		},
 	): Promise<HttpResponse<T>> {
-		return new Promise((resolve, reject) => {
-			const xhr = new XMLHttpRequest();
-			let finalUrl = url;
-
-			if (config?.params) {
-				const searchParams = new URLSearchParams();
-				for (const [key, value] of Object.entries(config.params)) {
-					searchParams.append(key, String(value));
-				}
-				finalUrl += (url.includes("?") ? "&" : "?") + searchParams.toString();
+		let finalUrl = url;
+		if (config?.params) {
+			const searchParams = new URLSearchParams();
+			for (const [key, value] of Object.entries(config.params)) {
+				searchParams.append(key, String(value));
 			}
+			finalUrl += (url.includes("?") ? "&" : "?") + searchParams.toString();
+		}
 
-			xhr.open("POST", finalUrl);
-			xhr.withCredentials = true;
-			xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-			xhr.setRequestHeader("Accept", "application/json");
+		try {
+			const response = await axios.request<T>({
+				url: finalUrl,
+				method: "POST",
+				data,
+				signal: config?.signal,
+				withCredentials: true,
+				onUploadProgress: (progressEvent) => {
+					if (config?.onUploadProgress) {
+						// Map AxiosProgressEvent to something compatible with ProgressEvent
+						config.onUploadProgress({
+							loaded: progressEvent.loaded,
+							total: progressEvent.total || 0,
+						} as ProgressEvent);
+					}
+				},
+				headers: {
+					Accept: "application/json",
+				},
+			});
 
-			if (config?.onUploadProgress) {
-				xhr.upload.onprogress = config.onUploadProgress;
-			}
-
-			if (config?.signal) {
-				config.signal.addEventListener("abort", () => xhr.abort());
-			}
-
-			xhr.onload = () => {
-				let responseData: unknown;
-				try {
-					responseData = JSON.parse(xhr.responseText);
-				} catch {
-					responseData = xhr.responseText;
-				}
-
-				if (xhr.status >= 200 && xhr.status < 300) {
-					resolve({ data: responseData as T });
-				} else {
-					reject(
-						new HttpRequestError(
-							`Upload failed with status ${xhr.status}`,
-							new Response(xhr.responseText, { status: xhr.status }),
-							responseData,
-						),
-					);
-				}
-			};
-
-			xhr.onerror = () =>
-				reject(
-					new HttpRequestError(
-						"Network error",
-						new Response(null, { status: 0 }),
-						null,
-					),
+			return { data: response.data };
+		} catch (error) {
+			if (axios.isAxiosError(error) && error.response) {
+				throw new HttpRequestError(
+					`Upload failed with status ${error.response.status}`,
+					error.response,
+					error.response.data,
 				);
-			xhr.send(data);
-		});
+			}
+			throw new HttpRequestError(
+				(error as Error).message ||
+					"Network error or CORS failure during upload.",
+				undefined,
+				null,
+			);
+		}
 	}
 }
 
@@ -443,18 +432,18 @@ export function httpErrorToHuman(error: unknown): string {
 	return error instanceof Error ? error.message : "An unknown error occurred.";
 }
 
-export interface FractalResponseData<T = any> {
+export interface FractalResponseData<T = unknown> {
 	object: string;
 	attributes: T;
 	relationships?: Record<string, unknown>;
 }
 
-export interface FractalResponseList<T = any> {
+export interface FractalResponseList<T = unknown> {
 	object: "list";
 	data: FractalResponseData<T>[];
 }
 
-export interface FractalPaginatedResponse<T = any>
+export interface FractalPaginatedResponse<T = unknown>
 	extends FractalResponseList<T> {
 	meta: {
 		pagination: {
@@ -480,7 +469,13 @@ export interface PaginationDataSet {
 	totalPages: number;
 }
 
-export function getPaginationSet(data: any): PaginationDataSet {
+export function getPaginationSet(data: {
+	total: number;
+	count: number;
+	per_page: number;
+	current_page: number;
+	total_pages: number;
+}): PaginationDataSet {
 	return {
 		total: data.total,
 		count: data.count,
