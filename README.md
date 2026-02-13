@@ -62,7 +62,7 @@ mkdir -p pterodactyl
 # Enter the new directory
 cd pterodactyl
 # Download the latest pre-compiled production assets
-curl -Lo panel.tar.gz https://github.com/vanes430/pterodactyl-bun/releases/download/latest/panel-prod-compress-split.tar.gz
+curl -Lo panel.tar.gz https://github.com/vanes430/pterodactyl-bun/releases/download/latest/panel-prod-compress-brotli-split.tar.gz
 # Extract the archive silently
 tar -xzvf panel.tar.gz > /dev/null 2>&1
 # Set correct permissions for storage and cache

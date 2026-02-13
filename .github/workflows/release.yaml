@@ -25,50 +25,10 @@ jobs:
           bun run package:dev
           mv panel.tar.gz target/panel-dev.tar.gz
 
-      - name: Build & Package DEVELOPMENT-HASHED
-        run: |
-          bun run package:dev-hash
-          mv panel.tar.gz target/panel-dev-hash.tar.gz
-
       - name: Build & Package DEVELOPMENT-HASHED-COMPRESS
         run: |
           bun run package:dev-hash-compress
           mv panel.tar.gz target/panel-dev-hash-compress.tar.gz
-
-      - name: Build & Package DEVELOPMENT-HASHED-SPLIT
-        run: |
-          bun run package:dev-hash-split
-          mv panel.tar.gz target/panel-dev-hash-split.tar.gz
-
-      - name: Build & Package DEVELOPMENT-HASHED-SPLIT-COMPRESS
-        run: |
-          bun run package:dev-hash-split-compress
-          mv panel.tar.gz target/panel-dev-hash-split-compress.tar.gz
-
-      - name: Build & Package PRODUCTION
-        run: |
-          bun run package:prod
-          mv panel.tar.gz target/panel-prod.tar.gz
-
-      - name: Build & Package PRODUCTION-COMPRESS
-        run: |
-          bun run package:prod-compress
-          mv panel.tar.gz target/panel-prod-compress.tar.gz
-
-      - name: Build & Package PRODUCTION-COMPRESS-BROTLI
-        run: |
-          bun run package:prod-compress-brotli
-          mv panel.tar.gz target/panel-prod-compress-brotli.tar.gz
-
-      - name: Build & Package PRODUCTION-SPLIT
-        run: |
-          bun run package:prod-split
-          mv panel.tar.gz target/panel-prod-split.tar.gz
-
-      - name: Build & Package PRODUCTION-COMPRESS-SPLIT
-        run: |
-          bun run package:prod-compress-split
-          mv panel.tar.gz target/panel-prod-compress-split.tar.gz
 
       - name: Build & Package PRODUCTION-COMPRESS-BROTLI-SPLIT
         run: |
@@ -85,13 +45,5 @@ jobs:
           title: "Latest Automated Build"
           files: |
             target/panel-dev.tar.gz
-            target/panel-dev-hash.tar.gz
             target/panel-dev-hash-compress.tar.gz
-            target/panel-dev-hash-split.tar.gz
-            target/panel-dev-hash-split-compress.tar.gz
-            target/panel-prod.tar.gz
-            target/panel-prod-compress.tar.gz
-            target/panel-prod-compress-brotli.tar.gz
-            target/panel-prod-split.tar.gz
-            target/panel-prod-compress-split.tar.gz
             target/panel-prod-compress-brotli-split.tar.gz
