@@ -43,6 +43,9 @@ const StartupContainer = lazy(
 const UsersContainer = lazy(
 	() => import("@/components/server/users/UsersContainer"),
 );
+const ModrinthContainer = lazy(
+	() => import("@/components/server/modrinth/ModrinthContainer"),
+);
 
 // Each of the router files is already code split out appropriately — so
 // all of the items above will only be loaded in when that router is loaded.
@@ -119,6 +122,12 @@ export default {
 			permission: "file.*",
 			name: undefined,
 			component: FileEditContainer,
+		},
+		{
+			path: "/plugins",
+			permission: "file.*",
+			name: "Plugins",
+			component: ModrinthContainer,
 		},
 		{
 			path: "/databases",

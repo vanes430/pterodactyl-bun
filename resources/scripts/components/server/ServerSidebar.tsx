@@ -8,6 +8,7 @@ import {
 	Menu,
 	Network,
 	Play,
+	Puzzle,
 	Settings,
 	Terminal,
 	Users,
@@ -92,6 +93,7 @@ export default () => {
 									{/* Icon Mapping based on route name */}
 									{route.name === "Console" && <Terminal size={18} />}
 									{route.name === "Files" && <FileText size={18} />}
+									{route.name === "Plugins" && <Puzzle size={18} />}
 									{route.name === "Databases" && <Database size={18} />}
 									{route.name === "Schedules" && <CalendarDays size={18} />}
 									{route.name === "Users" && <Users size={18} />}
@@ -107,6 +109,7 @@ export default () => {
 							<NavItem key={route.path} to={to(route.path)} end={route.exact}>
 								{route.name === "Console" && <Terminal size={18} />}
 								{route.name === "Files" && <FileText size={18} />}
+								{route.name === "Plugins" && <Puzzle size={18} />}
 								{route.name === "Databases" && <Database size={18} />}
 								{route.name === "Schedules" && <CalendarDays size={18} />}
 								{route.name === "Users" && <Users size={18} />}
