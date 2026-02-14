@@ -3,7 +3,7 @@ import debounce from "debounce";
 import { ArrowBigDownDash, ChevronsRight, Send } from "lucide-react";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { theme as th } from "twin.macro";
+import tw, { theme as th } from "twin.macro";
 import { type ITerminalOptions, Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 import { SearchAddon } from "xterm-addon-search";
@@ -323,9 +323,28 @@ export default () => {
 				})}
 			>
 				<div className={styles.dots}>
-					<div className={styles.red} />
-					<div className={styles.yellow} />
-					<div className={styles.green} />
+					<div className={styles.dot_group}>
+						<div className={styles.red} />
+						<div className={styles.yellow} />
+						<div className={styles.green} />
+					</div>
+					<div css={tw`flex items-center`}>
+						<div
+							css={[
+								tw`w-2 h-2 rounded-full mr-2 transition-all duration-500`,
+								status === "running"
+									? tw`bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]`
+									: status === "starting" || status === "stopping"
+										? tw`bg-yellow-500 animate-pulse`
+										: tw`bg-red-500`,
+							]}
+						/>
+						<span
+							css={tw`text-[10px] uppercase font-bold tracking-widest text-neutral-400`}
+						>
+							{status || "offline"}
+						</span>
+					</div>
 				</div>
 				<div className={"h-full"}>
 					<div id={styles.terminal} ref={ref} />

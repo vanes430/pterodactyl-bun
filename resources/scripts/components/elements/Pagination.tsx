@@ -20,7 +20,7 @@ interface Props<T> {
 }
 
 const Block = styled(Button as React.FC<any>)`
-    ${tw`p-0 w-10 h-10`}
+    ${tw`p-0 w-10 h-10 flex items-center justify-center`}
 
     &:not(:last-of-type) {
         ${tw`mr-2`};
