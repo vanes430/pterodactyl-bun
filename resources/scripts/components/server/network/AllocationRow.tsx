@@ -33,6 +33,8 @@ const AllocationRow = ({ allocation }: Props) => {
 	const uuid = ServerContext.useStoreState((state) => state.server.data?.uuid);
 	const { mutate } = getServerAllocations();
 
+	const fullAddress = `${allocation.alias || ip(allocation.ip)}:${allocation.port}`;
+
 	const onNotesChanged = useCallback(
 		(id: number, notes: string) => {
 			mutate(
@@ -72,7 +74,7 @@ const AllocationRow = ({ allocation }: Props) => {
 		<GreyRowBox
 			$hoverable={false}
 			className={
-				"flex-wrap md:flex-nowrap mt-2 !p-3 !bg-white/[0.02] hover:!bg-white/[0.04] !border-white/[0.05]"
+				"flex-wrap md:flex-nowrap mt-2 !p-3 !bg-white/[0.02] hover:!bg-white/[0.04] border !border-cyan-500/50"
 			}
 		>
 			<div className={"flex items-center w-full md:w-auto flex-1 min-w-0"}>
@@ -81,25 +83,27 @@ const AllocationRow = ({ allocation }: Props) => {
 				</div>
 				<div className={"mr-4 flex-1 md:flex-none md:w-48 min-w-0"}>
 					<Label>{allocation.alias ? "Hostname" : "IP Address"}</Label>
-					{allocation.alias ? (
-						<CopyOnClick text={allocation.alias}>
-							<p className={"text-sm font-medium text-neutral-200 truncate"}>
-								{allocation.alias}
-							</p>
-						</CopyOnClick>
-					) : (
-						<CopyOnClick text={ip(allocation.ip)}>
-							<p className={"text-sm font-medium text-neutral-200"}>
-								{ip(allocation.ip)}
-							</p>
-						</CopyOnClick>
-					)}
+					<CopyOnClick text={fullAddress}>
+						<p
+							className={
+								"text-sm font-medium text-neutral-200 truncate cursor-pointer"
+							}
+						>
+							{allocation.alias || ip(allocation.ip)}
+						</p>
+					</CopyOnClick>
 				</div>
 				<div className={"w-24 overflow-hidden mr-4"}>
 					<Label>Port</Label>
-					<p className={"text-sm font-mono text-cyan-400 font-bold"}>
-						{allocation.port}
-					</p>
+					<CopyOnClick text={fullAddress}>
+						<p
+							className={
+								"text-sm font-mono text-cyan-400 font-bold cursor-pointer"
+							}
+						>
+							{allocation.port}
+						</p>
+					</CopyOnClick>
 				</div>
 			</div>
 			<div className={"mt-4 w-full md:mt-0 md:flex-1 md:mx-4"}>
@@ -123,7 +127,7 @@ const AllocationRow = ({ allocation }: Props) => {
 				{allocation.isDefault ? (
 					<div
 						className={
-							"px-3 py-1 bg-cyan-500/10 border border-cyan-500/50 rounded-full"
+							"flex items-center justify-center px-3 py-1 bg-cyan-500/10 border border-cyan-500/50 rounded-full"
 						}
 					>
 						<span
@@ -140,7 +144,7 @@ const AllocationRow = ({ allocation }: Props) => {
 							<Button.Text
 								size={Button.Sizes.Small}
 								className={
-									"!text-[10px] !px-2 !py-1 uppercase tracking-tighter hover:!bg-white/5"
+									"flex items-center justify-center !text-[10px] !px-2 !py-1 uppercase tracking-tighter hover:!bg-white/5"
 								}
 								onClick={setPrimaryAllocation}
 							>

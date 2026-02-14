@@ -31,9 +31,13 @@
 		@apply relative rounded-lg p-2 sm:p-3 bg-neutral-900/50 min-h-[16rem] flex-1 font-mono text-sm border border-white/[0.05];
 
 		& .dots {
-			@apply flex space-x-1.5 mb-3 px-1;
+			@apply flex items-center justify-between mb-3 px-1;
 
-			& > div {
+			& .dot_group {
+				@apply flex space-x-1.5;
+			}
+
+			& > div > div {
 				@apply w-2.5 h-2.5 rounded-full opacity-80;
 			}
 
