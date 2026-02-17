@@ -234,13 +234,15 @@ const ServerRowContent = memo(
 							</p>
 							{server.expirationDate && (
 								<Tooltip placement={"top"} content={"Expiration Date"}>
-									<ExpirationBadge>
-										<Clock size={12} css={tw`mr-1`} />
-										{format(
-											new Date(server.expirationDate),
-											"yyyy-MM-dd HH:mm",
-										)}
-									</ExpirationBadge>
+									<div>
+										<ExpirationBadge>
+											<Clock size={12} css={tw`mr-1`} />
+											{format(
+												new Date(server.expirationDate),
+												"HH:mm - EEEE, dd-MM-yyyy",
+											)}
+										</ExpirationBadge>
+									</div>
 								</Tooltip>
 							)}
 						</div>

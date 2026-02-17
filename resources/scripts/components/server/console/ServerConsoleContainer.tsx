@@ -71,10 +71,15 @@ const ServerConsoleContainer = () => {
 					{expirationDate && (
 						<div css={tw`flex justify-center sm:justify-start`}>
 							<Tooltip placement={"top"} content={"Expiration Date"}>
-								<ExpirationBadge>
-									<Clock size={14} className={"mr-1"} />
-									{format(new Date(expirationDate), "yyyy-MM-dd HH:mm")}
-								</ExpirationBadge>
+								<div>
+									<ExpirationBadge>
+										<Clock size={14} className={"mr-1"} />
+										{format(
+											new Date(expirationDate),
+											"HH:mm - EEEE, dd-MM-yyyy",
+										)}
+									</ExpirationBadge>
+								</div>
 							</Tooltip>
 						</div>
 					)}
