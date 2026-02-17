@@ -5,9 +5,22 @@
 .env*
 .vagrant/*
 .vscode/*
-storage/framework/*
+
+# Ignore contents of these folders but keep the folders themselves via .gitkeep
+storage/app/public/*
+storage/app/private/*
+storage/app/backups/*
+storage/app/tars/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*
+storage/clockwork/*
 bootstrap/cache/*
-storage/logs/*.log
+
+# Exception to keep .gitkeep files
+!**/.gitkeep
+
 /public/storage
 /.idea
 /nbproject
@@ -25,9 +38,6 @@ bun.lockb
 
 # Storage
 /storage/*.key
-/storage/app/backups/*
-/storage/app/public/*
-/storage/app/tars/*
 
 # Logs
 npm-debug.log*
