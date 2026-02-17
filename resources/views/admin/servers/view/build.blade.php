@@ -94,6 +94,22 @@
                 <div class="col-xs-12">
                     <div class="box">
                         <div class="box-header with-border">
+                            <h3 class="box-title">Auto Suspension</h3>
+                        </div>
+                        <div class="box-body">
+                            <div class="form-group">
+                                <label for="expiration_date" class="control-label">Expiration Date</label>
+                                <div>
+                                    <input type="datetime-local" id="expiration_date" name="expiration_date" class="form-control" value="{{ $server->expiration_date ? \Carbon\Carbon::parse($server->expiration_date)->format('Y-m-d\TH:i') : '' }}" />
+                                </div>
+                                <p class="text-muted small">The date when this server will be automatically suspended. Leave empty for no expiration.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12">
+                    <div class="box">
+                        <div class="box-header with-border">
                             <h3 class="box-title">Application Feature Limits</h3>
                         </div>
                         <div class="box-body">

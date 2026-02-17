@@ -46,6 +46,7 @@ use Pterodactyl\Exceptions\Http\Server\ServerStateConflictException;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $installed_at
+ * @property \Illuminate\Support\Carbon|null $expiration_date
  * @property \Illuminate\Database\Eloquent\Collection|\Pterodactyl\Models\ActivityLog[] $activity
  * @property int|null $activity_count
  * @property Allocation|null $allocation
@@ -173,6 +174,7 @@ class Server extends Model implements Identifiable
         'database_limit' => 'present|nullable|integer|min:0',
         'allocation_limit' => 'sometimes|nullable|integer|min:0',
         'backup_limit' => 'present|nullable|integer|min:0',
+        'expiration_date' => 'sometimes|nullable|date',
     ];
 
     /**
@@ -198,6 +200,7 @@ class Server extends Model implements Identifiable
         self::UPDATED_AT => 'datetime',
         'deleted_at' => 'datetime',
         'installed_at' => 'datetime',
+        'expiration_date' => 'datetime',
     ];
 
     /**

@@ -59,6 +59,7 @@ export interface Server {
 		allocations: number;
 		backups: number;
 	};
+	expirationDate: string | null;
 	isTransferring: boolean;
 	variables: ServerEggVariable[];
 	allocations: Allocation[];
@@ -95,6 +96,7 @@ export interface ServerResponseAttributes {
 		allocations: number;
 		backups: number;
 	};
+	expiration_date: string | null;
 	is_transferring: boolean;
 	relationships?: {
 		variables?: FractalResponseList<EggVariableAttributes>;
@@ -124,6 +126,7 @@ export const rawDataToServerObject = ({
 	limits: { ...data.limits },
 	eggFeatures: data.egg_features || [],
 	featureLimits: { ...data.feature_limits },
+	expirationDate: data.expiration_date || null,
 	isTransferring: data.is_transferring,
 	variables: (data.relationships?.variables?.data || []).map(
 		rawDataToServerEggVariable,

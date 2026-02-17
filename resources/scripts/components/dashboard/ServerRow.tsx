@@ -1,8 +1,10 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import copy from "copy-to-clipboard";
+import { format } from "date-fns";
 import {
 	Ban,
+	Clock,
 	Cpu,
 	GripVertical,
 	HardDrive,
@@ -24,7 +26,12 @@ import getServerResourceUsage, {
 	type ServerStats,
 } from "@/api/server/getServerResourceUsage";
 import GreyRowBox from "@/components/elements/GreyRowBox";
+import Tooltip from "@/components/elements/tooltip/Tooltip";
 import { bytesToString, ip, mbToBytes } from "@/lib/formatters";
+
+const ExpirationBadge = styled.span`
+	${tw`text-[10px] bg-neutral-600 text-gray-100 py-0.5 px-1.5 rounded-full inline-flex items-center ml-2 shrink-0`};
+`;
 
 const isAlarmState = (current: number, limit: number): boolean =>
 	limit > 0 && current / (limit * 1024 * 1024) >= 0.9;
@@ -221,7 +228,22 @@ const ServerRowContent = memo(
 						)}
 					</div>
 					<div>
-						<p css={tw`text-lg break-words text-neutral-100`}>{server.name}</p>
+						<div css={tw`flex items-center`}>
+							<p css={tw`text-lg break-words text-neutral-100`}>
+								{server.name}
+							</p>
+							{server.expirationDate && (
+								<Tooltip placement={"top"} content={"Expiration Date"}>
+									<ExpirationBadge>
+										<Clock size={12} css={tw`mr-1`} />
+										{format(
+											new Date(server.expirationDate),
+											"yyyy-MM-dd HH:mm",
+										)}
+									</ExpirationBadge>
+								</Tooltip>
+							)}
+						</div>
 						{!!server.description && (
 							<p css={tw`text-sm text-neutral-400 break-words line-clamp-2`}>
 								{server.description}

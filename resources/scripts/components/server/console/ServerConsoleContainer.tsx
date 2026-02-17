@@ -1,16 +1,27 @@
 import Features from "@feature/Features";
+import { format } from "date-fns";
+import { Clock } from "lucide-react";
 import { lazy, memo, useEffect, useState } from "react";
 import isEqual from "react-fast-compare";
+import styled from "styled-components";
 import tw from "twin.macro";
 import { Alert } from "@/components/elements/alert";
 import Can from "@/components/elements/Can";
 import ServerContentBlock from "@/components/elements/ServerContentBlock";
 import Spinner from "@/components/elements/Spinner";
+import Tooltip from "@/components/elements/tooltip/Tooltip";
 import Console from "@/components/server/console/Console";
 import McLogsButton from "@/components/server/console/McLogsButton";
 import PowerButtons from "@/components/server/console/PowerButtons";
 import ServerDetailsBlock from "@/components/server/console/ServerDetailsBlock";
 import { ServerContext } from "@/state/server";
+
+const ExpirationBadge = styled.span`
+	${tw`mb-2 text-sm bg-neutral-600 text-gray-100 py-1 px-2 rounded-full inline-flex items-center transition-colors duration-150 w-fit`};
+	&:hover {
+		${tw`cursor-pointer`};
+	}
+`;
 
 const StatGraphs = lazy(() => import("@/components/server/console/StatGraphs"));
 
@@ -33,6 +44,9 @@ const ServerConsoleContainer = () => {
 	const isNodeUnderMaintenance = ServerContext.useStoreState(
 		(state) => state.server.data?.isNodeUnderMaintenance,
 	);
+	const expirationDate = ServerContext.useStoreState(
+		(state) => state.server.data?.expirationDate,
+	);
 
 	useEffect(() => {
 		// Berikan prioritas pada Console untuk render pertama kali,
@@ -54,6 +68,16 @@ const ServerConsoleContainer = () => {
 			)}
 			<div className={"flex flex-col sm:grid sm:grid-cols-4 gap-4 mb-4"}>
 				<div className={"sm:col-span-2 lg:col-span-3 pr-4"}>
+					{expirationDate && (
+						<div css={tw`flex justify-center sm:justify-start`}>
+							<Tooltip placement={"top"} content={"Expiration Date"}>
+								<ExpirationBadge>
+									<Clock size={14} className={"mr-1"} />
+									{format(new Date(expirationDate), "yyyy-MM-dd HH:mm")}
+								</ExpirationBadge>
+							</Tooltip>
+						</div>
+					)}
 					<div css={tw`flex items-center justify-center sm:justify-start`}>
 						<h1
 							className={

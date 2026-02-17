@@ -138,6 +138,25 @@
         <div class="col-xs-12">
             <div class="box">
                 <div class="box-header with-border">
+                    <h3 class="box-title">Auto Suspension</h3>
+                </div>
+                <div class="box-body row">
+                    <div class="form-group col-md-6">
+                        <label for="pExpirationDate" class="control-label">Expiration Date</label>
+                        <div>
+                            <input type="datetime-local" id="pExpirationDate" name="expiration_date" class="form-control" value="{{ old('expiration_date') }}" />
+                        </div>
+                        <p class="text-muted small">The date when this server will be automatically suspended. Leave empty for no expiration.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header with-border">
                     <h3 class="box-title">Resource Management</h3>
                 </div>
 
