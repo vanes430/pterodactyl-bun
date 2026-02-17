@@ -1,3 +1,4 @@
+import type { Identifier } from "@/api/definitions";
 import type {
 	AllocationAttributes,
 	EggVariableAttributes,
@@ -22,8 +23,16 @@ export interface Allocation {
 }
 
 export interface Server {
-	id: string;
+	/**
+	 * @deprecated this is the "uuid_short" which will be removed in 2.0, prefer use of "identifier"
+	 */
+	id: string | Identifier<"serv">;
+	identifier: Identifier<"serv">;
 	internalId: number | string;
+	/**
+	 * @deprecated
+	 */
+	__deprecatedUuidShort: string;
 	uuid: string;
 	name: string;
 	node: string;
@@ -57,6 +66,8 @@ export interface Server {
 
 export interface ServerResponseAttributes {
 	identifier: string;
+	server_identifier: Identifier<"serv">;
+	__deprecated_uuid_short: string;
 	internal_id: number;
 	uuid: string;
 	name: string;
@@ -95,7 +106,9 @@ export const rawDataToServerObject = ({
 	attributes: data,
 }: FractalResponseData<ServerResponseAttributes>): Server => ({
 	id: data.identifier,
+	identifier: data.server_identifier,
 	internalId: data.internal_id,
+	__deprecatedUuidShort: data.__deprecated_uuid_short,
 	uuid: data.uuid,
 	name: data.name,
 	node: data.node,
