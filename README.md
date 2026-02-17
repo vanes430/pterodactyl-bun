@@ -73,6 +73,9 @@ rm .env
 cp ../.env .env
 # Install PHP dependencies (Production)
 composer install --no-dev --optimize-autoloader
+# Set up the database and run seeders
+php artisan migrate --seed --force
+php artisan migrate --step --force
 # Clear view cache
 php artisan view:clear
 # Clear configuration cache
