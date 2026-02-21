@@ -14,7 +14,12 @@ import { properties } from "@codemirror/legacy-modes/mode/properties";
 import { shell } from "@codemirror/legacy-modes/mode/shell";
 import { toml } from "@codemirror/legacy-modes/mode/toml";
 import { EditorState, type Extension, Prec } from "@codemirror/state";
-import { EditorView, keymap } from "@codemirror/view";
+import {
+	drawSelection,
+	EditorView,
+	highlightSpecialChars,
+	keymap,
+} from "@codemirror/view";
 import { githubDark } from "@uiw/codemirror-theme-github";
 import CodeMirror, { type ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import type React from "react";
@@ -44,14 +49,25 @@ const editorTheme = EditorView.theme({
 		fontSize: "13px",
 		height: "100%",
 	},
-	".cm-content": {
+	"&.cm-focused": {
+		outline: "none",
+	},
+	".cm-scroller": {
 		fontFamily:
 			"Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
 		lineHeight: "1.5rem",
 	},
+	".cm-content": {
+		fontFamily: "inherit",
+		lineHeight: "inherit",
+		padding: "4px 0",
+	},
 	".cm-gutter": {
 		fontFamily: "inherit",
-		lineHeight: "1.5rem",
+		lineHeight: "inherit",
+	},
+	".cm-line": {
+		padding: "0 4px",
 	},
 	".cm-tooltip": {
 		border: "none",
@@ -174,6 +190,8 @@ export default ({
 		return [
 			editorTheme,
 			getLanguageExtension(mode),
+			highlightSpecialChars(),
+			drawSelection(),
 			EditorView.lineWrapping,
 			Prec.highest(indentUnit.of("  ")),
 			Prec.highest(EditorState.tabSize.of(2)),
@@ -195,6 +213,7 @@ export default ({
 		}
 
 		const detectedMode = findModeByFilename(filename);
+		console.log("Detected mode:", detectedMode?.mime || "text/plain");
 		onModeChanged(detectedMode?.mime || "text/plain");
 	}, [filename, onModeChanged]);
 
