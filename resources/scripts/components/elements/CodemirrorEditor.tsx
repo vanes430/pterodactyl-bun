@@ -46,12 +46,22 @@ const editorTheme = EditorView.theme({
 	},
 	".cm-content": {
 		fontFamily:
-			"ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+			"Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
 		lineHeight: "1.5rem",
 	},
 	".cm-gutter": {
 		fontFamily: "inherit",
 		lineHeight: "1.5rem",
+	},
+	".cm-tooltip": {
+		border: "none",
+		backgroundColor: "#000000",
+	},
+	".cm-tooltip-autocomplete": {
+		"& > ul > li[aria-selected]": {
+			backgroundColor: "#334155",
+			color: "#ffffff",
+		},
 	},
 });
 
@@ -164,6 +174,7 @@ export default ({
 		return [
 			editorTheme,
 			getLanguageExtension(mode),
+			EditorView.lineWrapping,
 			Prec.highest(indentUnit.of("  ")),
 			Prec.highest(EditorState.tabSize.of(2)),
 			keymap.of([
