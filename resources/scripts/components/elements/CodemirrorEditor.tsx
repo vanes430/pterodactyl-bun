@@ -6,7 +6,7 @@ import tw from "twin.macro";
 import modes from "@/modes";
 
 require("codemirror/lib/codemirror.css");
-require("codemirror/theme/material-darker.css");
+require("codemirror/theme/ayu-dark.css");
 require("codemirror/addon/edit/closebrackets");
 require("codemirror/addon/edit/closetag");
 require("codemirror/addon/edit/matchbrackets");
@@ -200,7 +200,7 @@ export default ({
 
 		const e = CodeMirror.fromTextArea(node, {
 			mode: "text/plain",
-			theme: "material-darker",
+			theme: "ayu-dark",
 			indentUnit: 4,
 			smartIndent: true,
 			tabSize: 4,

@@ -26,6 +26,7 @@ const modes: Mode[] = [
 	},
 	{ name: "CSS", mime: "text/css", mode: "css", ext: ["css"] },
 	{ name: "CQL", mime: "text/x-cassandra", mode: "sql", ext: ["cql"] },
+	{ name: "Dart", mime: "application/dart", mode: "dart", ext: ["dart"] },
 	{ name: "Diff", mime: "text/x-diff", mode: "diff", ext: ["diff", "patch"] },
 	{
 		name: "Dockerfile",
@@ -48,6 +49,7 @@ const modes: Mode[] = [
 		alias: ["xhtml"],
 	},
 	{ name: "HTTP", mime: "message/http", mode: "http" },
+	{ name: "Java", mime: "text/x-java", mode: "clike", ext: ["java"] },
 	{
 		name: "JavaScript",
 		mime: "text/javascript",
@@ -67,9 +69,10 @@ const modes: Mode[] = [
 		mime: "application/json",
 		mimes: ["application/json", "application/x-json"],
 		mode: "javascript",
-		ext: ["json", "map"],
+		ext: ["json", "map", "json5"],
 		alias: ["json5"],
 	},
+	{ name: "Kotlin", mime: "text/x-kotlin", mode: "clike", ext: ["kt"] },
 	{ name: "Lua", mime: "text/x-lua", mode: "lua", ext: ["lua"] },
 	{
 		name: "Markdown",
@@ -101,14 +104,14 @@ const modes: Mode[] = [
 		name: "Plain Text",
 		mime: "text/plain",
 		mode: "null",
-		ext: ["txt", "text", "conf", "def", "list", "log"],
+		ext: ["txt", "text", "def", "list", "log"],
 	},
 	{ name: "PostgreSQL", mime: "text/x-pgsql", mode: "sql" },
 	{
 		name: "Properties",
 		mime: "text/x-properties",
 		mode: "properties",
-		ext: ["properties", "ini", "in"],
+		ext: ["properties", "ini", "in", "conf"],
 		alias: ["ini", "properties"],
 	},
 	{
@@ -146,6 +149,7 @@ const modes: Mode[] = [
 	},
 	{ name: "SQL", mime: "text/x-sql", mode: "sql", ext: ["sql"] },
 	{ name: "SQLite", mime: "text/x-sqlite", mode: "sql" },
+	{ name: "Swift", mime: "text/x-swift", mode: "swift", ext: ["swift"] },
 	{ name: "TOML", mime: "text/x-toml", mode: "toml", ext: ["toml"] },
 	{
 		name: "TypeScript",
