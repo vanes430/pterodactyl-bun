@@ -13,8 +13,8 @@ import { nginx } from "@codemirror/legacy-modes/mode/nginx";
 import { properties } from "@codemirror/legacy-modes/mode/properties";
 import { shell } from "@codemirror/legacy-modes/mode/shell";
 import { toml } from "@codemirror/legacy-modes/mode/toml";
-import { EditorState, type Extension } from "@codemirror/state";
-import { keymap } from "@codemirror/view";
+import { EditorState, type Extension, Prec } from "@codemirror/state";
+import { EditorView, keymap } from "@codemirror/view";
 import { githubDark } from "@uiw/codemirror-theme-github";
 import CodeMirror, { type ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import type React from "react";
@@ -31,9 +31,6 @@ const EditorContainer = styled.div`
     }
 
     .cm-editor {
-        font-family: "JetBrains Mono", "Fira Code", "Source Code Pro", monospace;
-        font-size: 13px;
-        line-height: 1.5rem;
         ${tw`rounded h-full`};
     }
 
@@ -41,6 +38,22 @@ const EditorContainer = styled.div`
         ${tw`rounded h-full`};
     }
 `;
+
+const editorTheme = EditorView.theme({
+	"&": {
+		fontSize: "13px",
+		height: "100%",
+	},
+	".cm-content": {
+		fontFamily:
+			"ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+		lineHeight: "1.5rem",
+	},
+	".cm-gutter": {
+		fontFamily: "inherit",
+		lineHeight: "1.5rem",
+	},
+});
 
 export interface Props {
 	style?: React.CSSProperties;
@@ -149,9 +162,10 @@ export default ({
 
 	const extensions = useMemo(() => {
 		return [
+			editorTheme,
 			getLanguageExtension(mode),
-			indentUnit.of("  "),
-			EditorState.tabSize.of(2),
+			Prec.highest(indentUnit.of("  ")),
+			Prec.highest(EditorState.tabSize.of(2)),
 			keymap.of([
 				{
 					key: "Mod-s",
