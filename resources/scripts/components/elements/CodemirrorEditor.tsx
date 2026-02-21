@@ -8,11 +8,12 @@ import { python } from "@codemirror/lang-python";
 import { sql } from "@codemirror/lang-sql";
 import { xml } from "@codemirror/lang-xml";
 import { yaml } from "@codemirror/lang-yaml";
-import { StreamLanguage } from "@codemirror/language";
+import { indentUnit, StreamLanguage } from "@codemirror/language";
 import { nginx } from "@codemirror/legacy-modes/mode/nginx";
 import { properties } from "@codemirror/legacy-modes/mode/properties";
 import { shell } from "@codemirror/legacy-modes/mode/shell";
 import { toml } from "@codemirror/legacy-modes/mode/toml";
+import { EditorState, type Extension } from "@codemirror/state";
 import { keymap } from "@codemirror/view";
 import { githubDark } from "@uiw/codemirror-theme-github";
 import CodeMirror, { type ReactCodeMirrorRef } from "@uiw/react-codemirror";
@@ -50,8 +51,6 @@ export interface Props {
 	fetchContent: (callback: () => Promise<string>) => void;
 	onContentSaved: () => void;
 }
-
-import type { Extension } from "@codemirror/state";
 
 const getLanguageExtension = (mode: string): Extension => {
 	switch (mode) {
@@ -151,6 +150,8 @@ export default ({
 	const extensions = useMemo(() => {
 		return [
 			getLanguageExtension(mode),
+			indentUnit.of("  "),
+			EditorState.tabSize.of(2),
 			keymap.of([
 				{
 					key: "Mod-s",
@@ -204,6 +205,12 @@ export default ({
 					allowMultipleSelections: true,
 					indentOnInput: true,
 					syntaxHighlighting: true,
+					defaultKeymap: true,
+					searchKeymap: true,
+					historyKeymap: true,
+					foldKeymap: true,
+					completionKeymap: true,
+					lintKeymap: true,
 				}}
 				height="100%"
 			/>
