@@ -6,7 +6,7 @@ import tw from "twin.macro";
 import modes from "@/modes";
 
 require("codemirror/lib/codemirror.css");
-require("codemirror/theme/ayu-mirage.css");
+require("codemirror/theme/material-darker.css");
 require("codemirror/addon/edit/closebrackets");
 require("codemirror/addon/edit/closetag");
 require("codemirror/addon/edit/matchbrackets");
@@ -81,8 +81,7 @@ require("codemirror/mode/xml/xml");
 require("codemirror/mode/yaml/yaml");
 
 const EditorContainer = styled.div`
-    min-height: 16rem;
-    height: calc(100vh - 20rem);
+    height: 100%;
     ${tw`relative`};
 
     > div {
@@ -103,6 +102,47 @@ const EditorContainer = styled.div`
         text-shadow: none;
         margin-left: 0.25rem;
         margin-right: 0.25rem;
+    }
+
+    /* Modernized Search/Dialog UI */
+    .CodeMirror-dialog {
+        background: #1e1e1e;
+        color: #ccc;
+        padding: 8px 12px;
+        border-bottom: 1px solid #333;
+        font-family: inherit;
+    }
+
+    .CodeMirror-dialog input {
+        background: #2d2d2d;
+        color: #fff;
+        border: 1px solid #444;
+        border-radius: 4px;
+        padding: 2px 6px;
+        margin-left: 8px;
+        outline: none;
+    }
+
+    .CodeMirror-dialog input:focus {
+        border-color: #007acc;
+    }
+
+    .CodeMirror-dialog button {
+        background: #333;
+        color: #eee;
+        border: 1px solid #444;
+        border-radius: 4px;
+        padding: 2px 8px;
+        margin-left: 4px;
+        cursor: pointer;
+    }
+
+    .CodeMirror-dialog button:hover {
+        background: #444;
+    }
+
+    .CodeMirror-search-hint {
+        display: none;
     }
 `;
 
@@ -160,7 +200,7 @@ export default ({
 
 		const e = CodeMirror.fromTextArea(node, {
 			mode: "text/plain",
-			theme: "ayu-mirage",
+			theme: "material-darker",
 			indentUnit: 4,
 			smartIndent: true,
 			tabSize: 4,
