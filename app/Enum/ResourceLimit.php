@@ -46,7 +46,7 @@ enum ResourceLimit
             self::Allocation => Limit::perMinute(10),
             self::Backup => Limit::perMinutes(15, 3),
             self::Database => Limit::perMinute(2),
-            self::FilePull => Limit::perMinutes(10, 5),
+            self::FilePull => Limit::perMinute(15),
             self::Subuser => Limit::perMinutes(15, 10),
             self::Websocket => Limit::perMinute(60),
             default => Limit::perMinute(2),
